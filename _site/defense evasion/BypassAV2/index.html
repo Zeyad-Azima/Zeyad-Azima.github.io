@@ -1,0 +1,544 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.19.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Bypass The Anti-Virus - Part 2: Common Misconfigurations, Techniques &amp; Attacks - Zeyad Azima</title>
+<meta name="description" content="Common Misconfigurations, Techniques &amp; Attacks to bypass Anti-Virus. ">
+
+
+  <meta name="author" content="Zeyad Azima">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Zeyad Azima">
+<meta property="og:title" content="Bypass The Anti-Virus - Part 2: Common Misconfigurations, Techniques &amp; Attacks">
+<meta property="og:url" content="http://localhost:5000/defense%20evasion/BypassAV2/">
+
+
+  <meta property="og:description" content="Common Misconfigurations, Techniques &amp; Attacks to bypass Anti-Virus. ">
+
+
+
+  <meta property="og:image" content="http://localhost:5000/assets/images/clca7x8tt5teb0jrvefkubwhb.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2022-12-30T00:00:00+08:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:5000/defense%20evasion/BypassAV2/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Zeyad Azima",
+      "url": "http://localhost:5000/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Zeyad Azima Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<!-- favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/site_data/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/site_data/favicon-16x16.png">
+<meta name="theme-color" content="#ffffff">
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+          <a class="site-logo" href="/"><img src="/assets/images/site_data/logo.png" alt=""></a>
+        
+        <a class="site-title" href="/">
+          Zeyad Azima
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/#Security-Research">Security Research</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#MacOS">MacOS</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#IoT-Exploitation">IoT Exploitation</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#Defense-Evasion">Defense Evasion</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#General">General</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#Certificates">Certificates</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories">All Categories</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/site_data/avatar.jpg" alt="Zeyad Azima" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Zeyad Azima</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>Brain Storming Stuff (Exploit Development, Reverse Engineering &amp; More)</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="mailto:contact@zeyadazima.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i><span class="label">Email</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/AzimaZeyad" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/zer0verflow/" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/Zeyad-Azima" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://www.buymeacoffee.com/zeyadazima" rel="nofollow noopener noreferrer"><i class="fas fa-mug-hot" aria-hidden="true"></i><span class="label">Buy Me a Coffee</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Bypass The Anti-Virus - Part 2: Common Misconfigurations, Techniques &amp; Attacks">
+    <meta itemprop="description" content="IntroductionAfter the basics we discuss in the previous part of this series. Now, it’s the time to move forward and know about the Misconfigurations, Techniques &amp; Attacks that can affect the anti-virus. Taking the Misconfigurations topic first. To be more clear, Any software could have some misconfigurations during the development &amp; implementation of the software. Therefor, as the anti-virus also a software it can be affected to the misconfigurations we will discuss.Insecure PermissionsInsecure Permissions Occaures when a low-privileges user “Non-Administrators” get permissions he doesn’t suppose to have it. Before the example the permissions are as the following Read,Write,Execute and could be all “Full Control”.  Read: View &amp; Ability to read a file and it’s containt  Write: Ability to write “Edit” and modify.  Execute: Ability to execute and run the file/program.">
+    <meta itemprop="datePublished" content="2022-12-30T00:00:00+08:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Bypass The Anti-Virus - Part 2: Common Misconfigurations, Techniques &amp; Attacks
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  6 minute read
+
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu">
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#insecure-permissions">Insecure Permissions</a></li>
+  <li><a href="#improper-privileges">Improper Privileges</a></li>
+  <li><a href="#unquoted-service-path">Unquoted Service Path</a></li>
+  <li><a href="#dll-hijacking">DLL Hijacking</a></li>
+  <li><a href="#conclusion">Conclusion</a></li>
+</ul>
+
+            </nav>
+          </aside>
+        
+        <h1 id="introduction">Introduction</h1>
+<p>After the basics we discuss in the previous part of this series. Now, it’s the time to move forward and know about the <code class="language-plaintext highlighter-rouge">Misconfigurations, Techniques &amp; Attacks</code> that can affect the anti-virus. Taking the <code class="language-plaintext highlighter-rouge">Misconfigurations</code> topic first. To be more clear, Any software could have some misconfigurations during the development &amp; implementation of the software. Therefor, as the anti-virus also a software it can be affected to the misconfigurations we will discuss.</p>
+<h1 id="insecure-permissions">Insecure Permissions</h1>
+<p><code class="language-plaintext highlighter-rouge">Insecure Permissions</code> Occaures when a low-privileges user “Non-Administrators” get permissions he doesn’t suppose to have it. Before the example the permissions are as the following <code class="language-plaintext highlighter-rouge">Read</code>,<code class="language-plaintext highlighter-rouge">Write</code>,<code class="language-plaintext highlighter-rouge">Execute</code> and could be all “Full Control”.</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Read</code>: View &amp; Ability to read a file and it’s containt</li>
+  <li><code class="language-plaintext highlighter-rouge">Write</code>: Ability to write “Edit” and modify.</li>
+  <li><code class="language-plaintext highlighter-rouge">Execute</code>: Ability to execute and run the file/program.</li>
+</ul>
+
+<p><img src="/assets/images/Untitled%20Diagram.drawio%205.png" alt="Untitled Diagram.drawio 5.png" /></p>
+
+<p>So, any of these misconfigurations related to the permissions known as <code class="language-plaintext highlighter-rouge">Insecure Permissions</code> can result in Reading, Wrting &amp; Executing on sensitive files and programs for example:</p>
+<ul>
+  <li>Insecure <code class="language-plaintext highlighter-rouge">Read</code> permissions could apper in reading configuration files of the anti-virus as an example.</li>
+  <li>Insecure <code class="language-plaintext highlighter-rouge">Write</code> permissions could apper in modifying the anti-virus configuration files or the affected files at all. For example the <code class="language-plaintext highlighter-rouge">Signatures Database</code> file could be deleted or making it empty therefore the <code class="language-plaintext highlighter-rouge">Static Engine</code> will fail to detecting the malware.</li>
+  <li>Insecure <code class="language-plaintext highlighter-rouge">Execute</code> permissions can lead to executing of dangerous executables like uinstall program which will lead to remove the anti-virus.
+    <h1 id="improper-privileges">Improper Privileges</h1>
+    <p><img src="/assets/images/Untitled%20Diagram.drawio%206.png" alt="Untitled Diagram.drawio 6.png" /></p>
+  </li>
+</ul>
+
+<p>Another misconfiguration is <code class="language-plaintext highlighter-rouge">Improper Privileges</code> and here the software “Anti-Virus” itself doesn’t check for the user privileges (<code class="language-plaintext highlighter-rouge">If ths user is allowed or not</code>). As a results that will let a non-privileged user to access/modify the software and its related components.This type of misconfigurations could also lead to <code class="language-plaintext highlighter-rouge">Privilige Escalation</code>. You can read about <code class="language-plaintext highlighter-rouge">Improper Privileges</code> from <a href="https://cwe.mitre.org/data/definitions/269.html">here</a>. And you can see somecases found in some Endpoint Security Softwares: <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-3369">Bitdefender</a>, <a href="https://www.mcafee.com/support/?articleId=TS103335&amp;page=shell&amp;shell=article-view">McAfee</a>,.</p>
+
+<h1 id="unquoted-service-path">Unquoted Service Path</h1>
+<p>The <code class="language-plaintext highlighter-rouge">Unquoted Service Path</code> is one of the misconfiguration on the <code class="language-plaintext highlighter-rouge">Windows</code> Platform and this kind of misconfigurations is well-known, because it’s widely used to <code class="language-plaintext highlighter-rouge">Escalate Priviliges</code>. Let’s Explain the idea behind the service path more to make it clear. When we create a windows service manually or when we install a software, The software create some services that are responable to run some binaries or some files when the service boot-up, Therefor, the software can work well without any problems as each service run a specific binary or file that has specific funcation/operation in the anti-virus.</p>
+
+<p>We can search for the <code class="language-plaintext highlighter-rouge">Services</code> App in the taskbar search:
+<img src="/assets/images/aa0c53afdf62200682cb7da8b6747e6a.png" alt="aa0c53afdf62200682cb7da8b6747e6a.png" /></p>
+
+<p>After open it we can open any services to explain how it works:
+<img src="/assets/images/a090a4be3fb2c024d7936decb01ada0c.png" alt="a090a4be3fb2c024d7936decb01ada0c.png" /></p>
+
+<p>In the Above picture you can see that we got 2 <code class="language-plaintext highlighter-rouge">Services</code> with the following 2 paths under <code class="language-plaintext highlighter-rouge">Path to executable</code> or as it called <code class="language-plaintext highlighter-rouge">binpath</code>:</p>
+<ul>
+  <li>Eddie Services: <code class="language-plaintext highlighter-rouge">C:\Program Files\AirVPN\Eddie-Service-Elevated.exe</code></li>
+  <li>ESET Services: <code class="language-plaintext highlighter-rouge">"C:\Program Files\ESET\ESET Security\ekrn.exe"</code></li>
+</ul>
+
+<p>So, As you can see the <code class="language-plaintext highlighter-rouge">Eddie Services</code>  has the path without any quotes like <code class="language-plaintext highlighter-rouge">'' or ""</code>. Unlike <code class="language-plaintext highlighter-rouge">ESET Services</code> has double quotes <code class="language-plaintext highlighter-rouge">""</code>. Now, Why do we need to put the path inside quotes ?. To know the answer let’s explain how <code class="language-plaintext highlighter-rouge">Windows</code> execute the <code class="language-plaintext highlighter-rouge">Service binary</code>. When there are spaces in the path, <code class="language-plaintext highlighter-rouge">Windows</code> try to execute the path as the following:</p>
+
+<p>Taking the following path for example <code class="language-plaintext highlighter-rouge">C:\Program Files\vsociety software\run.exe</code>. Basiclly, as there is no qoutes, It will replace the spaces and read it as a path and would add <code class="language-plaintext highlighter-rouge">.exe</code> to it and try to execute it if not exist will move to the next one until the end of the path reached.</p>
+
+<p>Process example as the following for the pervious 2 paths:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">C:\Program Files\vsociety software\run.exe</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">C:\Program.exe</code>: If not exist the following step:</li>
+      <li><code class="language-plaintext highlighter-rouge">C:\Program Files\vsociety.exe</code>:  If not exist the it will run the original one which is the following</li>
+      <li><code class="language-plaintext highlighter-rouge">C:\Program Files\vsociety software\run.exe</code>: it will run as its the targeted original existing file.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>As we saw if a malicious user created a file called a malicious file called <code class="language-plaintext highlighter-rouge">Program.exe</code> under <code class="language-plaintext highlighter-rouge">C</code> directory. the service will execute it. As a results, it will launch the malicious file instead of the targeted service file. Therefor, it could lead to stop some features in the anti-virus as the service binary is important and needed to start some protections.</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">"C:\Program Files\vsociety software\run.exe"</code>: the qouted path cancel the spaces part and tell that this is a full path.</li>
+</ul>
+
+<h1 id="dll-hijacking">DLL Hijacking</h1>
+<p>A DLL (<code class="language-plaintext highlighter-rouge">Dynamic-link library</code>) file is a library can be found in windows and it’s contains functions and codes that do a spesific task to do. Basically, works as any other library exist. These DLLs can be hijacked and trick the software to load a DLL file created by the malicious user which gonna lead to a damage or to make the software loss some features. In case of Anti-Virus, It could be an important library to do some scans or detect malware. As a results, it’s gonna lead to a bypass.</p>
+
+<p><code class="language-plaintext highlighter-rouge">DLL Hijacking</code> got a lot of types as the following:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">DLL replacement</code>: replace a legitimate DLL with an evil DLL. This can be combined with DLL Proxying , which ensures all functionality of the original DLL remains intact.</li>
+  <li><code class="language-plaintext highlighter-rouge">DLL search order hijacking</code>: DLLs specified by an application without a path are searched for in fixed locations in a specific order. Hijacking the search order takes place by putting the evil DLL in a location that is searched in before the actual DLL. This sometimes includes the working directory of the target application.</li>
+  <li><code class="language-plaintext highlighter-rouge">Phantom DLL hijacking</code>: drop an evil DLL in place of a missing/non-existing DLL that a legitimate application tries to load.</li>
+  <li><code class="language-plaintext highlighter-rouge">DLL redirection</code>: change the location in which the DLL is searched for, e.g. by editing the %PATH% environment variable, or .exe.manifest / .exe.local files to include the folder containing the evil DLL.</li>
+  <li><code class="language-plaintext highlighter-rouge">WinSxS DLL replacement</code>: replace the legitimate DLL with the evil DLL in the relevant WinSxS folder of the targeted DLL. Often referred to as DLL side-loading.</li>
+  <li><code class="language-plaintext highlighter-rouge">Relative path DLL Hijacking</code>: copy (and optionally rename) the legitimate application to a user-writeable folder, alongside the evil DLL. In the way this is used, it has similarities with (Signed) Binary Proxy Execution. A variation of this is (somewhat oxymoronically called) ‘bring your own LOLbin’ in which the legitimate application is brought with the evil DLL (rather than copied from the legitimate location on the victim’s machine).</li>
+</ul>
+
+<p>The above types from <a href="https://book.hacktricks.xyz/windows-hardening/windows-local-privilege-escalation/dll-hijacking">hacktricks</a>. And also you could read more about the <code class="language-plaintext highlighter-rouge">DLL Hijacking</code> itself from the same link.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+<p>We have learned about simple and little 4 of the <code class="language-plaintext highlighter-rouge">Misconfigurations</code> that could be used to bypass the anti-virus software, There are many and more other ways can be used to bypass the anti-virus software. These <code class="language-plaintext highlighter-rouge">Misconfigurations, Techniques &amp; Attacks</code>  we will be discussed in the coming parts. Always don’t forget to take a look around the outlines and understand more. But, at all we gonna go deep when we come to part 5 of the series, where we gonna start to attack our Victim (<code class="language-plaintext highlighter-rouge">Anti-Virus software vendor</code>).</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#defense-evasion" class="page__taxonomy-item" rel="tag">Defense Evasion</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2022-12-30T00:00:00+08:00">December 30, 2022</time></p>
+        
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/defense%20evasion/BypassAV1/" class="pagination--pager" title="Bypass The Anti-Virus - Part 1: Introduction
+">Previous</a>
+    
+    
+      <a href="/iot%20exploitation/exploitzte/" class="pagination--pager" title="Exploit Writing (KILLx108): Kill ZTE Router
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2024 Zeyad Azima. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

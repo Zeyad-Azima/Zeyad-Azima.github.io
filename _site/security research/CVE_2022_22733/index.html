@@ -1,0 +1,709 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.19.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>CVE-2022-22733: Apache ShardingSphere ElasticJob-UI privilege escalation - Zeyad Azima</title>
+<meta name="description" content="Detailed analysis for CVE-2022-22733 a privilege escalation vulnerability through exposure of sensitive data. ">
+
+
+  <meta name="author" content="Zeyad Azima">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Zeyad Azima">
+<meta property="og:title" content="CVE-2022-22733: Apache ShardingSphere ElasticJob-UI privilege escalation">
+<meta property="og:url" content="http://localhost:5000/security%20research/CVE_2022_22733/">
+
+
+  <meta property="og:description" content="Detailed analysis for CVE-2022-22733 a privilege escalation vulnerability through exposure of sensitive data. ">
+
+
+
+  <meta property="og:image" content="http://localhost:5000/assets/images/clgupfc8l1whj0jqg8hpn3bjf.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2023-04-28T00:00:00+08:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:5000/security%20research/CVE_2022_22733/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Zeyad Azima",
+      "url": "http://localhost:5000/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Zeyad Azima Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<!-- favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/site_data/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/site_data/favicon-16x16.png">
+<meta name="theme-color" content="#ffffff">
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+          <a class="site-logo" href="/"><img src="/assets/images/site_data/logo.png" alt=""></a>
+        
+        <a class="site-title" href="/">
+          Zeyad Azima
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/#Security-Research">Security Research</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#MacOS">MacOS</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#IoT-Exploitation">IoT Exploitation</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#Defense-Evasion">Defense Evasion</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#General">General</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#Certificates">Certificates</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories">All Categories</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/site_data/avatar.jpg" alt="Zeyad Azima" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Zeyad Azima</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>Brain Storming Stuff (Exploit Development, Reverse Engineering &amp; More)</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="mailto:contact@zeyadazima.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i><span class="label">Email</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/AzimaZeyad" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/zer0verflow/" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/Zeyad-Azima" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://www.buymeacoffee.com/zeyadazima" rel="nofollow noopener noreferrer"><i class="fas fa-mug-hot" aria-hidden="true"></i><span class="label">Buy Me a Coffee</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="CVE-2022-22733: Apache ShardingSphere ElasticJob-UI privilege escalation">
+    <meta itemprop="description" content="Introduction">
+    <meta itemprop="datePublished" content="2023-04-28T00:00:00+08:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">CVE-2022-22733: Apache ShardingSphere ElasticJob-UI privilege escalation
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  12 minute read
+
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu">
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#testing-lab">Testing Lab</a></li>
+  <li><a href="#what-is-shardingsphere-elasticjob-ui-">What is ShardingSphere ElasticJob-UI ?</a></li>
+  <li><a href="#static-analysis">Static Analysis</a></li>
+  <li><a href="#dynamic-analysis">Dynamic Analysis</a></li>
+  <li><a href="#patch-diffing">Patch Diffing</a></li>
+  <li><a href="#conclusion">Conclusion</a>
+    <ul>
+      <li><a href="#resources">Resources</a></li>
+    </ul>
+  </li>
+</ul>
+
+            </nav>
+          </aside>
+        
+        <h1 id="introduction"><strong>Introduction</strong></h1>
+
+<p>A vulnerability discovered in Apache ShardingSphere ElasticJob-UI known as <code class="language-plaintext highlighter-rouge">CVE-2022-22733</code>, The vulnerability lead to exposure of sensitive informatiopns and as a results it allows an attacker who has guest account to do privilege escalation.</p>
+
+<h1 id="testing-lab"><strong>Testing Lab</strong></h1>
+
+<p>For the testing lab the vulnerability affecting version 3.0.0 and prior versions. So, we can use docker to build our testing lab, First pull the docker image:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo docker pull apache/shardingsphere-elasticjob-lite-ui:3.0.0
+</code></pre></div></div>
+
+<p>Now, Let’s run the app:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo docker run -d --name elasticjob-ui -p 8088:8088 -e ELASTIC_JOB_GUEST_ENABLED=true apache/shardingsphere-elasticjob-lite-ui:3.0.0
+</code></pre></div></div>
+
+<p>Here it will run the app and enable the guest access, Therefore we can simulate and reproduce the vulnerability.</p>
+
+<p><img src="/assets/images/302203b4011d5f8a700420f297226cf2" alt="" /></p>
+
+<p> </p>
+
+<h1 id="what-is-shardingsphere-elasticjob-ui-"><strong>What is ShardingSphere ElasticJob-UI ?</strong></h1>
+
+<p>ShardingSphere ElasticJob-UI is a web-based graphical user interface (GUI) that is part of the ShardingSphere ElasticJob project and provides an easy-to-use interface to manage, monitor, and visualize the status of jobs running in a ShardingSphere ElasticJob cluster. It simplifies the management and administration of distributed scheduling tasks, making it more convenient for users to manage their jobs without dealing directly with the underlying API or configuration files.</p>
+
+<p> </p>
+
+<h1 id="static-analysis"><strong>Static Analysis</strong></h1>
+
+<p>Let’s Open burpsuite and take a look at the login request and response.</p>
+
+<p><img src="/assets/images/a3c77f68ab6940726d7fb61cc9b00ef3" alt="" /></p>
+
+<p>In the above screenshot when we login, It provide us back with a response contains the <code class="language-plaintext highlighter-rouge">accessToken</code>. If we copy the <code class="language-plaintext highlighter-rouge">accessToken</code> value and decode it:</p>
+
+<p><img src="/assets/images/4059668d5c71d349e3a6d2980def19bd" alt="" /></p>
+
+<p>As we can see after decoding the value, It’s exposed the <code class="language-plaintext highlighter-rouge">guest</code> username and password which is the user we logged-in with &amp; Also exposed the <code class="language-plaintext highlighter-rouge">root</code> username and password, As a results we can use the exposed <code class="language-plaintext highlighter-rouge">root</code> creds and escalate our privileges. Let’s see the root cause of this issue by analyzing and going through the login/authentication process code. Now, Under the following class <code class="language-plaintext highlighter-rouge">org.apache.shardingsphere.elasticjob.lite.ui.security.AuthenticationFilter</code> we can see the following:</p>
+
+<p><img src="/assets/images/77cac8700b632826138caa3c4711a1d5" alt="" /></p>
+
+<p>Which obvuise is the endpoint where the authentication process happens, Let’s dig deeper into the class code:</p>
+
+<p><img src="/assets/images/5f77f486a2077b0edabdd341892c158c" alt="" /></p>
+
+<p>First, It’s defining the package and import needed libraries by scrolling down we can see the start of defining the class:</p>
+
+<p><img src="/assets/images/9007545f86a4c57cf24fb4ebb2178d35" alt="" /></p>
+
+<p>This <code class="language-plaintext highlighter-rouge">AuthenticationFilter</code> class implements the <code class="language-plaintext highlighter-rouge">Filter</code> interface and has a constant <code class="language-plaintext highlighter-rouge">LOGIN_URI</code> that represents the <code class="language-plaintext highlighter-rouge">URI</code> for the login endpoint, a <code class="language-plaintext highlighter-rouge">Gson</code> object for <code class="language-plaintext highlighter-rouge">JSON</code> serialization and deserialization, and a <code class="language-plaintext highlighter-rouge">UserAuthenticationService</code> object from the <code class="language-plaintext highlighter-rouge">UserAuthenticationService</code> class that can be set using a setter method. If we go to that class under the same location we will be able to see that it’s responsiable to check for the user in the authentication process. In other words, It’s a main part of the authentication. As we mentioned before about the <code class="language-plaintext highlighter-rouge">Filter</code> interface, It’s basically a part of the <code class="language-plaintext highlighter-rouge">Servlet API</code> and is used to define filters that can intercept requests and responses going to and coming from a web application, For example, modifying request parameters, add or modify request headers, perform logging, and even transform the response returned by the server. Something important we have to know about the <code class="language-plaintext highlighter-rouge">Filter</code> interface and It’s that the <code class="language-plaintext highlighter-rouge">Filter</code> interface contains three methods:</p>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">init(FilterConfig config)</code>: This method is called when the filter is initialized and It allows the filter to perform any initialization that is required.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">doFilter(ServletRequest request, ServletResponse response, FilterChain chain)</code>: This method is called for every incoming request that matches the filter mapping and It allows the filter to examine or modify the request, perform any filtering logic, and then pass the request on to the next filter in the chain or to the servlet.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">destroy()</code>: This method is called when the filter is destroyed and It allows the filter to perform any cleanup that is required.<br />
+  By completing our lines of codes we can see the <code class="language-plaintext highlighter-rouge">doFilter()</code> method:</p>
+  </li>
+</ul>
+
+<p><img src="/assets/images/9ef9e688b010ae213464c669e6a50487" alt="" /></p>
+
+<p>The method takes three parameters <code class="language-plaintext highlighter-rouge">servletRequest</code>, <code class="language-plaintext highlighter-rouge">servletResponse</code> and <code class="language-plaintext highlighter-rouge">filterChain</code>, <code class="language-plaintext highlighter-rouge">servletRequest</code> and <code class="language-plaintext highlighter-rouge">servletResponse</code> parameters are instances of the <code class="language-plaintext highlighter-rouge">ServletRequest</code> and <code class="language-plaintext highlighter-rouge">ServletResponse</code> interfaces, respectively. The <code class="language-plaintext highlighter-rouge">filterChain</code> parameter is an object that represents the next filter in the chain or the servlet that the request is being sent to. Then, The method first casts the <code class="language-plaintext highlighter-rouge">ServletRequest</code> and <code class="language-plaintext highlighter-rouge">ServletResponse</code> objects to <code class="language-plaintext highlighter-rouge">HttpServletRequest</code> and <code class="language-plaintext highlighter-rouge">HttpServletResponse</code>, respectively. After that it checks if the request <code class="language-plaintext highlighter-rouge">URI</code> matches the <code class="language-plaintext highlighter-rouge">LOGIN_URI</code> constant. If it does, the <code class="language-plaintext highlighter-rouge">handleLogin</code> method is called to handle the login request and If not the method checks if the request has a valid access token by checking the value of the <code class="language-plaintext highlighter-rouge">Access-Token</code> header. If the access token is valid, the request is passed on to the next filter in the chain using the <code class="language-plaintext highlighter-rouge">doFilter</code> method of the <code class="language-plaintext highlighter-rouge">FilterChain</code> object. Otherwise, the <code class="language-plaintext highlighter-rouge">respondWithUnauthorized</code> method is called to return an unauthorized status code to the client.</p>
+
+<p><img src="/assets/images/000b77ffd459e65870b81fa9d62d5741" alt="" /></p>
+
+<p>The <code class="language-plaintext highlighter-rouge">destroy()</code> method is empty and is used to clean up any resources used by the filter and <code class="language-plaintext highlighter-rouge">handleLogin</code> method is responsible for handling user login requests. It receives a <code class="language-plaintext highlighter-rouge">HttpServletRequest</code> object, which contains the user’s credentials, and a <code class="language-plaintext highlighter-rouge">HttpServletResponse</code> object, which is used to return the server’s response.It’s first reads the user’s credentials from the request using the <code class="language-plaintext highlighter-rouge">getReader</code> method and converts them to a <code class="language-plaintext highlighter-rouge">UserAccount</code> object using the <code class="language-plaintext highlighter-rouge">gson.fromJson</code> method. Then calls the <code class="language-plaintext highlighter-rouge">checkUser</code> method of the <code class="language-plaintext highlighter-rouge">userAuthenticationService</code> object to check the validity of the user’s credentials. If the credentials are valid the method creates a <code class="language-plaintext highlighter-rouge">HashMap</code> object to hold the user’s information, including their username, accessToken, and whether they are a guest user. It then writes this information to the response using the <code class="language-plaintext highlighter-rouge">httpResponse.getWriter().write</code> method after converting it to a <code class="language-plaintext highlighter-rouge">JSON</code> string using the <code class="language-plaintext highlighter-rouge">gson.toJson</code> method. If the user’s credentials are invalid, the method calls the <code class="language-plaintext highlighter-rouge">respondWithUnauthorized</code> method, which writes a <code class="language-plaintext highlighter-rouge">JSON</code> string to the response indicating that the user is unauthorized.</p>
+
+<p><img src="/assets/images/4aadfcfe3d871e47a9c1a4106b2bc654" alt="" /></p>
+
+<p>In this line we can notice it’s where the <code class="language-plaintext highlighter-rouge">accessToken</code> returned to the user and it’s being called from the <code class="language-plaintext highlighter-rouge">getToken()</code> method from <code class="language-plaintext highlighter-rouge">userAuthenticationService</code> object which is the <code class="language-plaintext highlighter-rouge">userAuthenticationService</code> class. Now, If we go to the class:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>package org.apache.shardingsphere.elasticjob.lite.ui.security;
+
+import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import lombok.Setter;
+import org.apache.commons.codec.binary.Base64;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+/**
+ * User authentication service.
+ */
+@Component
+@ConfigurationProperties(prefix = "auth")
+@Setter
+public final class UserAuthenticationService {
+    
+    private String rootUsername;
+    
+    private String rootPassword;
+    
+    private String guestUsername;
+    
+    private String guestPassword;
+    
+    private final Base64 base64 = new Base64();
+    
+    private Gson gson = new Gson();
+    
+    /**
+     * Check user.
+     *
+     * @param userAccount user account
+     * @return check success or failure
+     */
+</code></pre></div></div>
+
+<p>We can see that it starts with defining the package, class and some variables which we can see in the <code class="language-plaintext highlighter-rouge">accessToken</code> when we decoded it such as <code class="language-plaintext highlighter-rouge">rootUsername</code>, <code class="language-plaintext highlighter-rouge">rootPassword</code>, <code class="language-plaintext highlighter-rouge">guestUsername</code> &amp; <code class="language-plaintext highlighter-rouge">guestPassword</code> and creates a new <code class="language-plaintext highlighter-rouge">Base64</code> object along with <code class="language-plaintext highlighter-rouge">JSON</code> object to store data into.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    public AuthenticationResult checkUser(final UserAccount userAccount) {
+        if (null == userAccount || Strings.isNullOrEmpty(userAccount.getUsername()) || Strings.isNullOrEmpty(userAccount.getPassword())) {
+            return new AuthenticationResult(null, null, false, false);
+        }
+        if (rootUsername.equals(userAccount.getUsername()) &amp;&amp; rootPassword.equals(userAccount.getPassword())) {
+            return new AuthenticationResult(rootUsername, rootPassword, true, false);
+        }
+        if (guestUsername.equals(userAccount.getUsername()) &amp;&amp; guestPassword.equals(userAccount.getPassword())) {
+            return new AuthenticationResult(guestUsername, guestPassword, true, true);
+        }
+        return new AuthenticationResult(null ,null, false, false);
+    }
+     /**
+     * Get user authentication token.
+     *
+     * @return authentication token
+     */
+    public String getToken() {
+        return base64.encodeToString(gson.toJson(this).getBytes());
+    }
+}
+</code></pre></div></div>
+
+<p>After that It provides a method to check user authentication by comparing the provided username and password with the pre-configured root and guest usernames and passwords. Finally, We can see the <code class="language-plaintext highlighter-rouge">getToken()</code> method that encodes the current <code class="language-plaintext highlighter-rouge">UserAuthenticationService</code> object as a <code class="language-plaintext highlighter-rouge">Base64</code> encoded string which is returned as the authentication token (<code class="language-plaintext highlighter-rouge">accessToken</code>) and here comes the vulnerability with the <code class="language-plaintext highlighter-rouge">getToken()</code> method is returning the <code class="language-plaintext highlighter-rouge">Base64</code> string with representation of the entire <code class="language-plaintext highlighter-rouge">UserAuthenticationService</code> object including the root username and password. As a results it’s exposed as we saw in the first of the analysis.</p>
+
+<h1 id="dynamic-analysis"><strong>Dynamic Analysis</strong></h1>
+
+<p>Now, Let’s Setup our lab in debugging mode to see how it works dynamically. As we pulled the image before we will just run it again with a different name and port.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo docker run -d --name elasticjob-ui-debug -p 8888:8088 -p 8000:8000 -e ELASTIC_JOB_GUEST_ENABLED=true -e JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n" apache/shardingsphere-elasticjob-lite-ui:3.0.0
+</code></pre></div></div>
+
+<p>Here we added a new port mapping which is <code class="language-plaintext highlighter-rouge">8000</code> for debugging and also added new environment variable to set debugging options <code class="language-plaintext highlighter-rouge">JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"</code> &amp; Finally, a port mapping for the web interface of the application <code class="language-plaintext highlighter-rouge">8888</code> to <code class="language-plaintext highlighter-rouge">8088</code>. Now, It’s time to setup our debugger through <code class="language-plaintext highlighter-rouge">IntelliJ</code> IDE, We need to download the <code class="language-plaintext highlighter-rouge">ShardingSphere</code> version <code class="language-plaintext highlighter-rouge">3.0.0</code> source code from <code class="language-plaintext highlighter-rouge">github</code> and open it as a new project inside <code class="language-plaintext highlighter-rouge">IntelliJ</code> IDE.</p>
+
+<p><img src="/assets/images/7e13324ba73ecf47d39c4a5f01548f73" alt="" /></p>
+
+<p>After that go to <code class="language-plaintext highlighter-rouge">Run</code> Tab and then click on <code class="language-plaintext highlighter-rouge">Edit Configurations</code>:</p>
+
+<p><img src="/assets/images/3563640afdd0e1fbdd8907de86946d1f" alt="" /></p>
+
+<p>Then Click on the <code class="language-plaintext highlighter-rouge">+</code> add sign and choose <code class="language-plaintext highlighter-rouge">Remote JVM Debug</code>:</p>
+
+<p><img src="/assets/images/1f0d7c3b222a7cdf4f888dbda905f7c9" alt="" /></p>
+
+<p>And Name it as you want &amp; configure the remote debugger, By adding the machine docker <code class="language-plaintext highlighter-rouge">IP</code>, Debugging port which is <code class="language-plaintext highlighter-rouge">8000</code> and the module to debug which is the <code class="language-plaintext highlighter-rouge">ShardingSphere-ElasticJob-lite-UI</code>:</p>
+
+<p><img src="/assets/images/d86a406b4e3fe943abac1c22debf5457" alt="" /></p>
+
+<p>Finally, Let’s set our breakpoint on the <code class="language-plaintext highlighter-rouge">handlelogin</code> function under the <code class="language-plaintext highlighter-rouge">org.apache.shardingsphere.elasticjob.lite.ui.security.AuthenticationFilter</code> class:</p>
+
+<p><img src="/assets/images/916c67c993120a8d86663ddfa5696c06" alt="" /></p>
+
+<p>Now, Press on the <code class="language-plaintext highlighter-rouge">debug</code> button:</p>
+
+<p><img src="/assets/images/a3cf38fc15ab5fdfb875c7bbff7b4422" alt="" /></p>
+
+<p>We can see it’s telling us that’s connected successfully to the targeted VM debug:</p>
+
+<p><img src="/assets/images/913cd6fde00551ad59a0550abe2b753b" alt="" /></p>
+
+<p>Let’s visit the application on our browser and login. Once we hit the <code class="language-plaintext highlighter-rouge">Login</code> button, We will be able to see that it’s hit the breakpoint and our debugger is working:</p>
+
+<p><img src="/assets/images/ea5ccb61520a1ebf6c1e6daff87e1c3c" alt="" /></p>
+
+<p>Here under <code class="language-plaintext highlighter-rouge">this</code> in the debugger which refers within the <code class="language-plaintext highlighter-rouge">AuthenticationFilter</code> class that it has the <code class="language-plaintext highlighter-rouge">UserAuthenticationService</code> Object which is made out of the <code class="language-plaintext highlighter-rouge">UserAuthenticationService</code> class itself:</p>
+
+<p><img src="/assets/images/1e51bd8bc7d6eec2d4e2e16ba8220ded" alt="" /></p>
+
+<p>We can see that it’s already carry the <code class="language-plaintext highlighter-rouge">guest</code> &amp; <code class="language-plaintext highlighter-rouge">root</code> names and passwords, Along with the created Objects of <code class="language-plaintext highlighter-rouge">Base64</code> and <code class="language-plaintext highlighter-rouge">Gson</code>. Now, Let’s step over and set a breakpoint to line where <code class="language-plaintext highlighter-rouge">accessToken</code> get added to the request:</p>
+
+<p><img src="/assets/images/3ab1f16b07b71892be55f4deaed0e679" alt="" /></p>
+
+<p>In the above screenshot as we see, By stepping over until we arrive to <code class="language-plaintext highlighter-rouge">checkUser()</code> function which is taking the credentials entered by user.</p>
+
+<p><img src="/assets/images/250ce77c60110bb7fc050d81609a8007" alt="" /></p>
+
+<p>By stepping over 2 more steps we can see that the <code class="language-plaintext highlighter-rouge">authenticationResult</code> started to created &amp; Mentioned under it the <code class="language-plaintext highlighter-rouge">username</code>,<code class="language-plaintext highlighter-rouge">password</code> which are our credentials, <code class="language-plaintext highlighter-rouge">success</code> which is the authentication status and in this situation it’s <code class="language-plaintext highlighter-rouge">true</code> as credentials matched &amp; Finally, <code class="language-plaintext highlighter-rouge">isGuest</code> which indicates if the user is a <code class="language-plaintext highlighter-rouge">guest</code> or no and in our case yes it’s.</p>
+
+<p><img src="/assets/images/89b326f135d1a55bac8c568b9fd37aaf" alt="" /></p>
+
+<p>here we can see the <code class="language-plaintext highlighter-rouge">result</code> which is a <code class="language-plaintext highlighter-rouge">HashMap</code> and will be sent with the response body. Clearly it’s generated the token and if we take this value &amp; decode it we will be able to see the exposure of the <code class="language-plaintext highlighter-rouge">root</code> username and password, along with the <code class="language-plaintext highlighter-rouge">guest</code> username and password that loaded at first of the debugging in a refer with the <code class="language-plaintext highlighter-rouge">UserAuthenticationService</code> class object. If we do the same with the <code class="language-plaintext highlighter-rouge">root</code> account we obtained from the token which is <code class="language-plaintext highlighter-rouge">root</code>:<code class="language-plaintext highlighter-rouge">root</code> &amp; see how it will be remain the same and will return the both users accounts in the token as we can see in the below screenshot:</p>
+
+<p><img src="/assets/images/ee22d05822057eb444ffec3fd8b7b123" alt="" /></p>
+
+<h1 id="patch-diffing"><strong>Patch Diffing</strong></h1>
+
+<p>Now, Coming to the patches that applied on the code, It’s a lot of modifications but, we will focus on the modifications made for the classes.</p>
+
+<h3 id="userauthenticationservicejava">UserAuthenticationService.java</h3>
+
+<p><img src="/assets/images/f937e90e006c85f26976e4d90b38c8bd" alt="" /></p>
+
+<p>The vulnerability in the original code block is that the <code class="language-plaintext highlighter-rouge">getToken()</code> method of the <code class="language-plaintext highlighter-rouge">UserAuthenticationService</code> class returns a token that contains the root username and password in plaintext which used in the <code class="language-plaintext highlighter-rouge">doFilter()</code> method to authenticate the user, which allows an attacker to extract the root username and password by intercepting and decoding the token and the patched code block fixes the vulnerability by changing the <code class="language-plaintext highlighter-rouge">getToken()</code> method to <code class="language-plaintext highlighter-rouge">isValidToken()</code> and <code class="language-plaintext highlighter-rouge">getToken()</code> methods which check if the token is valid and return a new token that does not contain the root username and password. Additionally, the <code class="language-plaintext highlighter-rouge">handleLogin()</code> method in the patched code block now checks if the user is authenticated using a valid token instead of using the vulnerable <code class="language-plaintext highlighter-rouge">getToken()</code> method. If the token is valid, the <code class="language-plaintext highlighter-rouge">filterChain.doFilter()</code> method is called to allow the user to access the requested resource. Otherwise, the <code class="language-plaintext highlighter-rouge">respondWithUnauthorized()</code> method is called to deny access to the user.</p>
+
+<h3 id="userauthenticationfilterjava">UserAuthenticationFilter.java</h3>
+
+<p><img src="/assets/images/441c1fb480bec8a81f61a1b7717f4f87" alt="" /></p>
+
+<p>The changes made to the <code class="language-plaintext highlighter-rouge">AuthenticationFilter</code> class prevent the vulnerability by implementing token based authentication instead of using a hardcoded username and password. Specifically, Adding the ability to generate a token based on a user’s credentials using the <code class="language-plaintext highlighter-rouge">getToken()</code> method in the <code class="language-plaintext highlighter-rouge">UserAuthenticationService</code> class. This token is generated using the <code class="language-plaintext highlighter-rouge">com.auth0.jwt</code> library and is signed using a randomly generated <code class="language-plaintext highlighter-rouge">HMAC256</code> algorithm and <code class="language-plaintext highlighter-rouge">isValidToken()</code> method to the <code class="language-plaintext highlighter-rouge">UserAuthenticationService</code> class to check if the provided token is valid or not, Also Modified the <code class="language-plaintext highlighter-rouge">handleLogin</code> and <code class="language-plaintext highlighter-rouge">doFilter</code> methods. Additionally, the <code class="language-plaintext highlighter-rouge">AuthenticationFilter</code> class is modified to use the <code class="language-plaintext highlighter-rouge">ObjectMapper</code> instead of <code class="language-plaintext highlighter-rouge">Gson</code> for <code class="language-plaintext highlighter-rouge">JSON</code> serialization and deserialization. In the <code class="language-plaintext highlighter-rouge">handleLogin()</code> method the <code class="language-plaintext highlighter-rouge">gson.fromJson()</code> call is replaced with <code class="language-plaintext highlighter-rouge">objectMapper.readValue()</code> to deserialize the <code class="language-plaintext highlighter-rouge">UserAccount</code> object. Finally, in the <code class="language-plaintext highlighter-rouge">doFilter()</code> method, the if statement that checks for the access token is modified to use the <code class="language-plaintext highlighter-rouge">isValidToken()</code> method instead of checking for equality with the token obtained from <code class="language-plaintext highlighter-rouge">userAuthenticationService.getToken()</code>.</p>
+
+<h1 id="conclusion"><strong>Conclusion</strong></h1>
+
+<p><img src="/assets/images/dba3c2e2ae5646706285e61a610166a4" alt="" /></p>
+
+<p>At the end, We saw how the vulnerability occured and why, By showing the wrong implementation of authentication process and showed how it’s fixed in the patch applied to the code by using the <code class="language-plaintext highlighter-rouge">JWT</code> Library to generate the token with a secret key to which keeps the confidntiality of the data. As a results it’s not exposing the credentials anymore.</p>
+
+<h2 id="resources"><strong>Resources</strong></h2>
+
+<ul>
+  <li>
+    <p>https://github.com/apache/shardingsphere-elasticjob-ui/commit/f3afe51221cd2382e59afc4b9544c6c8a4448a99?diff=split</p>
+  </li>
+  <li>
+    <p>https://hub.docker.com/layers/apache/shardingsphere-elasticjob-lite-ui/3.0.0-beta/images/sha256-9e5f309485b252a397f3cf91177be810e0f170349416de377c7393876d1069e2?context=explore</p>
+  </li>
+  <li>
+    <p>https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-22733</p>
+  </li>
+  <li>
+    <p>https://github.com/apache/shardingsphere-elasticjob-ui/releases/tag/3.0.0</p>
+  </li>
+</ul>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#security-research" class="page__taxonomy-item" rel="tag">Security Research</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2023-04-28T00:00:00+08:00">April 28, 2023</time></p>
+        
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/security%20research/CVE_2023_24815/" class="pagination--pager" title="CVE-2023-24815: Vert.x-Web Path Traversal Escape
+">Previous</a>
+    
+    
+      <a href="/security%20research/CVE_2022_22733_exploit/" class="pagination--pager" title="Exploit Writing: CVE-2022-22733 Privilege Escalation &amp; RCE
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2024 Zeyad Azima. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

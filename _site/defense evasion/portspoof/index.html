@@ -1,0 +1,697 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.19.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Research: Evading Portspoof Solution - Zeyad Azima</title>
+<meta name="description" content="Bypass portspoof solution by abusing it’s logic. ">
+
+
+  <meta name="author" content="Zeyad Azima">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Zeyad Azima">
+<meta property="og:title" content="Research: Evading Portspoof Solution">
+<meta property="og:url" content="http://localhost:5000/defense%20evasion/portspoof/">
+
+
+  <meta property="og:description" content="Bypass portspoof solution by abusing it’s logic. ">
+
+
+
+  <meta property="og:image" content="http://localhost:5000/assets/images/cld14ume532ci0jnx2vc40wct.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2023-01-21T00:00:00+08:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:5000/defense%20evasion/portspoof/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Zeyad Azima",
+      "url": "http://localhost:5000/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Zeyad Azima Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<!-- favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/site_data/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/site_data/favicon-16x16.png">
+<meta name="theme-color" content="#ffffff">
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+          <a class="site-logo" href="/"><img src="/assets/images/site_data/logo.png" alt=""></a>
+        
+        <a class="site-title" href="/">
+          Zeyad Azima
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/#Security-Research">Security Research</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#MacOS">MacOS</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#IoT-Exploitation">IoT Exploitation</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#Defense-Evasion">Defense Evasion</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#General">General</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#Certificates">Certificates</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories">All Categories</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/site_data/avatar.jpg" alt="Zeyad Azima" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Zeyad Azima</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>Brain Storming Stuff (Exploit Development, Reverse Engineering &amp; More)</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="mailto:contact@zeyadazima.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i><span class="label">Email</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/AzimaZeyad" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/zer0verflow/" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/Zeyad-Azima" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://www.buymeacoffee.com/zeyadazima" rel="nofollow noopener noreferrer"><i class="fas fa-mug-hot" aria-hidden="true"></i><span class="label">Buy Me a Coffee</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Research: Evading Portspoof Solution">
+    <meta itemprop="description" content="Introduction">
+    <meta itemprop="datePublished" content="2023-01-21T00:00:00+08:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Research: Evading Portspoof Solution
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  7 minute read
+
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu">
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#what-is-portspoof-">What is portspoof ?</a></li>
+  <li><a href="#testing-lab">Testing Lab</a></li>
+  <li><a href="#installation">Installation</a></li>
+  <li><a href="#how-portspoof-works-">How Portspoof works ?</a></li>
+  <li><a href="#traffic-analysis">Traffic Analysis</a></li>
+  <li><a href="#evading-portspoof">Evading Portspoof</a></li>
+  <li><a href="#automate-the-process">Automate the process</a></li>
+  <li><a href="#conclusion">Conclusion</a></li>
+</ul>
+
+            </nav>
+          </aside>
+        
+        <h1 id="introduction">Introduction</h1>
+
+<p>One of the opensource solutions caught my eyes before and it was preventing and making port scanning hard to be done against the target that running it. Now, we will discuss how to evade it.</p>
+
+<p> </p>
+
+<h1 id="what-is-portspoof-"><strong>What is portspoof ?</strong></h1>
+
+<p>Portspoof is meant to be a lightweight, fast, portable and secure addition to the any firewall system or security system. The general goal of the program is to make the reconnaissance phase slow and bothersome for your attackers as much it is only possible. This is quite a change to the standard 5s Nmap scan, that will give a full view of your systems running services. (<a href="https://drk1wi.github.io/portspoof/">Read More</a>)</p>
+
+<p> </p>
+
+<h1 id="testing-lab"><strong>Testing Lab</strong></h1>
+
+<p>I used <code class="language-plaintext highlighter-rouge">Ubuntu Server</code> as a victim &amp; <code class="language-plaintext highlighter-rouge">kali linux</code> machine as attacker. If you faced any problems with installing <code class="language-plaintext highlighter-rouge">Portspoof</code>. You may install the needed packages/libraries:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt update
+sudo apt install gcc g++ make libc6-dev libc6-dev-i386
+</code></pre></div></div>
+
+<p> </p>
+
+<h1 id="installation"><strong>Installation</strong></h1>
+
+<ul>
+  <li>
+    <p>Note: <code class="language-plaintext highlighter-rouge">Don't forget to run all commands as sudo in new versions of linux. So, you avoid problems You can install portspoof from the following blog.</code> <a href="https://www.linux-magazine.com/Online/Features/Trick-Attackers-with-Portspoof">Click Here</a>. or From the following commands:</p>
+  </li>
+  <li>
+    <p>Download Portspoof:</p>
+  </li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/drk1wi/portspoof.git
+</code></pre></div></div>
+
+<ul>
+  <li>Compile Portspoof:</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo ./configure &amp;&amp; make &amp;&amp; sudo make install
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>Now, the following commands are used in specific situations.</p>
+
+    <ul>
+      <li>
+        <p>The first one is to redirect all connections to portspoof<br />
+  <code class="language-plaintext highlighter-rouge">sudo iptables -t nat -A PREROUTING -i eth0 -p tcp -mtcp --dport 1:65535 -j REDIRECT --to-ports 4444</code></p>
+      </li>
+      <li>
+        <p>The second one is to redirect some range of ports and exclude the real running services ports, For example, the following command not including port <code class="language-plaintext highlighter-rouge">22</code> and <code class="language-plaintext highlighter-rouge">80</code><br />
+  <code class="language-plaintext highlighter-rouge">sudo iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp -m multiport --dports 1:21,23:79,81:65535 -j REDIRECT --to-ports 4444</code></p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>Here is a bash script that you can use to configure and automate this process and don’t forget to exclude the real running services ports:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#!/bin/bash
+
+spoofPorts="1:19 23:24 26:52 54:79 81:109 112:122 124:442 444:464 466:586 588:891 893:2048 2050:8079 8081:32800 32801:65535"
+
+for prange in ${spoofPorts}; do
+
+iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport ${prange} -j REDIRECT --to-ports 4444
+
+done
+</code></pre></div></div>
+
+<p>This bash script sets up iptables rules to redirect incoming traffic on certain ports to port 4444 (<code class="language-plaintext highlighter-rouge">Which is port spoof listening port</code>). The variable “spoofPorts” contains a list of port ranges separated by spaces, in the format “startPort:endPort”. Then uses a for loop to iterate through each port range in the spoofPorts variable. For each iteration, the script runs the iptables command, which creates a new rule in the NAT table’s PREROUTING chain. The rule specifies that incoming traffic on interface eth0, using the TCP protocol, and destined for one of the ports in the current range, should be redirected to port 4444.</p>
+
+<p> </p>
+
+<h1 id="how-portspoof-works-"><strong>How Portspoof works ?</strong></h1>
+
+<p>Portspoof got a huge number of signatures when you connect to any port as we configured before in iptables it will forward all connections to portspoof services and will response with [syn-ack] that the ports are open. Then we won’t be able to identify the real services. Also, portspoof is responsing with banners etc. So, its hard to identify the actual running real services. But, portspoof is not affecting the actual real running services ( as we configured in the bash script ).<br />
+Portspoof working steps:</p>
+
+<p><img src="/assets/images/51ab4bec5389ac8eafae4d3122bf3ebd" alt="" /></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1- Attacker perform port scanning using nmap 
+
+2- The victim machine look at the iptables rules and forward the connection to portspoof services 
+
+3- portspoof response with [syn-ack] 
+
+4- Nmap identify ports as open and running 
+
+5- attacker try to enumerate version of protocols &amp; banners 
+
+6- portspoof response based on the config &amp; signatures (which is fake) 
+
+7- Nmap output based on the portspoof response
+</code></pre></div></div>
+
+<p> </p>
+
+<h1 id="traffic-analysis"><strong>Traffic Analysis</strong></h1>
+
+<p>The following pictrue shows the normal <code class="language-plaintext highlighter-rouge">nmap</code> scan. Now, on this target at te moment <code class="language-plaintext highlighter-rouge">ssh</code> services are running on port <code class="language-plaintext highlighter-rouge">22</code>.</p>
+
+<p><img src="/assets/images/e227713a7425ff94f38168ec3ca71260" alt="" /></p>
+
+<p>So, if we used the <code class="language-plaintext highlighter-rouge">tcp.port==22</code> filter in wireshark to take a look on how nmap identified the <code class="language-plaintext highlighter-rouge">ssh</code> as it’s running and it’s a real services.</p>
+
+<p><img src="/assets/images/d1580ddc36cc1434c9a4ee5121e9e920" alt="" /></p>
+
+<p>We can see clearly that the normal scan of <code class="language-plaintext highlighter-rouge">nmap</code>, Just looking for any response from the target and then identify it as running/open.</p>
+
+<p>But, if we tried other types scannings it will work (<code class="language-plaintext highlighter-rouge">Not all types</code>). For example <code class="language-plaintext highlighter-rouge">Fin</code> Scan, <code class="language-plaintext highlighter-rouge">Null</code> Scan.</p>
+
+<ul>
+  <li>
+    <p>Fin Scan:</p>
+
+    <ul>
+      <li>
+        <p>Open Port</p>
+
+        <p><img src="/assets/images/15237cf461478d9b2fd0e7e9d50321c1" alt="" /></p>
+
+        <p> </p>
+      </li>
+      <li>
+        <p>Closed Port</p>
+
+        <p><img src="/assets/images/fa79b4046788fbc0b907d6cc35dba399" alt="" /></p>
+
+        <p> </p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Null Scan:</p>
+
+    <ul>
+      <li>
+        <p>Open Port</p>
+
+        <p><img src="/assets/images/2c18187ec87e0b6983160e4dc393a3d4" alt="" /></p>
+
+        <p> </p>
+      </li>
+      <li>
+        <p>Closed Port</p>
+
+        <p><img src="/assets/images/bb2c17070afbc30359b2a5251e9001ba" alt="" /></p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p> </p>
+
+<p>But, <code class="language-plaintext highlighter-rouge">nmap</code> and related scans are known and can be caught by any measure of defense like <code class="language-plaintext highlighter-rouge">IDS/IPS</code>. So, Let’s complete by doing it manually.</p>
+
+<p> </p>
+
+<h1 id="evading-portspoof"><strong>Evading</strong> <code class="language-plaintext highlighter-rouge">Portspoof</code></h1>
+
+<p>We need to know how portspoof is dealing with our connections. So, we will be able to generate a bypass scenario. Lets try to connect manaual using <code class="language-plaintext highlighter-rouge">netcat</code> or <code class="language-plaintext highlighter-rouge">telnet</code>. I have used <code class="language-plaintext highlighter-rouge">netcat</code> but the connection were closed by the host without waiting any input from me for a reason.</p>
+
+<p>netcat:</p>
+
+<p><img src="/assets/images/3615f872805769ac853f0f4200df7175" alt="" /></p>
+
+<p> </p>
+
+<p>I tried telnet after that and the connection is closed by the host (victim):</p>
+
+<p><img src="/assets/images/73bdd94ee4de700cb6a378689dc053f9" alt="" /></p>
+
+<p> </p>
+
+<p>As we can guess from this that portspoof just creating the banners and response and close the connection.</p>
+
+<p>The victim got port <code class="language-plaintext highlighter-rouge">21 (ftp)</code> open by default so lets try to connect it.</p>
+
+<p> </p>
+
+<p><img src="/assets/images/8c809327e001fb761ec5d10e93c5e1d7" alt="" /></p>
+
+<p> </p>
+
+<p>As you can see the real services didn’t close the connection. Then for sure the fake one close the connection. Steps to identify the real running services:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1- Connect to the service 
+
+2- if we receive data and services closed connection then its fake 
+
+3- if we received data and send any command and received another data then its real service or the connection didn't closed then it's a real service
+</code></pre></div></div>
+
+<p> </p>
+
+<h1 id="automate-the-process"><strong>Automate the process</strong></h1>
+
+<p>We gonna automate the process using python and we gonna try it on FTP services. But, First lets try to scan with nmap.</p>
+
+<p> </p>
+
+<p><img src="/assets/images/fe932171d4aaf20a9e9bcc8191ad31f1" alt="" /></p>
+
+<p> </p>
+
+<p>As you can see its a miss and most of the ports identified as open and few as closed. So, we gonna use the following script to test it.</p>
+
+<p>Script:</p>
+
+<p><img src="/assets/images/58f348bf763dbdefc1ae21499df68412" alt="" /></p>
+
+<p>To avoid false positives we gonna use the commands of each protocol and we gonna try with ftp &amp; http protocols. The script is creating a connection with ftp services first, receive response then try to login with anonymous and receive the second response and save it in response variable. After that is comparing if the response contains the Login word cause when we try to login in FTP is printing Login word in each fail and success try. If the Login is exist it will identify the services as open else is gonna just pass it. The same for the HTTP services but its checking if the html word is exist in the response. Now let’s run it:</p>
+
+<p><img src="/assets/images/7e9559a62bab9859f24a8f67b874c977" alt="" /></p>
+
+<p> </p>
+
+<p>We got the ftp port as opened. Now you know how to bypass it you can write your tool on your own way to identify the services that you want or to identify if the connection is alive or no.</p>
+
+<p> </p>
+
+<h1 id="conclusion"><strong>Conclusion</strong></h1>
+
+<p>As we were able to see it was simple way to bypass it using the workflow or the logic behind it. Therefor, we will be able to break it with no doubts and reach the real used ports on the system and start our next steps in our <code class="language-plaintext highlighter-rouge">Pentesting</code> project.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#defense-evasion" class="page__taxonomy-item" rel="tag">Defense Evasion</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2023-01-21T00:00:00+08:00">January 21, 2023</time></p>
+        
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/iot%20exploitation/killzte/" class="pagination--pager" title="Research: Kill the Router with one request
+">Previous</a>
+    
+    
+      <a href="/general/idns/" class="pagination--pager" title="Homograph Attack: Abusing IDNs for Phishing
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2024 Zeyad Azima. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

@@ -1,0 +1,664 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.19.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Homograph Attack: Abusing IDNs for Phishing - Zeyad Azima</title>
+<meta name="description" content="How to abuse IDNs for Phishing. ">
+
+
+  <meta name="author" content="Zeyad Azima">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Zeyad Azima">
+<meta property="og:title" content="Homograph Attack: Abusing IDNs for Phishing">
+<meta property="og:url" content="http://localhost:5000/general/idns/">
+
+
+  <meta property="og:description" content="How to abuse IDNs for Phishing. ">
+
+
+
+  <meta property="og:image" content="http://localhost:5000/assets/images/df598d77a88828a214046fa52c5926a7.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2023-01-22T00:00:00+08:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:5000/general/idns/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Zeyad Azima",
+      "url": "http://localhost:5000/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Zeyad Azima Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<!-- favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/site_data/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/site_data/favicon-16x16.png">
+<meta name="theme-color" content="#ffffff">
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+          <a class="site-logo" href="/"><img src="/assets/images/site_data/logo.png" alt=""></a>
+        
+        <a class="site-title" href="/">
+          Zeyad Azima
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/#Security-Research">Security Research</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#MacOS">MacOS</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#IoT-Exploitation">IoT Exploitation</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#Defense-Evasion">Defense Evasion</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#General">General</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#Certificates">Certificates</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories">All Categories</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/site_data/avatar.jpg" alt="Zeyad Azima" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Zeyad Azima</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>Brain Storming Stuff (Exploit Development, Reverse Engineering &amp; More)</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="mailto:contact@zeyadazima.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i><span class="label">Email</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/AzimaZeyad" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/zer0verflow/" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/Zeyad-Azima" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://www.buymeacoffee.com/zeyadazima" rel="nofollow noopener noreferrer"><i class="fas fa-mug-hot" aria-hidden="true"></i><span class="label">Buy Me a Coffee</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Homograph Attack: Abusing IDNs for Phishing">
+    <meta itemprop="description" content="Introduction">
+    <meta itemprop="datePublished" content="2023-01-22T00:00:00+08:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Homograph Attack: Abusing IDNs for Phishing
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  12 minute read
+
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu">
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#what-is-phishing-">What is phishing ?</a></li>
+  <li><a href="#types-of-phishing">Types of Phishing</a>
+    <ul>
+      <li><a href="#email-phishing">Email Phishing</a></li>
+      <li><a href="#whaling-phishing">Whaling Phishing</a></li>
+      <li><a href="#smishing-phishing">Smishing Phishing</a></li>
+      <li><a href="#vishing-phishing">Vishing Phishing</a></li>
+    </ul>
+  </li>
+  <li><a href="#what-is-idns-">What is IDN’s ?</a></li>
+  <li><a href="#idn-homograph-attack">IDN Homograph Attack</a></li>
+  <li><a href="#what-is-punycode-">What is punycode ?</a></li>
+  <li><a href="#limit-the-attack">Limit the attack</a></li>
+  <li><a href="#prevent-and-detect-homograph-attack-and-http-spoofing">Prevent and Detect homograph attack and HTTP spoofing</a></li>
+  <li><a href="#conclusion">Conclusion</a></li>
+</ul>
+
+            </nav>
+          </aside>
+        
+        <h1 id="introduction">Introduction</h1>
+
+<p>In recent years, phishing and social engineering attacks have become a significant threat to businesses
+and individuals alike. These attacks are particularly dangerous because they target end-users directly,
+bypassing many traditional cyber security defenses such as firewalls, endpoint detection and response
+(EDR), and anti-virus software. To combat these threats, many companies have implemented phishing
+awareness training programs to educate employees on how to spot suspicious email attempts and
+protect themselves and the business from bad actors. However, even with user awareness, it can be
+difficult to limit or prevent certain types of attacks, such as homograph attacks, where the attacker uses
+seemingly legitimate websites or emails to trick the user.</p>
+
+<h1 id="what-is-phishing-">What is phishing ?</h1>
+
+<p>Phishing is a type of social engineering attacks that uses deception to trick individuals into providing
+sensitive information such as login credentials or personal data. This type of attack typically occurs
+through email, telephone, or text message communication and is designed to appear legitimate in order
+to gain the trust of the victim. The attackers may use various tactics such as creating fake websites or
+emails that resemble legitimate sources, impersonating a trusted organization, or using urgent
+language to create a sense of urgency and pressure the victim into providing the requested information.
+The goal of these attacks is to steal sensitive information such as passwords, credit card numbers, or
+other personal data for financial gain or to gain access to sensitive systems and information.</p>
+
+<h1 id="types-of-phishing">Types of Phishing</h1>
+
+<p><img src="/assets/images/c6c5e7b7b11bf488b927edd1242d7ad4.png" alt="c6c5e7b7b11bf488b927edd1242d7ad4.png" /></p>
+
+<h2 id="email-phishing">Email Phishing</h2>
+
+<p>Email Phishing is a tactic used in penetration testing and red teaming engagements where an attacker
+targets a specific company or individual by gathering information through Open-source intelligence
+(OSINT). This type of attack involves researching the company, their interests, and the services they
+offer in order to appear legitimate and trick the target into taking a desired action. An example of this
+type of attack is Spear Phishing, where the attacker poses as someone searching for a job and targets
+the human resources department of the company. The attacker then tricks the HR representative into
+downloading a malicious file, such as a keylogger or spyware, which allows the attacker to gain access
+to sensitive information. The goal of Email Phishing is to gather information or gain access to a
+company’s systems through tricking the target into taking an action that they would not normally take.</p>
+
+<h2 id="whaling-phishing">Whaling Phishing</h2>
+
+<p>Whaling phishing is a specific type of phishing that targets individuals with high levels of access and
+permissions within an organization, such as the CEO. This tactic involves creating fake emails that
+appear to be from other individuals within the company, in order to gain sensitive information or access
+to important systems. The goal of whaling phishing is to take advantage of the trust and authority of
+high-level individuals in order to compromise the entire organization. To carry out a successful whaling
+phishing attack, an attacker may conduct extensive research on the targeted organization, known as
+OSINT (Open Source Intelligence). This research may include studying the roles, positions, and groups
+within the company, in order to identify potential targets and understand their access levels. Once the
+attacker has a good understanding of the organization, they may create fake emails that appear to be
+from other individuals within the company. These emails may contain malicious links or attachments,
+which, when clicked, can infect the target’s computer with malware or steal sensitive information. For
+example, imagine that the CEO of a company has local administrator access on the company’s system.
+An attacker may create a fake email that appears to be from a lower-level employee, requesting the
+CEO to click on a link or download a file. If the CEO falls for the trap and clicks on the link or download
+the file, the attacker can potentially gain access to the CEO’s computer and potentially the entire
+company’s system. In summary, whaling phishing is a tactic that targets high-level individuals within an
+organization, such as the CEO, with the goal of compromising the entire organization. It involves
+conducting extensive research on the targeted organization and creating fake emails that appear to be
+from other individuals within the company, in order to steal sensitive information or gain access to
+important systems.</p>
+
+<h2 id="smishing-phishing">Smishing Phishing</h2>
+
+<p>Smishing, also known as SMS phishing, is where the attacker sends text messages to the victim in
+order to obtain sensitive information or trick them into taking a specific action. Unlike traditional phishing
+attacks, which are delivered through email, smishing attacks are delivered through text messages on a
+victim’s mobile device. The attacker may obtain the victim’s phone number through an old data breach
+or other means, making it easy for them to target the victim. One of the advantages of smishing is that it
+does not require an internet connection. This means that even if the victim is on vacation or in an area
+with limited internet access, they can still be targeted by the attacker. Additionally, the victim may be
+more likely to respond to a text message than an email, as text messages are typically considered
+more urgent and personal. However, it is important to note that smishing can be just as dangerous as
+traditional phishing attacks. The victim may be tricked into providing sensitive information, such as login
+credentials or financial information, or they may be directed to a malicious website that can infect their
+device with malware. Therefore, it is important for individuals and organizations to be aware of the risks
+of smishing and to take appropriate measures to protect themselves.</p>
+
+<h2 id="vishing-phishing">Vishing Phishing</h2>
+
+<p>Vishing, also known as voice call phishing, is where the threat actor contacts the victim or targeted
+person via phone call. The attacker may use phone numbers over IP (Internet Protocol) if they have
+already gained access to them. This method of phishing is considered harder compared to others, as
+the attacker must have a well-planned and convincing story in order to obtain the desired information
+from the victim without arousing suspicion. One benefit of vishing is that the outcome of the attack is
+often faster than email phishing, as the attacker does not need to wait for a file or email to be opened or
+clicked. It is important to note that there is often confusion between phishing and spear phishing. The
+main difference between the two is that spear phishing targets specific groups or organizations, such as
+individuals with specific positions that have access to sensitive systems.</p>
+
+<h1 id="what-is-idns-">What is IDN’s ?</h1>
+
+<p>International Domain Names (IDNs) are a solution to the problem of the limited character set of the
+early days of the World Wide Web’s Domain Name System (DNS). The DNS root originally only
+supported Latin letters A-z and digits. However, with over 6000 languages spoken worldwide, it became
+clear that support for non-Latin alphabets such as Cyrillic and Arabic was necessary. IDNs were
+created to address this issue and make the DNS root more inclusive and accessible for speakers of
+non-Latin languages. Additionally, IDNs also play a significant role in Homograph attacks, that uses
+visually similar characters to trick users into visiting malicious websites.</p>
+
+<h1 id="idn-homograph-attack">IDN Homograph Attack</h1>
+
+<p>An IDN Homograph Attack is an attack that utilizes the Internationalized Domain Name (IDN) feature to
+manipulate letters in different languages. The IDN feature allows for the use of non-Latin characters in
+domain names, which can be used to create a spoofed version of a legitimate domain that looks very
+similar to the original. This can be used to trick victims into providing sensitive information, such as
+login credentials or personal information, through phishing emails or other means. In a demonstration
+of an IDN Homograph Attack, an attacker may use a tool such as the Homoglyph Attack Generator
+(https://www.irongeek.com/homoglyph-attack-generator.php) to create a spoofed version of a trusted
+domain. For example, the attacker may create a domain that looks like “hackerone.com” but uses non-
+Latin characters that are visually similar to the letters “h”, “a”, “c”, “k”, “e”, “r”, “o”, “n” and “e”. The
+victim may not realize that the domain is different from the legitimate “hackerone.com” and may enter
+their login credentials or personal information, allowing the attacker to steal their information.</p>
+
+<p><img src="/assets/images/df598d77a88828a214046fa52c5926a7.png" alt="df598d77a88828a214046fa52c5926a7.png" /></p>
+
+<p>As you can observe in the picture, we utilized characters from a different language, specifically “cyrillic”
+letters, to create a domain name that appears similar to “hackerone.com”. However, it is important to
+note that the domain name in question, һackеrone.com, is not the same as the legitimate domain
+“hackerone.com”.</p>
+
+<p><img src="/assets/images/f8bd2750ef51e034849fe3fa12cedf5e.png" alt="f8bd2750ef51e034849fe3fa12cedf5e.png" /></p>
+
+<p>And here is the domain available as we can see:</p>
+
+<p><img src="/assets/images/fb7237140b1140ff4ae24b7b745b209a.png" alt="fb7237140b1140ff4ae24b7b745b209a.png" /></p>
+
+<p>By using the domain support@hackerone.com as the original domain, in order to steal their
+HackerOne account. This is a simple simulation of this type of attack and it can be used in different
+scenarios, depending on the target. This attack is specifically found in common browsers like Google
+Chrome, specifically in version 58 and Chromium-based browsers, but it also exists in Firefox.
+However, we will cover how to limit the risk of this attack in Firefox as well.</p>
+
+<h1 id="what-is-punycode-">What is punycode ?</h1>
+
+<p>Punycode is a method of encoding Unicode characters in the ASCII character set. Unicode is a
+standardized system of representing characters and symbols from different languages and scripts,
+while ASCII is a standardized set of characters and symbols used in computer systems. Punycode
+allows the use of Unicode characters in domain names and URLs, which are typically limited to the
+ASCII character set. The process of converting Unicode characters to Punycode involves a series of
+steps. First, the Unicode characters are divided into basic and non-basic characters. Basic characters
+are those that are already included in the ASCII character set, while non-basic characters are those
+that are not. Next, the non-basic characters are assigned a unique code point, which is a numerical
+value that represents the character. The code point is then converted to a series of ASCII characters
+using a specific algorithm. These ASCII characters are then prepended with the prefix xn– , which
+indicates that the characters following it are Punycode encoded. When a user enters a Punycode
+encoded URL, the browser will convert the Punycode back to Unicode characters and display the
+correct characters on the screen. An example of Punycode in action is the domain name xn–
+d1acufc.xn–p1ai , which is the Punycode version of the Russian domain name рф.рф (rf.rf) . In
+this example, the non-ASCII characters р and ф have been encoded in Punycode, allowing them to
+be used in the domain name. In summary, Punycode is a method of encoding Unicode characters,
+which are used in different languages and scripts, into the ASCII character set, which is widely used in
+computer systems. This allows the use of Unicode characters in domain names and URLs, which would
+otherwise not be possible.</p>
+
+<h1 id="limit-the-attack">Limit the attack</h1>
+
+<p>In order to limit the risk of attack in Firefox browser, there are a few steps you can take. First, open your
+Firefox browser and type about:config in the address bar and enable it:</p>
+
+<p><img src="/assets/images/e2c66817af75555423c88d30b8f23a22.png" alt="e2c66817af75555423c88d30b8f23a22.png" /></p>
+
+<p>The attack fixed in some common used browsers, but it’s still exist in firefox. We will cover blow how to
+limit the risk of this attack in firefox &amp; Goolge.</p>
+
+<h1 id="prevent-and-detect-homograph-attack-and-http-spoofing">Prevent and Detect homograph attack and HTTP spoofing</h1>
+
+<p>HTTP spoofing is an attack in which an attacker creates a fake website that looks identical to the
+original website. This can be done by using SSL certificates to make the fake website appear secure
+and trustworthy. However, it is important to pay attention to the certificate information to confirm the
+owner of the domain and website. To prevent and mitigate this type of attack, it is recommended to
+disable punycode in the address bar as most modern browsers have this feature. When punycode is
+disabled, the user will see the punycode as unicode, making it easier to identify suspicious websites.
+Additionally, using third-party tools such as virustotal can also help to check the authenticity of a
+website’s URL.</p>
+
+<p><img src="/assets/images/401185dd0348c738702fd212c176ca22.png" alt="401185dd0348c738702fd212c176ca22.png" /></p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>In conclusion, phishing and social engineering attacks are a significant threat to businesses and
+individuals alike. These attacks target end-users directly and bypass traditional cyber security
+defenses. To combat these threats, many companies have implemented phishing awareness training
+programs to educate employees on how to spot suspicious email attempts and protect themselves and
+the business from bad actors. However, even with user awareness, it can be difficult to limit or prevent
+certain types of attacks, such as homograph attacks. Email Phishing, Spear Phishing, and Whaling
+Phishing are some of the types of phishing that can be used by attackers to gain sensitive information
+or access to important systems. It is important for organizations and individuals to be aware of these
+tactics and to take necessary precautions to protect themselves and their data from phishing attacks.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#general" class="page__taxonomy-item" rel="tag">General</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2023-01-22T00:00:00+08:00">January 22, 2023</time></p>
+        
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/defense%20evasion/portspoof/" class="pagination--pager" title="Research: Evading Portspoof Solution
+">Previous</a>
+    
+    
+      <a href="/certificates/ecptx/" class="pagination--pager" title="eCPTX: The Honest Review
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2024 Zeyad Azima. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

