@@ -1,0 +1,16 @@
+# main links
+main:
+  - title: "Security Research"
+    url: /categories/#Security-Research
+  - title: "MacOS"
+    url: /categories/#MacOS
+  - title: "IoT Exploitation"
+    url: /categories/#IoT-Exploitation
+  - title: "Defense Evasion"
+    url: /categories/#Defense-Evasion
+  - title: "General"
+    url: /categories/#General
+  - title: "Certificates"
+    url: /categories/#Certificates
+  - title: "All Categories"
+    url: /categories
