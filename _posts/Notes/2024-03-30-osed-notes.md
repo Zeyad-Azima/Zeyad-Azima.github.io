@@ -9,7 +9,7 @@ categories:
   - Notes
 toc: true
 ---
-# 1- x86 Intel Assembly
+# x86 Intel Assembly
 | Register Name | Acronym | 16-bit | 8-bit High | 8-bit Low | Description |
 | --- | --- | --- | --- | --- | --- |
 | Extended Accumulator Register | EAX | AX  | AH  | AL  | Primarily used for arithmetic operations. Often stores the return value of a function. |
@@ -1656,8 +1656,6 @@ python3 shellcoding.py --egghunter --egg "w00t" --ntaccess 1c6 --nopafter 10 --n
 # SEH
 python3 shellcoding.py --egghunter --egg "w00t" --seh --nopafter 10 --nopbefore 10
 ```
-
-# Shellcoding
 
 # Reverse Engineering For Bugs
 ## Notes
