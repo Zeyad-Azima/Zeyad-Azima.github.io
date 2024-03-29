@@ -1342,7 +1342,8 @@ After that to detremin where our shellcode is located we can take the found addr
 ```
 !address your_Address
 ```
-![2983fe501299464784c0f9d7f11b3fae.png](:/92bb0ed393c845f3aa05950f2293d8c9)
+![image](https://github.com/Zeyad-Azima/Zeyad-Azima.github.io/assets/62406753/e185341f-28e3-44e9-83ab-8a5893b44727)
+
 ### NTAccess Egghunting
 ```
 CODE = (
@@ -1374,7 +1375,8 @@ CODE = (
 ```
 You can get the `NTAccess` syscall number as the following from `Windbg`:
 - `u ntdll!NtAccessCheckAndAuditAlarm`:
-![42b385e6163d202e469b27208fce53c4.png](:/2b10b1d2d9894e929000ba32e9fd04b6)
+![image](https://github.com/Zeyad-Azima/Zeyad-Azima.github.io/assets/62406753/d6016df9-8aa5-4594-9be5-60a33dee28ac)
+
 ### SEH Egghunting
 ```
 CODE = (
