@@ -12,5 +12,7 @@ main:
     url: /categories/#General
   - title: "Certificates"
     url: /categories/#Certificates
+  - title: "Notes"
+    url: /categories#Notes
   - title: "All Categories"
     url: /categories
