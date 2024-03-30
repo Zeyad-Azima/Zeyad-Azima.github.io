@@ -2151,6 +2151,7 @@ base_address = 16089DEA - 89DEA
 | `%hhn`    | Similar to `%n`, but writes the number of characters into a `char` or `unsigned char`. | Allows for even more precise control over the writing of memory, often used in tight memory spaces. |
 | `%ln`     | Similar to `%n`, but writes the number of characters into a `long` integer. | Useful for architectures or situations where `long` is the preferred or necessary data type. |
 | `%lln`    | Similar to `%n`, but writes the number of characters into a `long long` integer. | Applicable for 64-bit systems where `long long` is used to address larger memory spaces. |
+
 ## Exploiting
 ### ASLR Bypass
 ```
