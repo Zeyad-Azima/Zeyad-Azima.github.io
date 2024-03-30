@@ -2059,20 +2059,27 @@ add ecx, dword [eax] # the ecx has to be 0 or if can, you would add it to the va
 - other instructions such as
 lea
 sub
-``` 
+```
+
 ## Tips
+
 - Always check the register that will backup the `esp` address, and if that register can be used in other operations.
 - When there is a badchars problem upu could `neg` or add and sub from it.
 - If you can't use a gadget cause it has an instruction that could miss your `ROP`, then locate if it's behind your neccessery instructions, for example:
-```
+
+
 #gadget as the following
+
+```
 0x01edff4e: jmp eax; push esp; pop ecx; ret;
 
 the jmp instruction will missup our ROP Chain, So we can take the gadget address starting from `push esp`.
 
 If you use Call on ROP chain it will missup cause Calls will change the stack and result in back to the function it's inside.
 ```
+
 - if you got gadget with `ret num`:
+
 ```
 Your gadget has to be as the following
 rop = pack("<L", 0x63636363) # ret 0xc
@@ -2084,12 +2091,15 @@ rop += b"\x41" * 0xc # alignment for the ret 0xc
 # ASLR Bypass
 
 ## Introduction
+
 There are the Following ways to bypass `ASLR`:
 - `Non-ASLR Module`: Some modules that loaded or come with the software, Are not compiled with `ASLR` protection, Which we can use instead of the software itself or protected modules.
 - `Partial Overwrite`: If we can do a partial overwrite when we find one of the vulnerabilities, The `CPU` translate the partial address to a full address for exampel, If the current base address is `1000000` and we have our `JMP ESP` instruction at offset `73AE` if we only sent the `73AE` the `CPU` will translate it to a full address as the following `10007AE` which is the full address of our instruction.
 - `ASLR Bruteforcing`: This method is more effective on `x86` as the range of the address is smaller in size than the `x64_x86`. this is possible on `32-bit` because ASLR provides only `8 bits` of entropy. The main limitation is that this only works for target applications that don't crash when encountering an invalid `ROP` gadget address or in cases in which the application is automatically restarted after the crash. or Also tunning as a child process.
-- `Information leak & Logical Bugs`: There are set of logical bugs & Info leak bugs that can be used to leak the address of the module, This can be done by abusing the fact that some `APIs` & `Functions` can be used to retrive these kind of information. 
+- `Information leak & Logical Bugs`: There are set of logical bugs & Info leak bugs that can be used to leak the address of the module, This can be done by abusing the fact that some `APIs` & `Functions` can be used to retrive these kind of information.
+- 
 ### Info leakes
+
 ```
 Most Win32 APIs do not pose a security risk but a few can be directly exploited to generate an info leak. These include the DebugHelp APIs1 (from Dbghelp.dll), which are used to resolve function addresses from symbol names.
 
