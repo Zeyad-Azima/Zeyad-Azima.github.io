@@ -483,7 +483,7 @@ Imported symbols can be referenced in two primary ways:
 ### Table 1
 
 | Structure             | Field Name                        | Description                                               | Name in PE-Bear                | How to Find in WinDbg                            | Manual Calculation                                       | Example      |
-|-----------------------|-----------------------------------|-----------------------------------------------------------|--------------------------------|--------------------------------------------------|----------------------------------------------------------|--------------|
+|--------------|--------------|--------------|--------------|--------------|--------------|--------------|
 | DOS Header            | e_magic                           | DOS signature                                             | e_magic                        | `dt _IMAGE_DOS_HEADER <address>`                 | `<address> + 0x00`                                       | `5A4D`       |
 | DOS Header            | e_lfanew                          | File address of new exe header                            | e_lfanew                       | `dt _IMAGE_DOS_HEADER <address>`                 | `<address> + 0x3C`                                       | `F8`         |
 | File Header           | Machine                           | The architecture type                                     | Machine                        | `dt _IMAGE_FILE_HEADER <address>`                | `<PE header addr> + 0x4`                                 | `14C`        |
@@ -499,12 +499,12 @@ Imported symbols can be referenced in two primary ways:
 | Section Header        | SizeOfRawData                     | The size of the section's raw data                        | SizeOfRawData                  | `dt _IMAGE_SECTION_HEADER <address>`             | `<Section Table addr> + index * Section size + 0x10`      | `600`        |
 | Section Header        | PointerToRawData                  | The file pointer to the section's raw data                | PointerToRawData               | `dt _IMAGE_SECTION_HEADER <address>`             | `<Section Table addr> + index * Section size + 0x14`      | `400`        |
 | Section Header        | Characteristics                   | Characteristics of the section                            | Characteristics                | `dt _IMAGE_SECTION_HEADER <address>`             | `<Section Table addr> + index * Section size + 0x24`      | `60000020`   |
----
+
 
 ### Table 2
 
 | Field Name                 | Description                                        | Name in PE-Bear       | How to Find in WinDbg              | Manual Calculation                           | Example                 |
-|----------------------------|----------------------------------------------------|-----------------------|------------------------------------|----------------------------------------------|-------------------------|
+|--------------|--------------|-----------------------|--------------|--------------|--------------|
 | Signature                  | Marks the file as a PE format                      | e_magic               | `dt _IMAGE_DOS_HEADER <address>`   | `<address> + 0x00`                           | `5A4D`                  |
 | FileHeader.Machine         | The architecture type                              | Machine               | `dt _IMAGE_FILE_HEADER <address>`  | `<PE header addr> + 0x4`                     | `14C`                   |
 | FileHeader.NumberOfSections| Number of sections in the file                    | NumberOfSections      | `dt _IMAGE_FILE_HEADER <address>`  | `<PE header addr> + 0x6`                     | `5`                     |
@@ -517,12 +517,11 @@ Imported symbols can be referenced in two primary ways:
 | SectionHeader.SizeOfRawData | The size of the section's raw data              | SizeOfRawData         | `dt _IMAGE_SECTION_HEADER <addr>`  | `<Section Table addr> + index * Section size`| `400`                   |
 | SectionHeader.PointerToRawData | The file pointer to the section's raw data   | PointerToRawData      | `dt _IMAGE_SECTION_HEADER <addr>`  | `<Section Table addr> + index * Section size`| `400`                   |
 
----
 
 ### Table 3
 
 | Field Name                | Description                                               | Name in PE-bear                | How to Find in WinDbg              | Manual Calculation to Find It                 | Example           |
-|---------------------------|-----------------------------------------------------------|--------------------------------|------------------------------------|-----------------------------------------------|-------------------|
+|--------------|--------------|--------------|--------------|--------------|--------------|
 | e_lfanew                  | File offset to the NT Headers                             | File address of new exe header | `!dh [ModuleName]`                 | Start at DOS Header, find `e_lfanew` offset   | 0xF8              |
 | File Header               | Holds metadata about the image                            | File Header                    | `dt nt!_IMAGE_FILE_HEADER [Addr]`  | `e_lfanew + 4` (after PE Signature DWORD)     | Offset 0xFC       |
 | NumberOfSections          | Number of sections in the PE file                         | Number of Sections             | `dt nt!_IMAGE_FILE_HEADER [Addr]`  | Part of File Header                           | Example: 4        |
