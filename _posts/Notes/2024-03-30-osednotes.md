@@ -22,7 +22,6 @@ toc: true
 | Extended Base Pointer | EBP | BP  | BPL | N/A | Used to point to the base of the stack, and often references local function variables and function call return addresses. |
 | Extended Stack Pointer | ESP | SP  | SPL | N/A | Points to the top of the stack and adjusts automatically as values are pushed to or popped from the stack. |
 
-* * *
 
 Note: The 8-bit high and low byte registers (like `AH`, `AL`) are available for the original four general-purpose registers (`AX`, `BX`, `CX`, `DX`). The extended registers `ESI`, `EDI`, `EBP`, and `ESP` do not have corresponding 8-bit registers. Similarly, there aren't 4-bit versions of these registers in x86 architecture.can be split similarly, but without the higher 8-bit references.
 
@@ -2081,6 +2080,7 @@ rop = pack("<L", 0x63636363) # ret 0xc
 rop += pack("<L", 0x63636363) # next gadget
 rop += b"\x41" * 0xc # alignment for the ret 0xc
 ```
+
 
 # ASLR Bypass
 
