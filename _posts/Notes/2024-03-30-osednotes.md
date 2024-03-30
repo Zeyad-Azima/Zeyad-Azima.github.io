@@ -1226,11 +1226,13 @@ seh = pop r32; pop r32; ret;
 ```
 ### Get SEH value with `Windbg`
 
-![105645eaf2c06a99f4c3671a6af8c26a.png](:/c16df9c3c82b480c92ae1293450d282f)
+![image](https://github.com/Zeyad-Azima/Zeyad-Azima.github.io/assets/62406753/751fd506-7f6b-4f99-8807-e807c0ebc672)
+
 
 ### Never forget to add the final padding
 
-![38f35a6de44b69f7251cc414ade720c1.png](:/294189abd7bd48ff84eaba893d5a225f)
+![image](https://github.com/Zeyad-Azima/Zeyad-Azima.github.io/assets/62406753/0926803b-f3b9-4165-9b3a-4e42aa3e144e)
+
 
 ## Detect BadChars
 
@@ -1308,7 +1310,8 @@ print("\n[+] Searching for /P /P /R done ")
 
 Now, It's time to `JMP` shortly to avoid invalid instructions and crash.
 - First when `P/ P/ R/` instructions is done, You start to assemble the address using windbg:
-![1efd3ff87af74e9556ec17a0f41df0dc.png](:/4603c18772584baabba4703ca5e03a71)
+![image](https://github.com/Zeyad-Azima/Zeyad-Azima.github.io/assets/62406753/ce68d69f-788d-4f94-b59d-ecb43b9263c9)
+
 	- 1. We use `a` commmand after `ret` from `P/ P/ R/` to assemmble a jmp instruction.
 	- 2. We choose the address we want to jump to `jmp 0xaddress`.
 	- 3. Press Enter to assemble
