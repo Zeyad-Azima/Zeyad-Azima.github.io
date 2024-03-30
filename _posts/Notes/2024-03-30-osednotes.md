@@ -2048,7 +2048,8 @@ KERNEL32!WriteProcessMemoryStub:
 - Use `IDA` to extract the `IAT` address for the function.
 - If it has nullbytes then use the `neg` instruction.
 - Use an instruction that get `ptr` to locate the `VMA` of the function
-	- example
+- example:
+
 ```
 Function IAT = FF221111
 eax = Function IAT
