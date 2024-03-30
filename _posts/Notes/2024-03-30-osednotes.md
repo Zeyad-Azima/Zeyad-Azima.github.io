@@ -2011,7 +2011,7 @@ sub
 - When there is a badchars problem upu could `neg` or add and sub from it.
 - If you can't use a gadget cause it has an instruction that could miss your `ROP`, then locate if it's behind your neccessery instructions, for example:
 ```
-# gadget as the following
+#gadget as the following
 0x01edff4e: jmp eax; push esp; pop ecx; ret;
 
 the jmp instruction will missup our ROP Chain, So we can take the gadget address starting from `push esp`.
@@ -2027,6 +2027,7 @@ rop += b"\x41" * 0xc # alignment for the ret 0xc
 ```
 
 # ASLR Bypass
+
 ## Introduction
 There are the Following ways to bypass `ASLR`:
 - `Non-ASLR Module`: Some modules that loaded or come with the software, Are not compiled with `ASLR` protection, Which we can use instead of the software itself or protected modules.
