@@ -167,8 +167,6 @@ LEA ECX, [ECX + EDX]
 
 ## Introduction
 
-Here are some key notes and highlighted points from the provided text:
-
 1.  **Portability in PE Context:**
     
     - "Portable" refers to the PE file format's versatility across different CPU architectures and Windows versions.
