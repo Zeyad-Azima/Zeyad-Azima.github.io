@@ -1,18 +1,22 @@
 # main links
 main:
-  - title: "Security Research"
-    url: /categories/#Security-Research
+  - title: "Vulnerability/CVE Analysis"
+    url: /Vulnerability-CVE-Analysis/
   - title: "MacOS"
-    url: /categories/#MacOS
+    url: /MacOS/
+  - title: "Windows"
+    url: /Windows/
+  - title: "Shellcoding"
+    url: /Shellcoding/
   - title: "IoT Exploitation"
-    url: /categories/#IoT-Exploitation
-  - title: "Defense Evasion"
-    url: /categories/#Defense-Evasion
-  - title: "General"
-    url: /categories/#General
+    url: /IoT-Exploitation/
   - title: "Certificates"
-    url: /categories/#Certificates
+    url: /Certificates/
+  - title: "Defense Evasion"
+    url: /Defense-Evasion/
+  - title: "General"
+    url: /General/
   - title: "Notes"
-    url: /categories#Notes
+    url: /Notes/
   - title: "All Categories"
-    url: /categories
+    url: /categories/
