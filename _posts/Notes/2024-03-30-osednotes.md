@@ -7,6 +7,8 @@ ribbon: purple
 description: "OSED Notes and Guide Lines"
 categories:
   - Notes
+tags:
+  - notes
 toc: true
 ---
 # x86 Intel Assembly
