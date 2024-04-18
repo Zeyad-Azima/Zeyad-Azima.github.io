@@ -5,7 +5,7 @@ title: "Certificates"
 author_profile: true
 ---
 
-{% assign tag_filter = "Certificates" %}
+{% assign tag_filter = "certificates" %}
 {% assign filtered_posts = site.posts | where_exp: "post", "post.tags contains tag_filter" %}
 
 <div class="tagged-posts">
