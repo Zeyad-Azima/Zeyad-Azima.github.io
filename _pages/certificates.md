@@ -1,6 +1,6 @@
 ---
 layout: archive
-permalink: /Certificates/
+permalink: /certificates/
 title: "Certificates"
 author_profile: true
 ---
