@@ -1,11 +1,11 @@
 ---
 layout: archive
-permalink: /Notes/
+permalink: /notes/
 title: "Notes"
 author_profile: true
 ---
 
-{% assign tag_filter = "Notes" %}
+{% assign tag_filter = "notes" %}
 {% assign filtered_posts = site.posts | where_exp: "post", "post.tags contains tag_filter" %}
 
 <div class="tagged-posts">
