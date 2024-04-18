@@ -11,7 +11,7 @@ main:
   - title: "IoT Exploitation"
     url: /IoT-Exploitation/
   - title: "Certificates"
-    url: /Certificates/
+    url: /certificates/
   - title: "Defense Evasion"
     url: /Defense-Evasion/
   - title: "General"
