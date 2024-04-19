@@ -7,6 +7,8 @@ ribbon: orange
 description: "Bypass portspoof solution by abusing it's logic."
 categories:
   - Defense Evasion
+tags:
+  - Defense Evasion
 toc: true
 ---
 
