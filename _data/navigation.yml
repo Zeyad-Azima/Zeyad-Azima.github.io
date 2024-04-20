@@ -6,19 +6,19 @@ main:
     url: /Vulnerability-CVE-Analysis/
   - title: "MacOS"
     url: /MacOS/
-  - title: "Windows"
-    url: /Windows/
-  - title: "Shellcoding"
-    url: /Shellcoding/
-  - title: "IoT Exploitation"
-    url: /IoT-Exploitation/
+  #- title: "Windows"
+    #url: /Windows/
+  #- title: "Shellcoding"
+    #url: /Shellcoding/
   - title: "Certificates"
     url: /certificates/
+  - title: "Notes"
+    url: /notes/
+  - title: "IoT Exploitation"
+    url: /IoT-Exploitation/
   - title: "Defense Evasion"
     url: /defense-evasion/
   - title: "General"
     url: /General/
-  - title: "Notes"
-    url: /notes/
   - title: "All Categories"
     url: /categories/
