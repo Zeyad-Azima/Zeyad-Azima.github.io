@@ -1,7 +1,7 @@
 # main links
 main:
-  - title: "Exploit Developent"
-    url: /exploit-development/
+  - title: "Exploit Development"
+    url: /exploit development/
   - title: "Vulnerability/CVE Analysis"
     url: /Vulnerability-CVE-Analysis/
   - title: "MacOS"
