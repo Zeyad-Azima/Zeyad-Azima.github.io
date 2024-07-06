@@ -14,7 +14,7 @@ toc: true
 
 # Summary
 
-Kudos to my friend [@Abdulrahman](https://www.linkedin.com/in/abdulrahman-i-mahmoud) for starting the first version of the playbook and after contributing together we update it with organized structure, More steps and practicality.
+Kudos to my friend [@Abdulrahman](https://www.linkedin.com/in/abdulrahman-i-mahmoud) for starting the first version of the playbook and after contributing together we update it with organized structure, More steps and practicality. You can download the `PDF` version of the book fro [here](https://github.com/abdoibrahim1337/OSWP-PlayBook).
 
 # Contact & Follow Us
 
@@ -30,7 +30,7 @@ Kudos to my friend [@Abdulrahman](https://www.linkedin.com/in/abdulrahman-i-mahm
 
 ## Follow The PlayBook Updates
 - [https://github.com/abdoibrahim1337/OSWP-PlayBook](https://github.com/abdoibrahim1337/OSWP-PlayBook)
-
+- [https://zeyadazima.com/notes/oswplaybook/](https://zeyadazima.com/notes/oswplaybook/)
   
 # Reconnaissance
 
@@ -490,7 +490,7 @@ asleap -C do:3b:8d:7b:22:00:0:91 -R 68:09:13:ac:e8:df:36:5f:42:94:fb:97:91:05:2:
 ![image](https://github.com/Zeyad-Azima/Zeyad-Azima.github.io/assets/62406753/18e2b203-ca58-4233-939d-eb26a6da24af)
 
 
-16. After getting username and password here you go for connecting to the network section.
+17. After getting username and password here you go for connecting to the network section.
 
 # Install Required Tools & Packages:
 
