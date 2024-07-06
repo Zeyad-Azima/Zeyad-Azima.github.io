@@ -13,6 +13,7 @@ toc: true
 ---
 
 # Summary
+
 Kudos to my friend [@Abdulrahman](https://www.linkedin.com/in/abdulrahman-i-mahmoud) for starting the first version of the playbook and after contributing together we update it with organized structure, More steps and practicality.
 
 # Contact & Follow Us
@@ -29,7 +30,8 @@ Kudos to my friend [@Abdulrahman](https://www.linkedin.com/in/abdulrahman-i-mahm
 
 ## Follow The PlayBook Updates
 - [https://github.com/abdoibrahim1337/OSWP-PlayBook](https://github.com/abdoibrahim1337/OSWP-PlayBook)
-- 
+
+  
 # Reconnaissance
 
 ## Setup Interfaces
