@@ -554,6 +554,7 @@ sudo apt install john
 - https://github.com/r4ulcl/WiFiChallengeLab-docker
 
 > Note: For this lab you won't need any physical cards or anything all performed through, The labs virtual machine include everything, shoutout for [r4ulcl](https://github.com/r4ulcl) for this amazing lab.
+
 ### Linux Dist
 - https://www.wifislax.com: Wireless Pentest OS
 
