@@ -20,7 +20,7 @@ tags:
   - cookies
 toc: true
 ---
-
+ 
 # Introduction
 Welcome everyone! In addition to my regular work, I take on some pentesting projects as a freelancer for various clients. Today, I’m excited to share a particularly interesting bug that started as a seemingly straightforward `XSS` vulnerability but ultimately led to a full application takeover.
 
