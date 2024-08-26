@@ -22,8 +22,11 @@ tags:
   - apache
 toc: true
 ---
+
 # Introduction
+
 Welcome, everyone. In this blog post, I will share the story of how, in June 2023, I successfully dumped the database of a crypto network, ultimately leading to the ability to achieve remote code execution. This was accomplished during my research and analysis of a CVE affecting one of Apache's products.
+
 # About the CVE
 
 `CVE-2022-22733` is a critical security vulnerability affecting Apache ShardingSphere ElasticJob-UI, particularly in versions `3.0.0` and earlier. The vulnerability occurs within the `UserAuthenticationService` class, where the `getToken()` method returns a `Base64` encoded string representing the entire `UserAuthenticationService` object. This encoded token includes sensitive information such as the `root` and `guest` usernames & passwords. Which when we  decode it, We can find the `root` credentials, Which Allows to escalate privileges to the highest level within the application. You can read the full analysis from [here](https://zeyadazima.com/vulnerability/cve%20analysis/CVE_2022_22733/).
@@ -47,7 +50,9 @@ For this task, I utilized `Shodan` and `Zoomeye`. Although I didn't find many ta
 
 ![image](https://github.com/user-attachments/assets/a97caafd-4579-4207-ae04-3c482106898d)
 
+
 > **Query Used**: `title:"ShardingSphere"`
+
 
 # Exploit the CVE
 
