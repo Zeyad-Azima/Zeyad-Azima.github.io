@@ -1,5 +1,5 @@
 ---
-title: "CVE Analysis: Hacking a Crypto Network for $$$$"
+title: "CVE Analysis: Hacking a Crypto Network for Profit"
 classes: wide
 header:
   teaser: /assets/images/crypto.png
