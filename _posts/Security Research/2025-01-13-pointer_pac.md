@@ -1,5 +1,5 @@
 ---
-title: "We are [ARM]ed no more [ROP]pery Here"
+title: "We are ARMed no more ROPpery Here"
 classes: wide
 header:
   teaser: /assets/images/pac.png
