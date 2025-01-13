@@ -18,6 +18,7 @@ tags:
 toc: true
 ---
 
+
 # Introduction
 
 In 2017, ARM introduced Pointer Authentication (PAC) as part of its ARMv8.3-A architecture updates. This groundbreaking solution aimed to tackle one of the most critical challenges in software security: memory corruption vulnerabilities. By leveraging cryptographic techniques, PAC made it significantly harder for attackers to tamper with pointers in memory undetected.
