@@ -23,7 +23,7 @@ During my ongoing security research into Apache products, specifically focusing 
 
 # Background: Previous Work
 
-My journey with HugeGraph began with analyzing [CVE-2024-27348](https://github.com/Zeyad-Azima/CVE-2024-27348), a vulnerability I previously discovered that allowed bypassing sandbox restrictions to achieve RCE through Gremlin. You can read my detailed analysis [here](https://blog.securelayer7.net/remote-code-execution-in-apache-hugegraph/) for more understanding of the `SecurityManager` and How it executes scripts.
+My journey with HugeGraph began with analyzing [CVE-2024-27348](https://github.com/Zeyad-Azima/CVE-2024-27348), a vulnerability I previously worked-on that allowed bypassing sandbox restrictions to achieve RCE through Gremlin. You can read my detailed analysis [here](https://blog.securelayer7.net/remote-code-execution-in-apache-hugegraph/) for more understanding of the `SecurityManager` and How it executes scripts.
 
 After that discovery, I became determined to find ways to bypass the subsequent security mitigations implemented by the Apache team. My initial manual testing with various payloads yielded nothing promising—every attack vector seemed to be properly blocked by the enhanced SecurityManager.
 
