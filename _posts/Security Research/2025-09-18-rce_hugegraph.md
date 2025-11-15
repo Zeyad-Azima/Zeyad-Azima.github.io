@@ -17,7 +17,6 @@ tags:
   - cve
 toc: true
 ---
-
 # Introduction
 
 During my ongoing security research into Apache products, specifically focusing on Remote Code Execution (RCE) vulnerabilities, I discovered a fascinating and critical flaw in Apache HugeGraph Server's latest version(1.5.0). This vulnerability represents a unique case where the same malicious payload that gets consistently blocked during individual testing can successfully execute when sent as part of bulk concurrent requests.
