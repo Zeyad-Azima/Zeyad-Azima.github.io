@@ -2,7 +2,7 @@
 title: "macOS: Shellcoding on Apples (x86_64)"
 classes: wide
 header:
-  teaser: https://github.com/user-attachments/assets/267aa1b7-772f-403f-b353-a74bc1a69288
+  teaser: /assets/images/image.psd.png
 
 ribbon: blue
 description: "macOS Shellcoding in depth on x86_64."
