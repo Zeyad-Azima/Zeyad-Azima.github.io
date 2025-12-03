@@ -631,9 +631,11 @@ The rules for debugging applications on macOS;
 
 6. **Disabling SIP**:
    - While disabling SIP would technically allow debugging of any application, it is not recommended. SIP provides critical protections beyond just debugging restrictions, including protecting core system files and preventing unsigned kernel extensions from loading. Disabling SIP significantly weakens macOS security.
+
 ## LLDB
 
 ### Esssentail Start
+
 | Category | Name | Command | Shortcut | Description |
 | --- | --- | --- | --- | --- |
 | **Essential Start** | | | | |
