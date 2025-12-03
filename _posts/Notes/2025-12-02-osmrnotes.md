@@ -1577,7 +1577,7 @@ Apple stores system-provided service names in configuration files that also cont
 
 ### Get Identifier
 ```
-# Get app "Identifier=" using codesign
+Get app "Identifier=" using codesign
 codesign -dv /Path_to_app
 ```
 ### Get Process ID
