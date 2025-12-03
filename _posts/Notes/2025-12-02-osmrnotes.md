@@ -250,6 +250,7 @@ lrwxr-xr-x@ 1 root  wheel  41 Oct 18 05:36 OS -> ../../System/Volumes/Preboot/Cr
 These links show that `Cryptexes` are not traditionally mounted within the regular file system structure visible to the user, highlighting their specialized role and enhanced security measures.
 
 ## Firmlinks
+
 `Firmlinks` are a special type of symbolic link used by macOS to seamlessly integrate the read-only system volume with the writable data volume. This allows the operating system to maintain a clear separation between system files (which need to be protected from modifications to ensure system integrity) and user data (which needs to be freely writable by the user).
 
 - Check Firmlinks:
@@ -281,34 +282,38 @@ cat /usr/share/firmlinks
 On the left is the directory path on the System volume, and on the right, Is the directory path where it maps on the Data volume.
 
 - Confirm directory with `inode`:
+  
 ```
-# On System volume
+On System volume
 ls -li /System/Volumes/Data/usr/
 
 18524916 drwxr-xr-x  4 root  wheel  128 Feb  5 16:51 local
 inode -> 18524916
-# On the data volume
+On the data volume
 ls -li /usr
 
 18524916 drwxr-xr-x    4 root  wheel    128 Feb  5 16:51 local
 inode -> 18524916
 ```
+
 ## PLIST Files
+
 Convert Binary `plist`:
 ```
-# Convert to xml
+Convert to xml
 plutil -convert xml1 ~/your_plist_binary -o -
 
-# Convert to json
+Convert to json
 plutil -convert json ~/Library/Preferences/com.apple.screensaver.plist -o -
 
-# Convert to swift
+Convert to swift
 plutil -convert swift ~/Library/Preferences/com.apple.screensaver.plist -o -
 
-# Convert to objective-c
+Convert to objective-c
 plutil -convert objc ~/Library/Preferences/com.apple.screensaver.plist -o -
 ```
 ## Bundles
+
 Bundles are `.app` bundle, but many other executables are also packaged as bundles, such as `.framework` and `.systemextension`.
 ## Dyld
 Extract `dyld-cache`:
@@ -1145,6 +1150,7 @@ Breakpoint 1: where = dyld`amfi_check_dyld_policy_self, address = 0x100001234
      - **AMFI_DYLD_OUTPUT_ALLOW_LIBRARY_INTERPOSING**: Permits library interposing.
 
 ### SIP and AMFI Bits
+
 1. **System Integrity Protection (SIP) Bits**:
    - SIP is controlled using specific configuration flags. Each bit in the configuration represents a different aspect of system protection, such as allowing debugging or kernel extensions. These are set in the csrActiveConfig and checked against desired permissions.
    - Example flag: `CSR_ALLOW_TASK_FOR_PID` allows debugging processes.
@@ -1216,12 +1222,12 @@ int main(int argc, const char * argv[]) {
 ```
 
 - Compile and run:
-- 
+  
 ```bash
-# Compile
+Compile
 gcc -fraework Foundation checkDYLDFlags.m -o checkDYLDFlags
 
-# Run
+Run
 ./checkDYLDFlags 0X5d # replace with the output value
 ```
 
@@ -1311,10 +1317,10 @@ int main(int argc, const char * argv[]) {
 
 - Compile and run:
 ```bash
-# Compile
+Compile
 gcc -fraework Foundation checkCSRFlags.m -o checkCSRFlags
 
-# Run
+Run
 ./checkCSRFlags 0x2fd # replace with the your value
 ```
 
@@ -1445,27 +1451,27 @@ Most important load commands & functions from a dylib hijacking point of view ar
 
 - Test using `LC_LOAD_WEAK_DYLIB` 
 ```plaintext
-# 1- First check the app/binary security and if it's exploitable
-## You can check when the app is vulnerable from my previous analysis from here: https://zeyadazima.com/macos/CVE_2023_26818_P1/#the-analysis
+1- First check the app/binary security and if it's exploitable
+You can check when the app is vulnerable from my previous analysis from here: https://zeyadazima.com/macos/CVE_2023_26818_P1/#the-analysis
 codesign -dv --entitlements :- /path/to/app
 
-# 2- Secondly grep `LC_LOAD_WEAK_DYLIB` from load commands using `otool`
+2- Secondly grep `LC_LOAD_WEAK_DYLIB` from load commands using `otool`
 otool -l /path/to/app | grep LC_LOAD_WEAK_DYLIB -A 5
 
-# 3- Check the dylib path and if it's exist or no
+3- Check the dylib path and if it's exist or no
 ls -l path_from_LC_LOAD_WEAK_DYLIB
 ```
 
 ### Rpath-based dylib hijacking
 
 ```
-# 1- Grep the paths where is used for loading
+1- Grep the paths where is used for loading
 otool -l /path/to/app | grep LC_RPATH -A 2
 
-# 2- Grep the path where @rpath is used, Also check the library version
+2- Grep the path where @rpath is used, Also check the library version
 otool -l /path/to/app | grep @rpath -A 3
 
-# 3- Check the library path and if t's exist
+3- Check the library path and if t's exist
 ls -l /path/to/app{@rpath}/lib.dylib
 ```
 
@@ -1479,10 +1485,10 @@ $HOME/lib
 /usr/lib
 current directory
 
-# Monitor file system events to check the files
+Monitor file system events to check the files
 sudo fs_usage
 
-# Then look for dylibs that been requested and repeated in the search paths.
+Then look for dylibs that been requested and repeated in the search paths.
 ```
 
 ## Exploit Dylib Hijacking
@@ -1500,13 +1506,13 @@ void custom(int argc, const char **argv)
 
 - Exploitation steps
 ```plaintext
-# After identifying which dylib is vulnerable, Compile the test code
+After identifying which dylib is vulnerable, Compile the test code
 gcc -dynamiclib -current_version {version} -compatibility_version {version} -framework Foundation test.m -Wl,-reexport_library,"Hijacked dylib path" -o hijack.dylib
 
-# Check the reexport path
+Check the reexport path
 otool -l hijack.dylib| grep REEXPORT -A 2
 
-# Finally, set the full path to the library and copy it to the hijacking path
+Finally, set the full path to the library and copy it to the hijacking path
 install_name_tool -change @rpath/lib.dylib "Library path" hijack.dylib
 ```
 
