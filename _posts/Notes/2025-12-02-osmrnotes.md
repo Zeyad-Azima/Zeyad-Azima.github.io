@@ -1639,7 +1639,7 @@ Apple stores system-provided service names in configuration files that also cont
 4. **Service Access by Task B**:
    - **Send Copy of SEND Right to Task B**: Finally, `launchd` creates a copy of the SEND right and sends it to Task B. This step allows Task B to communicate securely with Task A using the established protocol.
 
-# Mach Special Ports
+## Mach Special Ports
 
 | Port        | Description                                                                                                                                                                                   |
 |------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
