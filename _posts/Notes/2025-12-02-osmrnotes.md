@@ -2983,8 +2983,8 @@ com.apple.launchd.l1jND8ppqA	tmp0000468a
 /tmp % ./pure 
 /tmp % ls -l
 total 0
-drwx------  3 labatrixmacenv  wheel  96 Jun 10 05:24 com.apple.installerUHykChAa
-drwx------  3 labatrixmacenv  wheel  96 Jun 10 03:33 com.apple.launchd.l1jND8ppqA
+drwx------  3 zeyadazima.com_macenv  wheel  96 Jun 10 05:24 com.apple.installerUHykChAa
+drwx------  3 zeyadazima.com_macenv  wheel  96 Jun 10 03:33 com.apple.launchd.l1jND8ppqA
 drwxr-xr-x  2 root            wheel  64 Jun  8 09:10 powerlog
 drwx------  3 root            wheel  96 Jun 10 05:25 tmp0000468a
 -rw-r--r--  1 root            wheel   0 Jun 10 22:32 zeyadazima.com
