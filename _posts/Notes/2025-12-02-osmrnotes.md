@@ -5827,7 +5827,7 @@ Electron applications expose multiple attack vectors for code injection and priv
 | Gatekeeper runs once | Post-launch modification | After first signature check | Non-executable code changes allowed |
 | Hardened runtime enabled | Traditional injection blocked | Prevents dylib injection | Forces Electron-specific techniques |
 
-### Detection Methods
+## Detection Methods
 
 #### 1. Static Analysis - Application Inspection
 
@@ -5985,7 +5985,7 @@ ipcMain.on('arbitrary-command', (event, cmd) => {
 </array>
 ```
 
-### Exploitation Methods
+## Exploitation Methods
 
 #### Method 1: ELECTRON_RUN_AS_NODE REPL Access
 
@@ -6381,7 +6381,7 @@ window.addEventListener('DOMContentLoaded', () => {
 // Original preload code continues...
 ```
 
-### Exploitation Tips
+## Exploitation Tips
 
 **Pre-Exploitation:**
 - [ ] Identify Electron app (check for app.asar or Electron Framework)
