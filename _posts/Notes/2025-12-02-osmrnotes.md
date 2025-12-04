@@ -3905,7 +3905,7 @@ Error opening file: Operation not permitted
 
 As expected, the operation is not permitted because the sandbox restricts access to the `/etc/` directory.
 
- ## Guide for sandbox Escaping
+## Guide for sandbox Escaping
  
 There are couples of ways can be considered to escape/bypass the sandbox:
 
