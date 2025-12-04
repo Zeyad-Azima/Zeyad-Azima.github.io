@@ -4271,6 +4271,7 @@ TCC operates by maintaining a database of permissions for each application. When
 ## TCC Protected Services
 
 TCC controls access to several critical services on macOS:
+
 | Constant                                      | Description                          |
 |-----------------------------------------------|--------------------------------------|
 | **kTCCServiceAccessibility**                  | Accessibility features               |
@@ -4598,7 +4599,7 @@ The malware modifies critical files within the app bundle, such as the `Info.pli
 - https://www.ampliasecurity.com/blog/2015/01/27/bypassing_os_x_gatekeeper/
 - https://packetstormsecurity.com/files/130147/OS-X-Gatekeeper-Bypass.html
 
-# Symlink and Hardlink Attacks - Practical Notes
+# Symlink and Hardlink Attacks
 
 ## Filesystem Permission Model
 
@@ -4612,6 +4613,7 @@ macOS uses POSIX file permissions with three permission levels:
 Each level has three permission types: **read**, **write**, **execute**
 
 #### File Permissions
+
 | Permission | Effect |
 |------------|--------|
 | read | Read file contents |
@@ -4619,6 +4621,7 @@ Each level has three permission types: **read**, **write**, **execute**
 | execute | Execute file as program |
 
 #### Directory Permissions
+
 | Permission | Effect |
 |------------|--------|
 | read | Enumerate directory entries (list files) |
@@ -4656,6 +4659,7 @@ chflags [flags] [file]
 ```
 
 #### Common Flags
+
 | Flag | Description |
 |------|-------------|
 | `uchg` / `uimmutable` | File cannot be changed |
@@ -4685,6 +4689,7 @@ drwxrwxrwt  user group  /tmp
 More granular permissions than POSIX model.
 
 #### Directory-Specific ACL Permissions
+
 | Permission | Description |
 |------------|-------------|
 | `list` | List directory entries |
@@ -4694,6 +4699,7 @@ More granular permissions than POSIX model.
 | `delete_child` | Delete contained object |
 
 #### File-Specific ACL Permissions
+
 | Permission | Description |
 |------------|-------------|
 | `read` | Open for reading |
