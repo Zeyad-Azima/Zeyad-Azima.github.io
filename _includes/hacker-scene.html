@@ -1,0 +1,64 @@
+<!--
+  Pixel-art animated scene: hacker → unauthorized access → panic → cops arrest.
+  Plays once on first scroll into view; replay button restarts it.
+-->
+<aside id="hacker-scene" class="hacker-scene" data-state="idle" aria-hidden="true">
+  <div class="hs-stage">
+    <!-- Floor / scene baseline -->
+    <div class="hs-floor"></div>
+
+    <!-- Monitor + desk -->
+    <div class="hs-desk">
+      <div class="hs-monitor">
+        <div class="hs-screen">
+          <span class="hs-prompt">&gt; <span class="hs-caret">_</span></span>
+          <span class="hs-warning">UNAUTHORIZED ACCESS</span>
+        </div>
+        <div class="hs-monitor-stand"></div>
+      </div>
+    </div>
+
+    <!-- Hacker (red hoodie) -->
+    <div class="hs-hacker">
+      <div class="hs-hacker-hood"></div>
+      <div class="hs-hacker-face">
+        <div class="hs-eye hs-eye-l"></div>
+        <div class="hs-eye hs-eye-r"></div>
+        <div class="hs-tear"></div>
+      </div>
+      <div class="hs-hacker-body"></div>
+      <div class="hs-hacker-hands"></div>
+      <div class="hs-cuffs"></div>
+      <div class="hs-bubble hs-bubble-hacker">
+        <span>!</span>
+      </div>
+    </div>
+
+    <!-- Jail cell (only shown in jailed state) -->
+    <div class="hs-cell">
+      <div class="hs-cell-bars"></div>
+    </div>
+
+    <!-- Cop 1 (blue) -->
+    <div class="hs-cop hs-cop-1">
+      <div class="hs-cop-hat"></div>
+      <div class="hs-cop-face"></div>
+      <div class="hs-cop-body"></div>
+      <div class="hs-cop-legs"><div class="hs-leg hs-leg-l"></div><div class="hs-leg hs-leg-r"></div></div>
+    </div>
+
+    <!-- Cop 2 (blue) -->
+    <div class="hs-cop hs-cop-2">
+      <div class="hs-cop-hat"></div>
+      <div class="hs-cop-face"></div>
+      <div class="hs-cop-body"></div>
+      <div class="hs-cop-legs"><div class="hs-leg hs-leg-l"></div><div class="hs-leg hs-leg-r"></div></div>
+    </div>
+
+    <!-- Cops' speech bubble -->
+    <div class="hs-bubble hs-bubble-cops">
+      <span>YOU ARE UNDER ARREST</span>
+    </div>
+  </div>
+
+</aside>
