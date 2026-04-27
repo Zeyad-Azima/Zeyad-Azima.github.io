@@ -1,183 +1,183 @@
 /* ==========================================================================
-   MINEEEEEEEEEEEEEEEEEEEEEEEEEEE
+   Post blog card — pixel / synthwave style
    ========================================================================== */
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-$post_color_white: #fff;
-$post_color_prime: #5ad67d;
-$post_color_grey: #e2e2e2;
-$post_color_grey_dark: #a2a2a2;
-$post_border_radius: 8px;
+$pixel-card-bg:    #1a1538;
+$pixel-card-line:  #2d2563;
+$pixel-card-ink:   #ffffff;
+$pixel-card-dim:   #e0e0e0;
+$pixel-card-mute:  #b8b8b8;
+$pixel-card-pink:  #ff5cd6;
+$pixel-card-cyan:  #5cf2ff;
 
-.post-blog-card:hover {
-  box-shadow: 0 0.5em 0.5em -0.4em rgba(255,255,255,0.8);
-  transform: translateY(-0.25em);
-}
 .post-blog-card {
-  min-height: 250px;
-  background: transparent;
-  display: flex;
-  flex-direction: column;
-  margin: 1rem auto;
-  transition: 0.3s;
-  margin-bottom: 1.6%;
-  line-height: 1.4;
-  font-family: sans-serif;
-  z-index: 0;
-  a {
-    color: inherit;
-    &:hover {
-      color: $post_color_prime;
-    }
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 18px;
+  padding: 16px;
+  margin: 0 0 18px;
+  background: $pixel-card-bg;
+  border: 3px solid #000;
+  box-shadow: 0 0 0 2px #000, 4px 4px 0 0 #000;
+  font-family: "Courier New", "Lucida Console", Monaco, monospace;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: $pixel-card-ink;
+  -webkit-font-smoothing: subpixel-antialiased;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  text-decoration: none !important;
+
+  &:hover {
+    transform: translate(-3px, -3px);
+    box-shadow:
+      0 0 0 2px #000,
+      7px 7px 0 0 #000,
+      7px 7px 0 5px $pixel-card-pink;
+    color: $pixel-card-ink;
   }
+
+  @media (max-width: 620px) {
+    grid-template-columns: 1fr;
+  }
+
+  /* thumb area — uses --image-url variable from inline style */
   .post-meta {
+    width: 100%;
+    height: 140px;
+    background: #000 var(--image-url, none) center / cover no-repeat;
+    border: 2px solid #000;
     position: relative;
-    z-index: 0;
-    height: 200px;
-  }
-  .post-description {
-    border-radius: 0 0 $post_border_radius $post_border_radius;
-    padding: 1rem;
-    background: $post_color_white;
-    position: relative;
-    z-index: 1;
-    h1,
-    h2 {
-      color: #444444;
-      font-family: Poppins, sans-serif;
+    overflow: hidden;
+    image-rendering: pixelated;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(0deg,
+          rgba(0, 0, 0, 0) 0 2px,
+          rgba(0, 0, 0, 0.18) 2px 3px),
+        linear-gradient(135deg,
+          rgba(255, 92, 214, 0.12),
+          rgba(92, 242, 255, 0.12));
+      mix-blend-mode: screen;
+      pointer-events: none;
     }
-    h1 {
-      line-height: 1;
-      margin: 0;
-      font-size: 1.2rem;
-    }
-    h2 {
-      font-size: 1rem;
-      font-weight: 300;
-      text-transform: uppercase;
-      color: $post_color_grey_dark;
-      margin-top: 5px;
-    }
-    .post-time {
-      float: right;
-    }
-  }
-  p {
-    position: relative;
-    margin: 1rem 0 0;
-    font-size: 0.8rem;
-    &:first-of-type {
-      margin-top: 1.25rem;
-      &:before {
-        content: "";
-        position: absolute;
-        height: 5px;
-        background: var(--ribbon);
-        width: 35px;
-        top: -0.75rem;
-        border-radius: 3px;
-      }
+
+    @media (max-width: 620px) {
+      height: 120px;
     }
   }
 
-  .post-description {
-    color: #696969;
-  }
-
-  .post-date {
-    float: left;
-    color: #9a9a9a;
-  }
-
-  .post-time {
-    float: right;
-    color: #9a9a9a;
-  }
-
+  /* category ribbon — colored pill */
   .post-ribbon {
-    border-radius: $post_border_radius $post_border_radius 0 0;
-    background: var(--image-url);
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-size: cover;
-    background-position: center;
-    transition: transform .2s;
+    position: relative;
+    z-index: 2;
+    background: none;
+    inset: auto;
   }
 
   .post-ribbon4 {
-    font-family: 'Carter One';
-    font-size: 1.3rem;
-    color: white;
+    display: inline-block;
     position: absolute;
-    top: 17px;
-    padding: 8px 10px;
-    background: var(--ribbon);
-    box-shadow: -1px 2px 3px rgba(0,0,0,.3);
-    border-radius: 0 $post_border_radius $post_border_radius 0;
-  }
-  .post-ribbon4:before, .post-ribbon4:after {
-    content: "";
-    position: absolute;
-  }
-  .post-ribbon4:before {
-    width: 7px;
-    height: 100%;
-    top: 0;
-    left: -7.0px;
-    padding: 0 0 7px;
-    background: inherit;
-    border-radius: 5px 0 0 5px;
-  }
-  .post-ribbon4:after {
-    width: 5px;
-    height: 5px;
-    bottom: -5px;
-    left: -5px;
-    background: #E3E3E3;
-    border-radius: 5px 0 0 5px;
+    top: 8px;
+    left: 8px;
+    padding: 5px 12px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #000;
+    background: var(--ribbon, #{$pixel-card-pink});
+    border: 2px solid #000;
+    box-shadow: 2px 2px 0 #000, 0 0 0 1px var(--ribbon, #{$pixel-card-pink});
+    z-index: 3;
+    text-shadow: 0 0 1px rgba(255, 255, 255, 0.4);
+
+    &:before, &:after { display: none; }
   }
 
-  @media (min-width: 640px) {
-    flex-direction: row;
-    max-width: 700px;
-    .post-meta {
-      flex-basis: 40%;
-      height: auto;
+  /* body */
+  .post-description {
+    padding: 0;
+    background: transparent;
+    color: $pixel-card-ink;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    &:before { display: none !important; }
+
+    h1, h2 {
+      font-family: inherit;
+      color: $pixel-card-ink;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+      font-size: 19px;
+      line-height: 1.35;
+      margin: 0 0 10px;
+      font-weight: 700;
+      -webkit-font-smoothing: none;
+
+      &::before { content: none !important; }
     }
-    .post-description {
-      border-radius: 0px $post_border_radius $post_border_radius 0;
-      flex-basis: 60%;
-      &:before {
-        transform: skewX(-3deg);
-        content: "";
-        background: #fff;
-        width: 30px;
-        position: absolute;
-        left: -10px;
-        top: 0;
-        bottom: 0;
-        z-index: -1;
-      }
-    }
-    .post-ribbon {
-      border-radius: $post_border_radius 0px 0px $post_border_radius;
-    }
-    .post-ribbon4 {
-      /*width: 100%;*/
-      font-size: 1rem;
+
+    p {
+      font-size: 15px;
+      font-weight: 400;
+      color: $pixel-card-dim;
+      letter-spacing: 0;
+      line-height: 1.6;
+      margin: 0 0 12px;
+      text-transform: none;
+      -webkit-font-smoothing: subpixel-antialiased;
+
+      &:first-of-type:before { display: none !important; }
     }
   }
 
-  @media (max-width: 500px) {
-    .post-ribbon {
-      width: 100%;
-    }
+  .post-date,
+  .post-time {
+    float: none;
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: $pixel-card-mute;
+    margin: 0 12px 0 0;
+  }
+
+  .post-time {
+    color: $pixel-card-cyan;
+
+    .fa-clock { color: inherit; margin-right: 4px; }
+  }
+
+  /* meta strip across the bottom */
+  .post-description > .post-date,
+  .post-description > .post-time {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 2px dashed $pixel-card-line;
+    flex: none;
+  }
+
+  .post-description > .post-date {
+    border-top: 2px dashed $pixel-card-line;
+    padding-top: 10px;
+    margin-top: auto;
+  }
+
+  .post-description > .post-time {
+    border-top: 0;
+    padding-top: 0;
   }
 }
 
@@ -190,17 +190,6 @@ $post_border_radius: 8px;
 .archive {
   margin-top: 1em;
   margin-bottom: 2em;
-
-  @include breakpoint($large) {
-    float: right;
-    width: calc(100% - #{$right-sidebar-width-narrow});
-    padding-right: $right-sidebar-width-narrow;
-  }
-
-  @include breakpoint($x-large) {
-    width: calc(100% - #{$right-sidebar-width});
-    padding-right: $right-sidebar-width;
-  }
 }
 
 .archive__item {
@@ -322,15 +311,7 @@ $post_border_radius: 8px;
 
 .archive {
   .grid__wrapper {
-    /* extend grid elements to the right */
-
-    @include breakpoint($large) {
-      margin-right: -1 * $right-sidebar-width-narrow;
-    }
-
-    @include breakpoint($x-large) {
-      margin-right: -1 * $right-sidebar-width;
-    }
+    /* grid view — let CSS grid layout from _pixel.scss handle widths */
   }
 }
 

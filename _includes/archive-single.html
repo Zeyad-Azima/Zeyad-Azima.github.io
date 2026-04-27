@@ -13,13 +13,10 @@
 {% if post.ribbon %}
   {% assign ribbon = post.ribbon %}
 {% else %}
-  {% assign ribbon = 'darkgrey' %}
+  {% assign ribbon = '#ff5cd6' %}
 {% endif %}
 
-
-<link href="https://fonts.googleapis.com/css2?family=Carter+One&display=swap" rel="stylesheet">
-
-<a href="{{ post.url | relative_url }}" class="post-blog-card" style="text-decoration: none; 
+<a href="{{ post.url | relative_url }}" class="post-blog-card" style="
     --image-url: url({{ teaser }});
     --ribbon: {{ ribbon }};">
 
@@ -30,13 +27,16 @@
   </div>
 
   <div class="post-description">
-    <h1>{{ title }}</h1>
-    <p>  {{ post.description | truncate: 120}}</p>
-    
+    <h2>{{ title }}</h2>
+    {% assign card_blurb = post.description | default: post.excerpt | strip_html | normalize_whitespace %}
+    {% if card_blurb != "" %}
+      <p>{{ card_blurb | truncate: 140 }}</p>
+    {% endif %}
+
     <p class="post-date page__meta">
-      {{post.date | date_to_string}}
+      {{ post.date | date_to_string }}
     </p>
-  
+
     {% if post.read_time %}
       <p class="post-time page__meta"><i class="far fa-clock" aria-hidden="true"></i> {% include read-time.html %}</p>
     {% endif %}
