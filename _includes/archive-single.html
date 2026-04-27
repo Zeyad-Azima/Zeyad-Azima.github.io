@@ -16,9 +16,13 @@
   {% assign ribbon = '#ff5cd6' %}
 {% endif %}
 
-<a href="{{ post.url | relative_url }}" class="post-blog-card" style="
+<a href="{{ post.url | relative_url }}" class="post-blog-card{% if forloop.first and page.url == '/' %} post-blog-card--featured{% endif %}" style="
     --image-url: url({{ teaser }});
     --ribbon: {{ ribbon }};">
+
+  {% if forloop.first and page.url == '/' %}
+    {% include owl-mascot.html %}
+  {% endif %}
 
   <div class="post-meta">
     <div class="post-ribbon">

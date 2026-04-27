@@ -1,0 +1,2279 @@
+/* ==========================================================================
+   Arcade skin — pixel/portfolio palette, chunky borders, offset shadows
+   ========================================================================== */
+
+/* Typography (system mono) */
+$serif:              "Courier New", "Lucida Console", Monaco, monospace !default;
+$sans-serif:         "Courier New", "Lucida Console", Monaco, monospace !default;
+$sans-serif-narrow:  $sans-serif !default;
+$monospace:          "Courier New", "Lucida Console", Monaco, monospace !default;
+$global-font-family: "Courier New", "Lucida Console", Monaco, monospace !default;
+$header-font-family: "Courier New", "Lucida Console", Monaco, monospace !default;
+$caption-font-family:"Courier New", monospace !default;
+
+/* Palette — matches the reference theme */
+$arcade-bg:        #0f0f1a;
+$arcade-bg2:       #1a1a2e;
+$arcade-panel:     #1a1a2e;
+$arcade-panel-2:   #232342;
+$arcade-line:      #2a2a4a;
+$arcade-fg:        #e0e0e0;
+$arcade-fg-dim:    #b8b8c8;
+$arcade-fg-mute:   #8a8aa0;
+$arcade-red:       #ff6b6b;
+$arcade-teal:      #4ecdc4;
+$arcade-yellow:    #ffe66d;
+$arcade-purple:    #a855f7;
+$arcade-blue:      #3b82f6;
+
+$arcade-pixel:     4px;
+$arcade-shadow:    #{$arcade-pixel} #{$arcade-pixel} 0 0 rgba(0,0,0,0.5);
+
+/* MM variable overrides */
+$background-color:        $arcade-bg !default;
+$text-color:              $arcade-fg !default;
+$muted-text-color:        $arcade-fg-dim !default;
+$primary-color:           $arcade-red !default;
+$border-color:            #000 !default;
+$code-background-color:   $arcade-panel !default;
+$code-background-color-dark: #050208 !default;
+$form-background-color:   #000 !default;
+$footer-background-color: #000 !default;
+$link-color:              $arcade-teal !default;
+$link-color-hover:        $arcade-yellow !default;
+$link-color-visited:      $arcade-teal !default;
+$masthead-link-color:     $arcade-fg !default;
+$masthead-link-color-hover: $arcade-yellow !default;
+$navicon-link-color-hover: #000 !default;
+$danger-color:            $arcade-red !default;
+$info-color:              $arcade-teal !default;
+$warning-color:           $arcade-yellow !default;
+$success-color:           $arcade-teal !default;
+
+/* ==========================================================================
+   Reset
+   ========================================================================== */
+
+* { box-sizing: border-box; }
+
+.btn, button, input, textarea, select,
+.notice, .notice--primary, .notice--info, .notice--warning, .notice--success, .notice--danger,
+.taxonomy__index, .page__taxonomy-item,
+.author__avatar img, .site-logo img,
+.toc, .nav__title,
+.archive__item-teaser, .archive__item-caption,
+.pagination li a,
+pre, code, .highlight, div.highlighter-rouge, figure.highlight,
+table, th, td,
+blockquote,
+.search-content, .ais-search-box .ais-search-box--input,
+.sidebar__right,
+.post-blog-card, .post-blog-card .post-meta, .post-blog-card .post-ribbon4 {
+  border-radius: 0;
+}
+
+/* Pixelated rendering only on chunky brand assets */
+.site-logo img,
+.author__avatar img,
+.post-blog-card .post-meta {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* ==========================================================================
+   Body / global
+   ========================================================================== */
+
+html {
+  background: $arcade-bg;
+}
+
+html, body {
+  color: $arcade-fg;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.7;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+/* body itself stays transparent so the fixed bg canvas (z-index: -1) shows through */
+body {
+  background: transparent !important;
+}
+
+/* Hide native cursor — JS pixel cursor takes over (touch devices keep native) */
+@media (hover: hover) and (pointer: fine) {
+  html, body, a, button, input, textarea, select { cursor: none; }
+}
+
+body { min-height: 100vh; }
+
+a {
+  color: $arcade-teal;
+  text-decoration: none;
+  transition: color 0.1s;
+  &:hover { color: $arcade-yellow; }
+}
+
+/* ==========================================================================
+   Headings
+   ========================================================================== */
+
+h1, h2, h3, h4, h5, h6,
+.page__title,
+.archive__subtitle {
+  font-family: $header-font-family;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $arcade-yellow;
+  text-shadow:
+    3px 3px 0 $arcade-red,
+    6px 6px 0 rgba(0, 0, 0, 0.4);
+  line-height: 1.4;
+}
+
+.page__title {
+  font-size: clamp(24px, 3vw, 36px);
+  letter-spacing: 0.12em;
+  margin-bottom: 22px;
+
+  &:not(:empty)::before {
+    content: "▶ ";
+    color: $arcade-red;
+  }
+
+  &:empty { display: none; }
+}
+
+.archive__subtitle {
+  font-size: 20px;
+  letter-spacing: 0.18em;
+  border-bottom: 2px dashed $arcade-line;
+  padding-bottom: 12px;
+  margin: 0 0 20px;
+  color: $arcade-yellow;
+
+  &::before {
+    content: "▶ ";
+    color: $arcade-red;
+  }
+}
+
+/* ==========================================================================
+   Masthead
+   ========================================================================== */
+
+.masthead {
+  background: rgba(15, 15, 26, 0.92) !important;
+  border-bottom: $arcade-pixel solid $arcade-red;
+  box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.5);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.masthead__inner-wrap {
+  padding: 12px 32px;
+  max-width: 1400px;
+  position: relative;
+  z-index: 1;
+}
+
+.site-title {
+  font-family: $header-font-family !important;
+  font-size: 18px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: $arcade-yellow !important;
+  text-shadow: 2px 2px 0 $arcade-red;
+}
+
+.site-subtitle {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: $arcade-teal;
+  margin-top: 2px;
+  text-transform: uppercase;
+}
+
+.site-logo img {
+  width: 36px;
+  height: 36px;
+  border: $arcade-pixel solid $arcade-yellow;
+  box-shadow: $arcade-pixel $arcade-pixel 0 0 $arcade-red;
+  background: $arcade-bg2;
+}
+
+.greedy-nav {
+  background: transparent !important;
+  border-bottom: 0;
+  justify-content: flex-start !important;
+  gap: 0;
+  flex-wrap: nowrap;
+
+  a {
+    font-family: $header-font-family;
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: $arcade-fg !important;
+    border: 2px solid transparent !important;
+    padding: 6px 12px !important;
+    transition: all 0.1s;
+
+    &:hover,
+    &:focus {
+      color: $arcade-teal !important;
+      border-color: $arcade-teal !important;
+      background: rgba(78, 205, 196, 0.1);
+    }
+  }
+
+  .visible-links a:before { display: none; }
+
+  .hidden-links {
+    background: $arcade-bg !important;
+    border: $arcade-pixel solid $arcade-red !important;
+    box-shadow: $arcade-pixel $arcade-pixel 0 0 rgba(0, 0, 0, 0.5);
+    padding: 6px 0 !important;
+
+    a {
+      color: $arcade-fg !important;
+      border: 0 !important;
+      border-bottom: 1px dashed $arcade-line !important;
+      padding: 12px 18px !important;
+
+      &:hover { color: #000 !important; background: $arcade-yellow !important; }
+    }
+
+    li:last-child a { border-bottom: 0 !important; }
+    &:before, &:after { display: none !important; }
+  }
+}
+
+/* Force visible-links to use available space (for greedy-nav measurement) */
+.masthead .greedy-nav .visible-links {
+  flex: 1 1 auto !important;
+  justify-content: flex-start !important;
+  flex-wrap: nowrap !important;
+  overflow: hidden;
+  margin-left: 8px;
+}
+
+.masthead .greedy-nav .site-title { margin-right: 12px; }
+.masthead .greedy-nav .search__toggle { margin-left: auto !important; }
+
+.search__toggle,
+.greedy-nav__toggle {
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: 2px solid $arcade-teal;
+  box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.5);
+  color: $arcade-teal;
+  margin: 0 6px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s;
+
+  .icon, svg, .svg-inline--fa {
+    fill: currentColor;
+    color: currentColor;
+    width: 22px;
+    height: 22px;
+    font-size: 22px;
+  }
+
+  &:hover {
+    background: $arcade-teal;
+    color: #000;
+    border-color: $arcade-teal;
+  }
+}
+
+.greedy-nav__toggle .navicon {
+  width: 20px;
+  height: 3px;
+  background: $arcade-teal;
+  position: relative;
+
+  &::before, &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 20px;
+    height: 3px;
+    background: $arcade-teal;
+  }
+
+  &::before { top: -7px; }
+  &::after  { top:  7px; }
+}
+
+.greedy-nav__toggle:hover .navicon,
+.greedy-nav__toggle:hover .navicon::before,
+.greedy-nav__toggle:hover .navicon::after {
+  background: #000;
+}
+
+/* ==========================================================================
+   Layout — sidebar + content grid
+   ========================================================================== */
+
+#main {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 36px;
+  align-items: start;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 36px 24px 24px;
+
+  @media (max-width: 880px) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding: 24px;
+  }
+}
+
+.sidebar,
+.sidebar.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 100px;
+  float: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 22px 20px !important;
+  overflow: visible !important;
+  -webkit-transform: none;
+  transform: none;
+  opacity: 1 !important;
+  height: auto !important;
+  font-family: $sans-serif;
+  font-size: 16px;
+  background: $arcade-panel;
+  border: $arcade-pixel solid $arcade-teal;
+  box-shadow:
+    $arcade-pixel $arcade-pixel 0 0 $arcade-red,
+    calc(#{$arcade-pixel} * 2) calc(#{$arcade-pixel} * 2) 0 0 rgba(0,0,0,0.3);
+
+  @media (max-width: 880px) {
+    position: static;
+    top: auto;
+  }
+}
+
+.archive,
+.page {
+  float: none !important;
+  width: 100% !important;
+  max-width: 100%;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.archive {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.page__inner-wrap {
+  float: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0;
+}
+
+/* TOC inline at top of post */
+.sidebar__right {
+  float: none !important;
+  width: 100% !important;
+  max-width: 100%;
+  margin: 0 0 2em !important;
+  padding: 0 !important;
+  position: static !important;
+
+  &.sticky { position: static !important; top: auto; }
+}
+
+/* ==========================================================================
+   Sidebar / author profile
+   ========================================================================== */
+
+.author__avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 18px;
+  padding: 6px;
+
+  img {
+    width: 130px !important;
+    height: 130px !important;
+    max-width: 130px !important;
+    border: $arcade-pixel solid $arcade-yellow !important;
+    box-shadow:
+      0 0 0 2px #000,
+      0 0 18px rgba(255, 230, 109, 0.35) !important;
+    border-radius: 0 !important;
+    filter: contrast(1.08) saturate(1.15);
+    padding: 0;
+    display: block;
+    animation: arcade-float 3s ease-in-out infinite;
+  }
+}
+
+@keyframes arcade-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+.author__content {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+.author__name {
+  font-size: 22px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+  color: $arcade-yellow;
+  text-shadow: 2px 2px 0 $arcade-red;
+  margin: 6px 0 8px;
+}
+
+.author__bio {
+  font-size: 14px;
+  color: $arcade-fg;
+  text-align: center;
+  letter-spacing: 0.02em;
+  line-height: 1.6;
+  text-transform: none;
+  margin: 0 0 4px;
+}
+
+.author__urls-wrapper {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: $arcade-fg-mute;
+  margin-top: 18px;
+
+  button {
+    background: transparent;
+    border: 2px solid $arcade-purple;
+    color: $arcade-fg;
+    box-shadow: 2px 2px 0 0 rgba(0,0,0,0.5);
+    font-family: $header-font-family;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 11px;
+    padding: 8px 12px;
+
+    &:hover {
+      background: $arcade-purple;
+      color: #fff;
+    }
+  }
+}
+
+.author__urls {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin-top: 14px;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
+  gap: 8px;
+
+  &::before, &::after { display: none; }
+
+  li { border: 0; margin: 0; }
+
+  a {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 48px;
+    padding: 0;
+    font-size: 22px;
+    line-height: 1;
+    color: $arcade-yellow !important;
+    background: $arcade-bg;
+    border: 2px solid $arcade-red;
+    box-shadow: 2px 2px 0 0 rgba(0,0,0,0.5);
+    transition: transform 0.1s ease, box-shadow 0.1s ease, color 0.1s ease, background 0.1s ease, border-color 0.1s ease;
+
+    &:hover, &:focus {
+      color: #000 !important;
+      background: $arcade-yellow;
+      border-color: $arcade-yellow;
+      box-shadow: 4px 4px 0 0 $arcade-red;
+      transform: translate(-2px, -2px);
+    }
+
+    i, .svg-inline--fa {
+      color: inherit;
+      font-size: 22px;
+      line-height: 1;
+      height: 22px;
+      width: auto;
+      margin: 0;
+      vertical-align: middle;
+    }
+
+    .label {
+      position: absolute !important;
+      width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0);
+      white-space: nowrap; border: 0;
+    }
+  }
+}
+
+/* ==========================================================================
+   Page content
+   ========================================================================== */
+
+.page__content {
+  font-size: 18px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  color: $arcade-fg;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  img, video, iframe, svg:not(.svg-inline--fa) {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  pre, code {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre;
+    word-wrap: normal;
+  }
+
+  .highlight, div.highlighter-rouge, figure.highlight {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  table {
+    display: table;
+    width: auto;
+    max-width: 100%;
+  }
+
+  p, li, dl {
+    font-size: 18px;
+    line-height: 1.8;
+    color: $arcade-fg;
+  }
+
+  strong, b { font-weight: 700; color: $arcade-yellow; }
+
+  a {
+    color: $arcade-teal;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 3px;
+
+    &:hover { color: $arcade-yellow; }
+  }
+
+  blockquote {
+    background: $arcade-panel;
+    border-left: $arcade-pixel solid $arcade-red;
+    color: $arcade-fg;
+    font-style: normal;
+    padding: 14px 18px;
+    box-shadow: $arcade-pixel $arcade-pixel 0 0 rgba(0,0,0,0.4);
+  }
+
+  hr {
+    border: 0;
+    border-top: 2px dashed $arcade-line;
+    margin: 2em 0;
+  }
+
+  img {
+    border: $arcade-pixel solid $arcade-purple;
+    box-shadow: $arcade-pixel $arcade-pixel 0 0 rgba(0,0,0,0.4);
+    background: $arcade-panel;
+  }
+
+  /* Heading dividers */
+  h1, h2, h3, h4, h5, h6 {
+    color: $arcade-yellow;
+    margin-top: 1.8em;
+    margin-bottom: 0.5em;
+    padding-bottom: 0.35em;
+    position: relative;
+
+    &::before {
+      content: "// ";
+      color: $arcade-red;
+    }
+
+    &::after {
+      content: "";
+      display: block;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 2px;
+    }
+  }
+
+  h1 {
+    padding-bottom: 0.5em;
+    margin-bottom: 0.7em;
+    &::after {
+      height: $arcade-pixel;
+      background:
+        linear-gradient(90deg, $arcade-red 0 50%, $arcade-teal 50% 100%);
+      box-shadow: 0 0 8px rgba(255, 107, 107, 0.4);
+    }
+  }
+
+  h2::after {
+    background: repeating-linear-gradient(90deg,
+      $arcade-red 0 10px,
+      transparent 10px 16px);
+  }
+
+  h3::after {
+    background: repeating-linear-gradient(90deg,
+      $arcade-teal 0 6px,
+      transparent 6px 12px);
+  }
+
+  h4::after {
+    background: repeating-linear-gradient(90deg,
+      $arcade-purple 0 4px,
+      transparent 4px 8px);
+  }
+
+  h5::after, h6::after {
+    background: $arcade-line;
+    height: 1px;
+    opacity: 0.6;
+  }
+}
+
+/* ==========================================================================
+   Code blocks
+   ========================================================================== */
+
+code, pre, kbd, tt, var, samp {
+  font-family: $monospace !important;
+}
+
+pre {
+  background: #000 !important;
+  color: $arcade-fg;
+  border: $arcade-pixel solid $arcade-blue;
+  box-shadow: $arcade-pixel $arcade-pixel 0 0 rgba(0,0,0,0.5);
+  padding: 14px;
+  position: relative;
+}
+
+p > code, li > code, a > code {
+  background: $arcade-panel !important;
+  border: 1px solid $arcade-line;
+  color: $arcade-yellow !important;
+  padding: 0 0.3em;
+}
+
+div.highlighter-rouge,
+figure.highlight {
+  background: #000 !important;
+  border: $arcade-pixel solid $arcade-blue;
+  box-shadow: $arcade-pixel $arcade-pixel 0 0 rgba(0,0,0,0.5);
+  position: relative;
+  margin: 1.4em 0;
+
+  pre { box-shadow: none; border: 0; background: transparent !important; color: $arcade-fg; }
+  code { background: transparent !important; border: 0 !important; padding: 0 !important; color: inherit !important; }
+}
+
+div.highlighter-rouge .highlight,
+figure.highlight .highlight {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0;
+}
+
+.highlight:not(div.highlighter-rouge .highlight):not(figure.highlight .highlight) {
+  background: #000 !important;
+  border: $arcade-pixel solid $arcade-blue;
+  box-shadow: $arcade-pixel $arcade-pixel 0 0 rgba(0,0,0,0.5);
+  position: relative;
+  margin: 1.4em 0;
+}
+
+/* Syntax token colors — arcade palette */
+.highlight {
+  color: $arcade-fg;
+
+  .c, .ch, .cd, .cm, .cpf, .c1, .cs, .cp { color: $arcade-fg-mute; font-style: italic; }
+  .k, .kc, .kd, .kn, .kp, .kr, .kv { color: $arcade-red; font-weight: 700; }
+  .kt { color: $arcade-purple; font-weight: 700; }
+  .s, .sb, .sc, .dl, .sd, .s2, .se, .sh, .si, .sx, .sr, .s1, .ss { color: $arcade-yellow; }
+  .m, .mb, .mf, .mh, .mi, .il, .mo, .mx { color: $arcade-teal; }
+  .nf, .nc, .nd, .nb, .bp, .ne, .nl, .nn { color: $arcade-blue; }
+  .n, .na, .nv, .vc, .vg, .vi, .vm, .py { color: $arcade-fg; }
+  .o, .ow { color: $arcade-red; }
+  .p, .pi { color: $arcade-fg-dim; }
+  .nt { color: $arcade-red; }
+  .err { color: $arcade-red; background: rgba(255, 107, 107, 0.15); }
+
+  .gutter, .rouge-gutter, .lineno, .gl {
+    color: $arcade-line;
+    border-right: 1px solid $arcade-line;
+    user-select: none;
+  }
+
+  .gd { color: $arcade-red; background: rgba(255, 107, 107, 0.12); }
+  .gi { color: $arcade-teal; background: rgba(78, 205, 196, 0.10); }
+  .gh, .gu { color: $arcade-blue; font-weight: 700; }
+  .hll { background: rgba(255, 230, 109, 0.18); }
+}
+
+/* Copy button */
+.code-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  background: $arcade-bg;
+  color: $arcade-teal;
+  border: 2px solid $arcade-teal;
+  box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.5);
+  font-family: $header-font-family;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  cursor: none;
+  line-height: 1;
+  transition: all 0.1s ease;
+
+  &:hover {
+    background: $arcade-teal;
+    color: #000;
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 0 rgba(0,0,0,0.5);
+  }
+
+  &.copied {
+    background: $arcade-yellow;
+    color: #000;
+    border-color: $arcade-yellow;
+  }
+}
+
+/* ==========================================================================
+   Buttons / forms
+   ========================================================================== */
+
+.btn, button, input[type="submit"] {
+  font-family: $header-font-family !important;
+  font-size: 12px !important;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: transparent !important;
+  border: $arcade-pixel solid $arcade-red !important;
+  color: $arcade-red !important;
+  box-shadow: $arcade-pixel $arcade-pixel 0 0 rgba(0,0,0,0.5);
+  padding: 10px 16px;
+  cursor: none;
+  transition: all 0.1s ease;
+
+  &:hover {
+    background: $arcade-red !important;
+    color: #fff !important;
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 0 rgba(0,0,0,0.5);
+  }
+
+  &:active {
+    transform: translate($arcade-pixel, $arcade-pixel);
+    box-shadow: none !important;
+  }
+}
+
+.search-content {
+  background: $arcade-bg2;
+  border-bottom: $arcade-pixel solid $arcade-red;
+}
+
+.search-input {
+  background: transparent !important;
+  color: $arcade-yellow !important;
+  font-family: $monospace !important;
+  font-weight: 700;
+  caret-color: $arcade-red;
+
+  &::placeholder { color: $arcade-fg-mute; }
+}
+
+/* Search results page */
+.search-input {
+  display: block;
+  width: 100%;
+  background: $arcade-panel !important;
+  color: $arcade-fg !important;
+  border: $arcade-pixel solid $arcade-teal !important;
+  box-shadow: $arcade-pixel $arcade-pixel 0 0 rgba(0,0,0,0.5);
+  font-family: $monospace !important;
+  font-size: 18px !important;
+  padding: 14px 18px !important;
+  margin: 0 0 24px;
+  caret-color: $arcade-red;
+
+  &::placeholder { color: $arcade-fg-mute; }
+
+  &:focus {
+    outline: none;
+    border-color: $arcade-yellow !important;
+    box-shadow: $arcade-pixel $arcade-pixel 0 0 $arcade-red;
+  }
+}
+
+.results__found {
+  font-family: $header-font-family;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: $arcade-teal;
+  background: $arcade-panel;
+  border: 2px solid $arcade-line;
+  box-shadow: 3px 3px 0 0 rgba(0,0,0,0.5);
+  padding: 8px 14px;
+  display: inline-block;
+  margin: 0 0 18px;
+
+  &::before { content: "▶ "; color: $arcade-red; }
+}
+
+#results .list__item { margin: 0 0 14px; }
+
+#results .archive__item {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  padding: 14px;
+  background: $arcade-panel;
+  border: $arcade-pixel solid $arcade-blue;
+  box-shadow: $arcade-pixel $arcade-pixel 0 0 rgba(0,0,0,0.5);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+
+  &:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 0 $arcade-blue, 10px 10px 0 0 rgba(0,0,0,0.5);
+  }
+
+  @media (max-width: 620px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+#results .archive__item:not(:has(.archive__item-teaser)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+#results .archive__item-teaser {
+  grid-column: 1;
+  width: 120px;
+  height: 80px;
+  border: 2px solid #000;
+  overflow: hidden;
+  background: #000;
+
+  img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  @media (max-width: 620px) {
+    width: 100%;
+    height: 140px;
+  }
+}
+
+#results .archive__item-title,
+#results .archive__item-excerpt {
+  grid-column: 2;
+  min-width: 0;
+}
+
+#results .archive__item:not(:has(.archive__item-teaser)) .archive__item-title,
+#results .archive__item:not(:has(.archive__item-teaser)) .archive__item-excerpt {
+  grid-column: 1;
+}
+
+#results .archive__item-title {
+  grid-row: 1;
+  align-self: end;
+  font-family: $header-font-family;
+  font-size: 16px;
+  line-height: 1.35;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+  color: $arcade-yellow;
+
+  &::before { content: none !important; }
+
+  a { color: $arcade-yellow !important; text-decoration: none; &:hover { color: $arcade-teal !important; } }
+}
+
+#results .archive__item-excerpt {
+  grid-row: 2;
+  align-self: start;
+  font-size: 14px;
+  line-height: 1.5;
+  color: $arcade-fg-dim;
+  margin: 0;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+#results .archive__item:has(.archive__item-teaser) .archive__item-teaser {
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+
+/* ==========================================================================
+   Pagination
+   ========================================================================== */
+
+.pagination {
+  margin-top: 32px;
+
+  li a {
+    font-family: $header-font-family !important;
+    font-size: 12px !important;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    background: transparent !important;
+    border: 2px solid $arcade-teal !important;
+    box-shadow: 2px 2px 0 0 rgba(0,0,0,0.5);
+    color: $arcade-teal !important;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+
+    &:hover, &.current {
+      background: $arcade-teal !important;
+      color: #000 !important;
+      border-color: $arcade-teal !important;
+    }
+
+    &.current {
+      background: $arcade-yellow !important;
+      border-color: $arcade-yellow !important;
+    }
+  }
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.page__footer {
+  background: rgba(15, 15, 26, 0.92) !important;
+  border-top: $arcade-pixel solid $arcade-red;
+  font-family: $sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 12px;
+  color: $arcade-fg;
+  padding: 28px 24px;
+
+  a { color: $arcade-teal; }
+  a:hover { color: $arcade-yellow; }
+}
+
+.page__footer-copyright {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  color: $arcade-fg-dim;
+}
+
+.page__footer-follow .social-icons a {
+  background: $arcade-bg;
+  border: 2px solid $arcade-teal;
+  box-shadow: 2px 2px 0 0 rgba(0,0,0,0.5);
+  padding: 8px;
+  color: $arcade-teal !important;
+
+  &:hover {
+    background: $arcade-teal;
+    color: #000 !important;
+    border-color: $arcade-teal;
+  }
+
+  .svg-inline--fa { color: inherit; }
+}
+
+/* ==========================================================================
+   Tables / notices
+   ========================================================================== */
+
+table {
+  border: $arcade-pixel solid $arcade-purple;
+  box-shadow: $arcade-pixel $arcade-pixel 0 0 rgba(0,0,0,0.5);
+  background: $arcade-panel;
+
+  th, td {
+    border: 1px solid $arcade-line;
+    padding: 0.5em 0.8em;
+    background: $arcade-panel;
+  }
+
+  th {
+    background: $arcade-purple;
+    color: #fff;
+    font-family: $header-font-family;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 12px;
+  }
+}
+
+.notice, .notice--primary, .notice--info,
+.notice--warning, .notice--success, .notice--danger {
+  background: $arcade-panel !important;
+  border: $arcade-pixel solid $arcade-red !important;
+  box-shadow: $arcade-pixel $arcade-pixel 0 0 rgba(0,0,0,0.5) !important;
+  color: $arcade-fg !important;
+  font-family: $sans-serif;
+
+  a { color: $arcade-teal; }
+}
+
+/* ==========================================================================
+   Categories / tags
+   ========================================================================== */
+
+.taxonomy__index {
+  background: $arcade-panel;
+  border: $arcade-pixel solid $arcade-purple;
+  box-shadow: $arcade-pixel $arcade-pixel 0 0 rgba(0,0,0,0.5);
+
+  a {
+    color: $arcade-fg;
+    border-bottom: 1px dashed $arcade-line;
+
+    &:hover { background: $arcade-purple; color: #fff; }
+  }
+}
+
+.taxonomy__count {
+  background: $arcade-yellow !important;
+  color: #000 !important;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  padding: 2px 8px;
+}
+
+.page__taxonomy-item {
+  background: transparent !important;
+  border: 2px solid $arcade-purple !important;
+  color: $arcade-purple !important;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 4px 10px !important;
+  margin: 0 4px 4px 0;
+  box-shadow: 2px 2px 0 0 rgba(0,0,0,0.5);
+
+  &:hover {
+    background: $arcade-purple !important;
+    color: #fff !important;
+  }
+}
+
+/* ==========================================================================
+   Selection
+   ========================================================================== */
+
+::selection {
+  background: $arcade-yellow;
+  color: #000;
+  text-shadow: none;
+}
+
+/* ==========================================================================
+   Breadcrumbs / meta
+   ========================================================================== */
+
+.breadcrumbs {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: $arcade-fg-mute;
+
+  ol li a {
+    color: $arcade-teal;
+    &:hover { color: $arcade-yellow; }
+  }
+}
+
+.page__meta, .page__date, .page__taxonomy {
+  color: $arcade-fg-mute;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  a { color: $arcade-teal; }
+  a:hover { color: $arcade-yellow; }
+}
+
+.page__meta .fa-clock { color: $arcade-teal; }
+
+/* ==========================================================================
+   Table of contents
+   ========================================================================== */
+
+.toc {
+  font-family: $sans-serif;
+  background: $arcade-panel !important;
+  border: $arcade-pixel solid $arcade-teal !important;
+  box-shadow: $arcade-pixel $arcade-pixel 0 0 rgba(0,0,0,0.5);
+  color: $arcade-fg;
+  border-radius: 0 !important;
+
+  .nav__title {
+    background: $arcade-teal !important;
+    color: #000 !important;
+    font-family: $header-font-family;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-shadow: none;
+    border-radius: 0 !important;
+    padding: 10px 14px;
+
+    i, .fa, .fas, .far { color: #000; }
+  }
+}
+
+.toc__menu {
+  font-size: 14px;
+
+  a {
+    color: $arcade-fg !important;
+    background: transparent;
+    border-bottom: 1px dashed $arcade-line;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    padding: 8px 14px;
+
+    &:hover {
+      color: $arcade-yellow !important;
+      background: rgba(255, 230, 109, 0.05);
+    }
+  }
+
+  .active a, a.active {
+    color: #000 !important;
+    background: $arcade-yellow !important;
+    font-weight: 700;
+  }
+
+  li ul > li a { color: $arcade-fg-mute !important; }
+  li ul > li a:hover { color: $arcade-yellow !important; }
+}
+
+/* ==========================================================================
+   Reveal-on-scroll (used by arcade-fx.js)
+   ========================================================================== */
+
+/* .reveal is only hidden once JS confirms it can observe — falls back to visible */
+body.arcade-fx-ready .reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+body.arcade-fx-ready .reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .author__avatar img { animation: none !important; }
+}
+
+/* ==========================================================================
+   Arcade overlays — cursor, bg canvas, scanlines, particles
+   ========================================================================== */
+
+#arcade-bg-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+#arcade-scanlines {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.18) 0px,
+    rgba(0, 0, 0, 0.18) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.5;
+}
+
+#arcade-cursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 16px; height: 16px;
+  background: $arcade-red;
+  pointer-events: none;
+  z-index: 99999;
+  mix-blend-mode: difference;
+  image-rendering: pixelated;
+  transition: width 0.1s, height 0.1s, background 0.1s;
+  will-change: transform;
+
+  &.hover {
+    width: 24px;
+    height: 24px;
+    margin: -4px 0 0 -4px;
+    background: $arcade-yellow;
+  }
+
+  &.down {
+    background: $arcade-teal;
+  }
+}
+
+#arcade-cursor-dot {
+  position: fixed;
+  top: 0; left: 0;
+  width: 4px; height: 4px;
+  background: #fff;
+  pointer-events: none;
+  z-index: 99999;
+  will-change: transform;
+}
+
+@media (hover: none), (pointer: coarse) {
+  #arcade-cursor, #arcade-cursor-dot { display: none; }
+}
+
+.arcade-particle {
+  position: fixed;
+  width: 6px; height: 6px;
+  pointer-events: none;
+  z-index: 99998;
+  image-rendering: pixelated;
+  will-change: transform, opacity;
+}
+
+/* Glitch effect — applied briefly via JS on hover */
+.arcade-glitch {
+  position: relative;
+  animation: arcade-glitch-shift 0.38s steps(2, end) infinite;
+}
+
+@keyframes arcade-glitch-shift {
+  0%   { text-shadow: 3px 3px 0 $arcade-red, 6px 6px 0 rgba(0,0,0,0.4); transform: translate(0); }
+  20%  { text-shadow: -2px 0 0 $arcade-teal, 2px 0 0 $arcade-red; transform: translate(2px, -1px); }
+  40%  { text-shadow: 2px 0 0 $arcade-yellow, -2px 0 0 $arcade-purple; transform: translate(-2px, 1px); }
+  60%  { text-shadow: 2px -2px 0 $arcade-blue; transform: translate(1px, 0); }
+  80%  { text-shadow: 3px 3px 0 $arcade-red, 6px 6px 0 rgba(0,0,0,0.4); transform: translate(0); }
+  100% { text-shadow: 3px 3px 0 $arcade-red, 6px 6px 0 rgba(0,0,0,0.4); transform: translate(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #arcade-bg-canvas, #arcade-scanlines, #arcade-cursor, #arcade-cursor-dot { display: none; }
+  .arcade-glitch { animation: none !important; }
+}
+
+/* ==========================================================================
+   Reduced motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   Pixel-art hacker scene (bottom-left mini animation)
+   ========================================================================== */
+
+.hacker-scene {
+  position: fixed;
+  /* sit just under the sidebar (sidebar starts at top:100px, ~520px tall in profile area) */
+  top: 640px;
+  left: 24px;
+  z-index: 40;
+  width: 280px;
+  height: 180px;
+  pointer-events: none;
+  font-family: "Courier New", monospace;
+  image-rendering: pixelated;
+
+  /* hide on narrow viewports + short screens */
+  @media (max-width: 1100px), (max-height: 820px) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hacker-scene { display: none; }
+}
+
+.hs-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  overflow: visible;
+}
+
+.hs-floor {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(78, 205, 196, 0.5) 20%,
+    rgba(78, 205, 196, 0.5) 80%,
+    transparent 100%);
+}
+
+/* ----- Monitor + desk ----- */
+.hs-desk {
+  position: absolute;
+  left: 32px;
+  bottom: 8px;
+  width: 90px;
+  height: 80px;
+}
+
+.hs-monitor {
+  position: absolute;
+  left: 0;
+  bottom: 12px;
+  width: 80px;
+  height: 60px;
+  background: #2a2a4a;
+  border: 3px solid #000;
+  box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.6);
+}
+
+.hs-screen {
+  position: absolute;
+  inset: 4px;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  overflow: hidden;
+}
+
+.hs-prompt {
+  color: $arcade-teal;
+  display: inline;
+  transition: opacity 0.15s;
+}
+
+.hs-caret {
+  display: inline-block;
+  animation: hs-blink 0.6s steps(1, end) infinite;
+}
+
+.hs-warning {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $arcade-red;
+  color: #fff;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-align: center;
+  padding: 0 4px;
+  opacity: 0;
+}
+
+.hs-monitor-stand {
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  width: 18px;
+  height: 10px;
+  margin-left: -9px;
+  background: #1a1a2e;
+  border: 2px solid #000;
+}
+
+@keyframes hs-blink {
+  0%, 50%   { opacity: 1; }
+  50.1%, 100% { opacity: 0; }
+}
+
+/* ----- Hacker character (red hoodie) ----- */
+.hs-hacker {
+  position: absolute;
+  left: 130px;
+  bottom: 12px;
+  width: 28px;
+  height: 60px;
+}
+
+.hs-hacker-hood {
+  position: absolute;
+  top: 0;
+  left: 4px;
+  width: 20px;
+  height: 18px;
+  background: $arcade-red;
+  box-shadow:
+    -2px 4px 0 0 $arcade-red,    /* hood side wraps */
+    22px 4px 0 0 $arcade-red;
+}
+
+.hs-hacker-face {
+  position: absolute;
+  top: 14px;
+  left: 6px;
+  width: 16px;
+  height: 12px;
+  background: #1a1a2e;
+}
+
+.hs-eye {
+  position: absolute;
+  top: 4px;
+  width: 3px;
+  height: 3px;
+  background: $arcade-yellow;
+}
+.hs-eye-l { left: 3px; }
+.hs-eye-r { right: 3px; }
+
+.hs-hacker-body {
+  position: absolute;
+  top: 28px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  background: $arcade-red;
+}
+
+.hs-hacker-hands {
+  position: absolute;
+  top: 36px;
+  left: -2px;
+  width: 32px;
+  height: 6px;
+  background: #1a1a2e;
+  box-shadow:
+    inset 4px 0 0 0 $arcade-red,
+    inset -4px 0 0 0 $arcade-red;
+  transition: top 0.2s, width 0.2s, left 0.2s;
+}
+
+/* Handcuffs (hidden until arrest) — silver bars connecting wrists */
+.hs-cuffs {
+  position: absolute;
+  top: 38px;
+  left: 6px;
+  width: 16px;
+  height: 4px;
+  background: #d0d0d0;
+  border: 1px solid #000;
+  opacity: 0;
+  transition: opacity 0.15s;
+  box-shadow:
+    -3px 0 0 0 #d0d0d0,
+    3px 0 0 0 #d0d0d0;
+}
+
+/* Tear drop on hacker's face when jailed */
+.hs-tear {
+  position: absolute;
+  top: 7px;
+  left: 4px;
+  width: 2px;
+  height: 4px;
+  background: $arcade-blue;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+/* Jail cell — vertical bars + back wall, slides in for jailed state */
+.hs-cell {
+  position: absolute;
+  top: 0;
+  bottom: 4px;
+  left: 50%;
+  width: 100px;
+  margin-left: -50px;
+  background:
+    linear-gradient(180deg, #1a1a2e 0%, #0a0a18 100%);
+  border-left: 3px solid #2a2a4a;
+  border-right: 3px solid #2a2a4a;
+  border-top: 3px solid #2a2a4a;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 0.3s, transform 0.4s;
+  z-index: 2;
+}
+
+.hs-cell-bars {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 11px,
+    #d0d0d0 11px,
+    #d0d0d0 14px
+  );
+  box-shadow: inset 0 0 0 1px #000;
+}
+
+.hs-cell-bars::after {
+  content: "";                          /* horizontal cross-bar */
+  position: absolute;
+  top: 50%;
+  left: 0; right: 0;
+  height: 3px;
+  margin-top: -1px;
+  background: #d0d0d0;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+}
+
+.hs-bubble {
+  position: absolute;
+  background: $arcade-yellow;
+  color: #000;
+  border: 2px solid #000;
+  padding: 4px 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  opacity: 0;
+  transform: scale(0.6);
+  transform-origin: bottom left;
+  transition: opacity 0.15s, transform 0.15s;
+  box-shadow: 2px 2px 0 0 #000;
+}
+
+.hs-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 8px;
+  width: 0; height: 0;
+  border: 4px solid transparent;
+  border-top-color: #000;
+}
+
+.hs-bubble-hacker {
+  top: -16px;
+  left: 12px;
+  font-size: 13px;
+  padding: 2px 6px;
+  color: $arcade-red;
+  background: #fff;
+}
+
+.hs-bubble-cops {
+  top: 20px;
+  right: 8px;
+  transform-origin: bottom right;
+}
+.hs-bubble-cops::after { left: auto; right: 8px; }
+
+/* ----- Cops (blue uniforms) ----- */
+.hs-cop {
+  position: absolute;
+  bottom: 12px;
+  width: 22px;
+  height: 50px;
+  transform: translateX(330px);
+  opacity: 0;             /* hidden until they run in */
+}
+
+/* Show cops only during the cops/arrest/cuffed/walking states */
+.hacker-scene[data-state="cops"]    .hs-cop,
+.hacker-scene[data-state="arrest"]  .hs-cop,
+.hacker-scene[data-state="cuffed"]  .hs-cop,
+.hacker-scene[data-state="walking"] .hs-cop {
+  opacity: 1;
+}
+
+.hs-cop-hat {
+  position: absolute;
+  top: 0;
+  left: 2px;
+  width: 18px;
+  height: 8px;
+  background: $arcade-blue;
+  box-shadow: 0 -2px 0 0 #1a1a2e;        /* badge lip */
+}
+
+.hs-cop-hat::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 7px;
+  width: 4px;
+  height: 4px;
+  background: $arcade-yellow;            /* badge */
+}
+
+.hs-cop-face {
+  position: absolute;
+  top: 8px;
+  left: 4px;
+  width: 14px;
+  height: 10px;
+  background: #ffd6a5;
+}
+
+.hs-cop-face::before,
+.hs-cop-face::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  width: 2px;
+  height: 2px;
+  background: #000;
+}
+.hs-cop-face::before { left: 3px; }
+.hs-cop-face::after  { right: 3px; }
+
+.hs-cop-body {
+  position: absolute;
+  top: 18px;
+  left: 1px;
+  width: 20px;
+  height: 22px;
+  background: $arcade-blue;
+}
+
+.hs-cop-body::before {
+  content: "";                            /* belt */
+  position: absolute;
+  bottom: 4px;
+  left: 0; right: 0;
+  height: 3px;
+  background: #000;
+}
+
+.hs-cop-legs {
+  position: absolute;
+  top: 40px;
+  left: 1px;
+  width: 20px;
+  height: 10px;
+  display: flex;
+  gap: 2px;
+  justify-content: space-between;
+}
+
+.hs-leg {
+  width: 8px;
+  height: 10px;
+  background: #1a1a2e;
+}
+
+.hs-cop-2 { transform: translateX(360px); }
+
+/* ==========================================================================
+   Animation states
+   Driven by JS toggling data-state on .hacker-scene
+   States: idle → typing → warning → panic → cops → arrest → done
+   ========================================================================== */
+
+/* Default (idle): hacker visible, no warning, no cops, no bubbles */
+.hacker-scene[data-state="idle"] .hs-warning,
+.hacker-scene[data-state="idle"] .hs-bubble { opacity: 0; }
+
+/* Typing — caret blinks (already running via keyframe) */
+
+/* Warning flashes red */
+.hacker-scene[data-state="warning"] .hs-prompt { opacity: 0; }
+.hacker-scene[data-state="warning"] .hs-warning {
+  opacity: 1;
+  animation: hs-warn-flash 0.3s steps(2, end) 6;
+}
+
+@keyframes hs-warn-flash {
+  0%, 100% { background: $arcade-red; }
+  50%      { background: #000; color: $arcade-red; }
+}
+
+/* Panic — hacker shakes, ! bubble pops */
+.hacker-scene[data-state="panic"] .hs-warning { opacity: 1; }
+.hacker-scene[data-state="panic"] .hs-prompt { opacity: 0; }
+.hacker-scene[data-state="panic"] .hs-hacker {
+  animation: hs-shake 0.18s steps(2, end) infinite;
+}
+.hacker-scene[data-state="panic"] .hs-bubble-hacker {
+  opacity: 1;
+  transform: scale(1);
+  animation: hs-pop 0.5s ease-out infinite alternate;
+}
+
+@keyframes hs-shake {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(-2px, -1px); }
+  50%  { transform: translate(2px, 0); }
+  75%  { transform: translate(-1px, 1px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes hs-pop {
+  from { transform: scale(1)   rotate(-4deg); }
+  to   { transform: scale(1.1) rotate(4deg); }
+}
+
+/* Cops run in */
+.hacker-scene[data-state="cops"] .hs-warning { opacity: 1; }
+.hacker-scene[data-state="cops"] .hs-prompt { opacity: 0; }
+.hacker-scene[data-state="cops"] .hs-hacker {
+  animation: hs-shake 0.18s steps(2, end) infinite;
+}
+.hacker-scene[data-state="cops"] .hs-bubble-hacker {
+  opacity: 1;
+  transform: scale(1);
+}
+.hacker-scene[data-state="cops"] .hs-cop-1 {
+  animation: hs-cop-1-run 1.6s steps(8, end) forwards, hs-bob 0.2s steps(2, end) infinite;
+}
+.hacker-scene[data-state="cops"] .hs-cop-2 {
+  animation: hs-cop-2-run 1.6s steps(8, end) 0.15s forwards, hs-bob 0.2s steps(2, end) infinite;
+}
+
+@keyframes hs-cop-1-run {
+  from { transform: translateX(330px); }
+  to   { transform: translateX(190px); }
+}
+@keyframes hs-cop-2-run {
+  from { transform: translateX(360px); }
+  to   { transform: translateX(220px); }
+}
+@keyframes hs-bob {
+  0%, 100% { margin-bottom: 0; }
+  50%      { margin-bottom: 2px; }
+}
+
+/* Arrest — cops in place, speech bubble pops */
+.hacker-scene[data-state="arrest"] .hs-warning { opacity: 1; }
+.hacker-scene[data-state="arrest"] .hs-prompt { opacity: 0; }
+.hacker-scene[data-state="arrest"] .hs-cop-1 {
+  transform: translateX(190px);
+  animation: none;
+}
+.hacker-scene[data-state="arrest"] .hs-cop-2 {
+  transform: translateX(220px);
+  animation: none;
+}
+.hacker-scene[data-state="arrest"] .hs-hacker {
+  animation: hs-shake 0.18s steps(2, end) infinite;
+}
+.hacker-scene[data-state="arrest"] .hs-bubble-hacker {
+  opacity: 1;
+  transform: scale(1);
+}
+.hacker-scene[data-state="arrest"] .hs-bubble-cops {
+  opacity: 1;
+  transform: scale(1);
+  animation: hs-pop 0.4s ease-out 3 alternate;
+}
+
+/* Handcuffed — cuffs appear, hands clamped together centered, hacker stops shaking */
+.hacker-scene[data-state="cuffed"] .hs-warning { opacity: 0.6; }
+.hacker-scene[data-state="cuffed"] .hs-prompt { opacity: 0; }
+.hacker-scene[data-state="cuffed"] .hs-cop-1 { transform: translateX(190px); animation: none; }
+.hacker-scene[data-state="cuffed"] .hs-cop-2 { transform: translateX(220px); animation: none; }
+.hacker-scene[data-state="cuffed"] .hs-hacker {
+  animation: none;
+}
+.hacker-scene[data-state="cuffed"] .hs-hacker-hands {
+  top: 38px;
+  left: 4px;
+  width: 20px;
+}
+.hacker-scene[data-state="cuffed"] .hs-cuffs { opacity: 1; }
+.hacker-scene[data-state="cuffed"] .hs-bubble-hacker { opacity: 0; transform: scale(0.6); }
+.hacker-scene[data-state="cuffed"] .hs-bubble-cops {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Walking off — hacker + cops march together to the left */
+.hacker-scene[data-state="walking"] .hs-warning { opacity: 0; }
+.hacker-scene[data-state="walking"] .hs-prompt { opacity: 0; }
+.hacker-scene[data-state="walking"] .hs-cuffs { opacity: 1; }
+.hacker-scene[data-state="walking"] .hs-bubble-cops { opacity: 0; transform: scale(0.6); }
+
+.hacker-scene[data-state="walking"] .hs-hacker {
+  animation: hs-walk-off-hacker 2s linear forwards, hs-bob 0.25s steps(2, end) infinite;
+}
+.hacker-scene[data-state="walking"] .hs-cop-1 {
+  animation: hs-walk-off-cop1 2s linear forwards, hs-bob 0.25s steps(2, end) infinite;
+}
+.hacker-scene[data-state="walking"] .hs-cop-2 {
+  animation: hs-walk-off-cop2 2s linear forwards, hs-bob 0.25s steps(2, end) infinite 0.1s;
+}
+
+@keyframes hs-walk-off-hacker {
+  from { transform: translateX(0); opacity: 1; }
+  to   { transform: translateX(-160px); opacity: 0; }
+}
+@keyframes hs-walk-off-cop1 {
+  from { transform: translateX(190px); opacity: 1; }
+  to   { transform: translateX(30px);  opacity: 0; }
+}
+@keyframes hs-walk-off-cop2 {
+  from { transform: translateX(220px); opacity: 1; }
+  to   { transform: translateX(60px);  opacity: 0; }
+}
+
+/* Jailed — cell drops in, hacker behind bars with sad face + tear */
+.hacker-scene[data-state="jailed"] .hs-warning { opacity: 0; }
+.hacker-scene[data-state="jailed"] .hs-prompt { opacity: 0; }
+.hacker-scene[data-state="jailed"] .hs-desk { opacity: 0; }
+.hacker-scene[data-state="jailed"] .hs-cop-1,
+.hacker-scene[data-state="jailed"] .hs-cop-2 {
+  opacity: 0;
+  animation: none;
+}
+.hacker-scene[data-state="jailed"] .hs-bubble-hacker,
+.hacker-scene[data-state="jailed"] .hs-bubble-cops { opacity: 0; }
+
+.hacker-scene[data-state="jailed"] .hs-cell {
+  opacity: 1;
+  transform: translateY(0);
+  animation: hs-cell-drop 0.5s ease-out forwards;
+}
+
+@keyframes hs-cell-drop {
+  0%   { transform: translateY(-100%); }
+  80%  { transform: translateY(4px); }
+  100% { transform: translateY(0); }
+}
+
+.hacker-scene[data-state="jailed"] .hs-hacker {
+  left: 50%;
+  margin-left: -14px;
+  animation: none;
+  z-index: 1;
+}
+.hacker-scene[data-state="jailed"] .hs-cuffs { opacity: 1; }
+.hacker-scene[data-state="jailed"] .hs-tear {
+  opacity: 1;
+  animation: hs-tear-fall 1.6s ease-in infinite;
+}
+.hacker-scene[data-state="jailed"] .hs-eye-l,
+.hacker-scene[data-state="jailed"] .hs-eye-r {
+  height: 1px;                          /* squint / sad eyes */
+  top: 5px;
+}
+
+@keyframes hs-tear-fall {
+  0%   { opacity: 1; transform: translateY(0); }
+  80%  { opacity: 1; transform: translateY(7px); }
+  100% { opacity: 0; transform: translateY(7px); }
+}
+
+/* Done — keep jailed pose */
+.hacker-scene[data-state="done"] .hs-warning { opacity: 0; }
+.hacker-scene[data-state="done"] .hs-prompt { opacity: 0; }
+.hacker-scene[data-state="done"] .hs-desk { opacity: 0; }
+.hacker-scene[data-state="done"] .hs-cop-1,
+.hacker-scene[data-state="done"] .hs-cop-2 { opacity: 0; }
+.hacker-scene[data-state="done"] .hs-cell {
+  opacity: 1;
+  transform: translateY(0);
+}
+.hacker-scene[data-state="done"] .hs-hacker {
+  left: 50%;
+  margin-left: -14px;
+  animation: none;
+}
+.hacker-scene[data-state="done"] .hs-cuffs { opacity: 1; }
+.hacker-scene[data-state="done"] .hs-tear { opacity: 1; }
+.hacker-scene[data-state="done"] .hs-eye-l,
+.hacker-scene[data-state="done"] .hs-eye-r {
+  height: 1px;
+  top: 5px;
+}
+.hacker-scene[data-state="done"] .hs-bubble-hacker,
+.hacker-scene[data-state="done"] .hs-bubble-cops { opacity: 0; }
+
+/* Replay button — only shows after scene done */
+.hs-replay {
+  position: absolute;
+  bottom: -34px;
+  left: 0;
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: $arcade-bg;
+  color: $arcade-yellow;
+  border: 2px solid $arcade-yellow;
+  padding: 4px 10px;
+  cursor: none;
+  pointer-events: auto;
+  opacity: 0;
+  transition: all 0.15s;
+  box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.6);
+}
+
+.hacker-scene[data-state="done"] .hs-replay {
+  opacity: 1;
+}
+
+.hs-replay:hover {
+  background: $arcade-yellow;
+  color: #000;
+  transform: translate(-1px, -1px);
+}
+
+/* ==========================================================================
+   Owl mascot — perches at the top-right of the latest post card.
+   Periodically takes off, flies a loop, returns to perch.
+   ========================================================================== */
+
+/* Featured card: needs overflow visible so mascot extends above the card */
+.post-blog-card--featured {
+  overflow: visible !important;
+  position: relative;
+}
+
+.owl-mascot {
+  position: absolute;
+  top: -38px;
+  right: 16px;
+  width: 38px;
+  height: 50px;
+  pointer-events: none;
+  image-rendering: pixelated;
+  z-index: 4;
+  font-family: "Courier New", monospace;
+
+  /* Soft white halo so the owl reads against the dark page */
+  filter:
+    drop-shadow(0 0 3px rgba(255, 255, 255, 0.7))
+    drop-shadow(0 0 8px rgba(255, 255, 255, 0.35))
+    drop-shadow(0 0 14px rgba(255, 255, 255, 0.18));
+
+  /* Flight loop: every ~12s, take off, do a circuit, return.
+     The flight path is one big keyframe; idle is the rest of the time. */
+  animation: owl-flight 12s ease-in-out infinite;
+}
+
+@keyframes owl-flight {
+  0%, 60%   { transform: translate(0, 0) rotate(0deg); }    /* perched, idle */
+  62%       { transform: translate(0, -8px) rotate(-5deg); } /* push off */
+  68%       { transform: translate(-80px, -50px) rotate(-12deg); }
+  74%       { transform: translate(-200px, -90px) rotate(-8deg); }
+  80%       { transform: translate(-380px, -70px) rotate(0deg); }   /* far left */
+  84%       { transform: translate(-460px, -30px) rotate(8deg); }
+  88%       { transform: translate(-380px, 10px) rotate(12deg); scaleX: -1; }
+  92%       { transform: translate(-200px, 0px) rotate(0deg); }
+  96%       { transform: translate(-40px, -10px) rotate(-5deg); }
+  100%      { transform: translate(0, 0) rotate(0deg); }    /* back to perch */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .owl-mascot { animation: none; }
+}
+
+@media (max-width: 620px) {
+  .owl-mascot {
+    transform: scale(0.8);
+    transform-origin: bottom right;
+  }
+}
+
+/* Owl character — pixel art via positioned blocks */
+.owl {
+  position: absolute;
+  inset: 0;
+}
+
+/* Ear tufts (top corners) */
+.owl-tuft {
+  position: absolute;
+  top: 0;
+  width: 5px;
+  height: 7px;
+  background: #1a1a2e;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+.owl-tuft-l { left: 5px; transform: rotate(-12deg); }
+.owl-tuft-r { right: 5px; transform: rotate(12deg); }
+
+/* Head — round-ish, dark navy with subtle teal trim */
+.owl-head {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 30px;
+  height: 22px;
+  background: #1a1a2e;
+  border: 2px solid #000;
+  box-shadow:
+    inset 0 -2px 0 0 rgba(78, 205, 196, 0.15);
+  /* Rounded silhouette via clip — keep pixel feel */
+  border-radius: 0;
+  animation: owl-head-tilt 3.2s ease-in-out infinite;
+}
+
+@keyframes owl-head-tilt {
+  0%, 35%, 100% { transform: rotate(0deg); }
+  45%           { transform: rotate(-6deg); }
+  55%, 70%      { transform: rotate(0deg); }
+  80%           { transform: rotate(6deg); }
+  90%           { transform: rotate(0deg); }
+}
+
+/* Eye masks — light cream-yellow facial discs */
+.owl-mask {
+  position: absolute;
+  top: 5px;
+  width: 10px;
+  height: 10px;
+  background: $arcade-yellow;
+  border: 1px solid #000;
+}
+.owl-mask-l { left: 3px; }
+.owl-mask-r { right: 3px; }
+
+/* Eyes — black pupils that blink + dart */
+.owl-eye {
+  position: absolute;
+  top: 8px;
+  width: 4px;
+  height: 6px;
+  background: #1a1a2e;
+  z-index: 2;
+  animation: owl-blink 4.5s steps(1, end) infinite;
+}
+.owl-eye-l { left: 6px; }
+.owl-eye-r { right: 6px; }
+
+@keyframes owl-blink {
+  0%, 92%, 100% { height: 6px; top: 8px; background: #1a1a2e; }
+  93%, 96%      { height: 1px; top: 12px; background: #1a1a2e; }  /* eyelids close */
+}
+
+/* Tiny white glints inside eyes (only when not blinking) */
+.owl-eye::after {
+  content: "";
+  position: absolute;
+  top: 1px; right: 1px;
+  width: 1px; height: 1px;
+  background: #fff;
+}
+
+/* Beak — small yellow triangle between eyes */
+.owl-beak {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  background: $arcade-red;
+  clip-path: polygon(50% 100%, 0% 0%, 100% 0%);
+  z-index: 3;
+}
+
+/* Body — rounder, slightly larger, fades to teal at the bottom */
+.owl-body {
+  position: absolute;
+  top: 22px;
+  left: 6px;
+  width: 26px;
+  height: 24px;
+  background: #1a1a2e;
+  border: 2px solid #000;
+  z-index: 1;
+}
+
+/* Belly — lighter color patch with feather streaks */
+.owl-belly {
+  position: absolute;
+  bottom: 0;
+  left: 4px;
+  right: 4px;
+  height: 14px;
+  background:
+    linear-gradient(180deg, transparent 0%, #2a2a4a 100%),
+    repeating-linear-gradient(0deg,
+      rgba(78, 205, 196, 0.18) 0px,
+      rgba(78, 205, 196, 0.18) 2px,
+      transparent 2px,
+      transparent 4px);
+}
+
+/* Wings — flutter while perched, big flap during flight */
+.owl-wing {
+  position: absolute;
+  top: 22px;
+  width: 10px;
+  height: 16px;
+  background: #1a1a2e;
+  border: 2px solid #000;
+  z-index: 3;
+  transform-origin: top center;
+  animation: owl-flutter 0.8s ease-in-out infinite;
+}
+.owl-wing-l { left: -2px; }
+.owl-wing-r { right: -2px; animation-delay: 0.05s; }
+
+@keyframes owl-flutter {
+  0%, 100% { transform: rotate(0deg);   height: 16px; }
+  50%      { transform: rotate(-6deg);  height: 14px; }
+}
+
+/* Big wing flap synced to flight times — applied to .owl during flight */
+.owl-mascot .owl {
+  animation: owl-flap-bursts 12s ease-in-out infinite;
+}
+
+@keyframes owl-flap-bursts {
+  /* during the perched portion (0-60%) — no extra effect */
+  0%, 60%   { filter: none; }
+  /* during flight — accelerate wing flap by overriding transform */
+  62%, 96%  { /* placeholder — actual flap is on .owl-wing below */ }
+  100%      { filter: none; }
+}
+
+/* During the flight portion, beat wings faster + bigger */
+.owl-mascot {
+  /* stack a separate, faster wing flap during flight */
+}
+.owl-mascot .owl-wing {
+  animation: owl-flutter 0.8s ease-in-out infinite, owl-flap 12s ease-in-out infinite;
+}
+.owl-mascot .owl-wing-r {
+  animation-delay: 0.05s, 0s;
+}
+
+@keyframes owl-flap {
+  /* idle on perch: contribute nothing */
+  0%, 60%, 100% { transform: rotate(0deg); }
+  /* flight phase: large up/down flap */
+  62%, 96% {
+    transform: rotate(-30deg);
+  }
+  64%, 68%, 72%, 76%, 80%, 84%, 88%, 92% {
+    transform: rotate(20deg);
+  }
+  66%, 70%, 74%, 78%, 82%, 86%, 90%, 94% {
+    transform: rotate(-30deg);
+  }
+}
+
+/* Feet — yellow talons gripping the perch */
+.owl-feet {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.owl-foot {
+  width: 4px;
+  height: 4px;
+  background: $arcade-yellow;
+  border: 1px solid #000;
+  position: relative;
+}
+
+.owl-foot::before,
+.owl-foot::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  width: 1px;
+  height: 2px;
+  background: $arcade-yellow;
+}
+.owl-foot::before { left: 0; }
+.owl-foot::after  { right: 0; }
+
+/* Hide feet during the flight portion (talons tucked in) */
+.owl-mascot .owl-feet {
+  animation: owl-feet-tuck 12s ease-in-out infinite;
+}
+
+@keyframes owl-feet-tuck {
+  0%, 60%, 100% { opacity: 1; transform: translateY(0); }
+  62%, 96%      { opacity: 0; transform: translateY(2px); }
+}
+
+/* Hover the card → owl ruffles (faster head tilt + bigger wing flutter) */
+.post-blog-card--featured:hover .owl-head {
+  animation: owl-head-tilt 1.4s ease-in-out infinite;
+}
+.post-blog-card--featured:hover .owl-wing {
+  animation: owl-flutter 0.4s ease-in-out infinite, owl-flap 12s ease-in-out infinite;
+}
