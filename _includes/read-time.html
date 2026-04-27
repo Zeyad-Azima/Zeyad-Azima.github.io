@@ -6,10 +6,15 @@
   {% assign words = page.content | strip_html | number_of_words %}
 {% endif %}
 
+{% assign minutes = words | divided_by: words_per_minute %}
+
 {% if words < words_per_minute %}
   {{ site.data.ui-text[site.locale].less_than | default: "less than" }} 1 {{ site.data.ui-text[site.locale].minute_read | default: "minute read" }}
-{% elsif words == words_per_minute %}
+{% elsif minutes == 1 %}
   1 {{ site.data.ui-text[site.locale].minute_read | default: "minute read" }}
+{% elsif minutes >= 90 %}
+  {% assign hours = minutes | divided_by: 60 %}
+  {{ hours }}+ hr read
 {% else %}
-  {{ words | divided_by:words_per_minute }} {{ site.data.ui-text[site.locale].minute_read | default: "minute read" }}
+  {{ minutes }} {{ site.data.ui-text[site.locale].minute_read | default: "minute read" }}
 {% endif %}

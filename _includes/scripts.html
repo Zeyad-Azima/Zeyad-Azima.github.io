@@ -4,7 +4,15 @@
   {% endfor %}
 {% else %}
   <script src="{{ '/assets/js/main.min.js' | relative_url }}"></script>
-  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+  {%- comment -%}
+    Font Awesome: kit in production (allowlisted to zeyadazima.com), free CDN locally.
+    Set JEKYLL_ENV=production for prod builds (GitHub Pages does this automatically).
+  {%- endcomment -%}
+  {% if jekyll.environment == "production" %}
+    <script src="https://kit.fontawesome.com/4eee35f757.js" crossorigin="anonymous"></script>
+  {% else %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  {% endif %}
 {% endif %}
 
 {% if site.search == true or page.layout == "search" %}
@@ -21,6 +29,72 @@
 
 {% include analytics.html %}
 {% include /comments-providers/scripts.html %}
+
+<script>
+(function () {
+  function addCopyButtons() {
+    /* Outer wrappers only — Rouge nests .highlight inside .highlighter-rouge,
+       and figure.highlight is its own outer wrapper. We pick the outermost so
+       there's exactly one button per code block. */
+    var blocks = document.querySelectorAll(
+      '.page__content div.highlighter-rouge, ' +
+      '.page__content figure.highlight'
+    );
+    blocks.forEach(function (block) {
+      if (block.dataset.copyAttached === '1') return;
+      var pre = block.querySelector('pre');
+      if (!pre) return;
+      block.dataset.copyAttached = '1';
+
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'code-copy-btn';
+      btn.setAttribute('aria-label', 'Copy code to clipboard');
+      btn.textContent = 'Copy';
+
+      btn.addEventListener('click', function () {
+        var codeEl = pre.querySelector('code') || pre;
+        var text = codeEl.innerText.replace(/\n$/, '');
+
+        var done = function () {
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          setTimeout(function () {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+          }, 1600);
+        };
+        var fail = function () {
+          btn.textContent = 'Error';
+          setTimeout(function () { btn.textContent = 'Copy'; }, 1600);
+        };
+
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(done, fail);
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); done(); } catch (e) { fail(); }
+          document.body.removeChild(ta);
+        }
+      });
+
+      block.appendChild(btn);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addCopyButtons);
+  } else {
+    addCopyButtons();
+  }
+})();
+</script>
+
 
 {% if site.after_footer_scripts %}
   {% for script in site.after_footer_scripts %}
