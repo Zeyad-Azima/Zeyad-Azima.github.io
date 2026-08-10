@@ -4,7 +4,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>WebView Test Page</title>
 <style>
-  body{margin:0;background:#1b2838;color:#fff;font-family:monospace;padding:18px}
+  html,body{margin:0;background:#1b2838;color:#fff;font-family:monospace}
+  body{padding:18px;min-height:100vh}
   h1{font-size:22px;margin:0 0 6px} h2{font-size:16px;margin:0 0 16px;font-weight:normal;color:#9db}
   .k{color:#cfe;font-size:15px;line-height:1.6;word-break:break-all}
   b{color:#7fd}
@@ -26,6 +27,7 @@
                 "domain="+domain+"|href="+href+"|ua="+ua+"|ts="+Date.now());
     } catch(e){}
 
+    // render context immediately so the page paints
     document.getElementById('out').innerHTML =
         "location.href = <b>"+href+"</b><br>"+
         "document.domain = <b>"+domain+"</b><br>"+
@@ -33,7 +35,8 @@
         "alert() reachable = <b>"+(typeof window.alert==='function')+"</b><br>"+
         "userAgent = "+ua;
 
-    try { alert("script executed\ndomain=" + domain); } catch(e){}
+    // defer alert so the page renders first (alert blocks the paint thread)
+    setTimeout(function(){ try { alert("script executed\ndomain=" + domain); } catch(e){} }, 1500);
   </script>
 </body>
 </html>
