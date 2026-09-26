@@ -5,7 +5,7 @@ header:
   teaser: /assets/images/image.psd.png
 
 ribbon: blue
-description: "macOS Shellcoding in depth on x86_64."
+description: "Pt.1 macOS Shellcoding in depth on x86_64."
 categories:
   - MacOS
 tags:
