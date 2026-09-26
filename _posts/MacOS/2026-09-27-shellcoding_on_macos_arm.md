@@ -17,7 +17,7 @@ toc: true
 
 Hello again, in our previous blogpost we explored shellcoding on `macOS` for the `x86_64` architecture. But since Apple has been shipping `Apple Silicon` (`M1`/`M2`/`M3`/`M4`) machines with `ARM64` (`AArch64`) as the first-class citizen — and `x86_64` on Apple hardware now runs only through the `Rosetta 2` translation layer — it only makes sense to cover shellcoding on the `native` architecture for modern `macOS` systems. Before diving in, you’ll need at least a basic understanding of `ARM64` assembly — this isn’t an assembly tutorial, so if you’re unfamiliar with the fundamentals, take some time to learn them first and return when you’re ready for the challenge. If you read our `x86_64` blogpost, You will find this one very familiar, Cause we will follow the same practical workflow: start by writing code in `C`, identify the necessary system calls, and then translate everything into assembly. This approach leverages the wealth of existing `C` documentation and resources, making the process significantly more manageable. You’ll find countless examples of how to build network clients, manipulate processes, or execute commands in `C`, but you’d be hard-pressed to find someone talking about implementing these same tasks purely in `ARM64` assembly. Let’s start with our Blogpost.
 
-> You can find all the code on my github: https://github.com/Zeyad-Azima/macOShellcoding
+> You can find all the code on my github: https://github.com/Zeyad-Azima/macOShellcoding 
 
 # Lab Setup
 
