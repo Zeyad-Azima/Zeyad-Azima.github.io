@@ -1,11 +1,11 @@
 ---
-title: "macOS: Shellcoding on Apples (x86_64)"
+title: "macOS: Shellcoding on Apples (ARM64)"
 classes: wide
 header:
   teaser: /assets/images/ShellcodingOnApples.jpg
 
 ribbon: blue
-description: "macOS Shellcoding in depth on ARM64."
+description: "Pt.2 macOS Shellcoding in depth on ARM64."
 categories:
   - MacOS
 tags:
